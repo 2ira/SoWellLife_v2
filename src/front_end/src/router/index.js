@@ -8,6 +8,9 @@ import Resources from '@/views/Resources.vue';
 import VideoResources from '@/views/VideoResources.vue';
 import ArticleResources from '@/views/ArticleResources.vue';
 import AIChat from '../views/AIChat.vue'
+import Profile_Page from '@/views/Profile_Page.vue';
+import TestPage from "@/views/test.vue";
+import MyCollection from '@/views/MyCollection.vue';
 
 const routes = [
   {
@@ -55,6 +58,22 @@ const routes = [
     path: '/sandbox',
     name: 'Sandbox',
     component: AIChat
+  },
+  {
+    path:'/profile',
+    name: 'Profile_Page',
+    component: Profile_Page
+
+  },
+  {
+    path: '/test',
+    name:'TestPage',
+    component:TestPage
+  },
+  {
+    path: '/collection',
+    name: 'MyCollection',
+    component: MyCollection
   },
 ];
 
