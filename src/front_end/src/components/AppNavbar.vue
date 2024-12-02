@@ -1,4 +1,4 @@
- <!-- AppNavbar.vue -->
+<!-- AppNavbar.vue -->
 <template>
   <div class="nav-container">
     <header>
@@ -14,14 +14,121 @@
             <input type="text" placeholder="搜索..." class="search-bar">
             <span class="search-icon">🔍</span>
           </div>
-            <div class="avatar-container" @click="goToProfile">
-              <img 
-                :src="avatarUrl || require('@/assets/imgs/homepage/default-avatar.jpg')" 
-                alt="用户头像" 
-                class="avatar-img"
-              >
+          <div class="user-avatar-container"
+               @click="isLoggedIn ? goToProfile() : showLoginModal()"
+               @mouseover="isLoggedIn && (avatarHover = true, isDropdownVisible = true)"
+               @mouseleave="avatarHover = false, isDropdownVisible = false">
+
+            <img
+                :src="avatar_url || require('@/assets/imgs/homepage/login.png')"
+                alt="用户头像"
+                class="user-avatar-img"
+                :class="{'avatar-hover': avatarHover}">
+
+            <!-- 下拉框 -->
+            <div v-if="isDropdownVisible" class="dropdown-menu" @click.stop>
+              <div class="user-info">
+                <div class="username">薛鹿呐</div>
+              </div>
+              <div class="button-group">
+                <div class="button">
+                  <img src="@/assets/imgs/icon/user.png" alt="设置" class="icon">
+                  <span @click="goToProfile()">个人设置</span>
+                </div>
+                <div class="button">
+                  <img src="@/assets/imgs/icon/collect.png" alt="收藏" class="icon">
+                  <span @click="gotoCollect()">收藏</span>
+                </div>
+                <div class="button">
+                  <img src="@/assets/imgs/icon/logout.png" alt="退出" class="icon">
+                  <span @click="logout()">退出登录</span>
+                </div>
+              </div>
             </div>
-          <button class="login-button">登录</button>
+          </div>
+          <!-- 登录框 -->
+          <div v-if="isLoginModalVisible" class="login-modal">
+            <div class="login-modal-content">
+              <!-- 右上角关闭按钮 -->
+              <span class="close-btn" @click="closeLoginModal">×</span>
+
+              <div class="login-tabs">
+                <!-- 切换标签 -->
+                <span :class="{'active': isPasswordLogin}" @click="setLoginMethod('password')">
+                  密码登录
+                </span>
+                |
+                <span :class="{'active': !isPasswordLogin && !isRegistering}" @click="setLoginMethod('captcha')">
+                  邮箱验证
+                </span>
+              </div>
+
+              <!-- 密码登录 -->
+              <div v-if="isPasswordLogin && !isRegistering" class="login-form">
+                <div class="form-group">
+                  <label for="username" class="input-label">用户名</label>
+                  <input id="username" type="text" v-model="username" placeholder="请输入用户名" class="input-field" />
+                </div>
+
+                <div class="form-group">
+                  <label for="password" class="input-label">密码</label>
+                  <input id="password" type="password" v-model="password" placeholder="请输入密码" class="input-field" />
+                </div>
+
+                <!-- 按钮 -->
+                <div class="button-group">
+                  <button @click="login" class="btn">登录</button>
+                  <button @click="startRegister" class="btn">注册</button>
+                </div>
+              </div>
+
+              <!-- 验证码登录 -->
+              <div v-if="!isPasswordLogin && !isRegistering" class="login-form">
+                <div class="form-group">
+                  <label for="email" class="input-label">邮箱</label>
+                  <input id="email" type="text" v-model="email" placeholder="请输入邮箱" class="input-field" />
+                </div>
+
+                <!-- 验证码输入区域 -->
+                <div class="captcha-group">
+                  <!-- 验证码输入框 -->
+                  <label for="captcha" class="captcha-input-label">验证码</label>
+                  <input
+                      type="tel"
+                      v-model="captcha"
+                      class="captcha-input"
+                      placeholder="请输入验证码"
+                      maxlength="6"
+                      @input="validateCaptcha"
+                      inputmode="numeric"
+                  />
+                  <!-- 发送验证码按钮 -->
+                  <button
+                      class="captcha-btn"
+                      :disabled="isSending || !isEmailValid"
+                      @click="startCountdown">
+                    {{ countdownText }}
+                  </button>
+                </div>
+                <!-- 登录/注册按钮 -->
+                <div class="button-group">
+                  <button
+                      @click="handleLoginOrRegister"
+                      class="btn"
+                  >
+                    登录/注册
+                  </button>
+                </div>
+              </div>
+              <!-- 下面的用户协议说明 -->
+              <div class="agreement-text">
+                如果你没注册过 SoWellLife，我们将自动帮你注册账号，登录或完成注册代表你同意
+                <a href="/user-agreement" target="_blank">用户协议</a> 和
+                <a href="/privacy-policy" target="_blank">隐私政策</a>。
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
     </header>
@@ -38,7 +145,7 @@
           </div>
         </li>
         <li><router-link to="/doctors">医生</router-link></li>
-        <li><router-link to="/tests">测试</router-link></li>
+        <li><router-link to="/test">测试</router-link></li>
         <li><router-link to="/sandbox">沙包</router-link></li>
       </ul>
     </nav>
@@ -50,14 +157,134 @@ export default {
   name: "AppNavbar",
   data() {
     return {
-      avatarUrl: null,
-      showDropdown: false
+      showDropdown: false,
+      isLoggedIn: true, // 判断是否登录
+      isLoginModalVisible: false,  // 控制登录框显示与否
+      isPasswordLogin: true,      // 控制密码登录与邮箱验证切换
+      isRegistering: false,       // 控制是否显示注册界面
+      username: '',
+      password: '',
+      email: '',
+      captcha: '',
+      isSending: false,     // 是否正在发送验证码
+      countdown: 60,        // 倒计时初始值
+      countdownText: '获取验证码',  // 按钮显示的文本
+      isEmailValid: true,    // 邮箱是否合法
+      emailExists: false,     // 邮箱是否已注册
+      avatar_url: null,       // 用户头像URL
+      isDropdownVisible: false, // 控制下拉框显示
+      avatarHover: false, // 控制头像是否放大
     };
   },
   methods: {
     goToProfile() {
       this.$router.push('/profile');
     },
+    gotoCollect(){
+      this.$router.push('/collection');
+    },
+    showLoginModal() {
+      // 未登录时显示登录框
+      this.isLoginModalVisible = true;
+    },
+    closeLoginModal() {
+      // 关闭登录框
+      this.isLoginModalVisible = false;
+    },
+    setLoginMethod(method) {
+      if (method === 'password') {
+        this.isPasswordLogin = true;
+        this.isRegistering = false;
+      } else if (method === 'captcha') {
+        this.isPasswordLogin = false;
+        this.isRegistering = false;
+      }
+    },
+
+
+    startRegister() {
+      // 切换到注册界面，显示邮箱输入
+      this.setLoginMethod('captcha');
+    },
+    // 验证邮箱合法性
+    validateEmail() {
+      const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+      this.isEmailValid = emailPattern.test(this.email);
+    },
+
+    // 验证验证码合法性
+    validateCaptcha() {
+      this.captcha = this.captcha.replace(/\D/g, ''); // 只允许数字输入
+    },
+
+    // 获取验证码的倒计时功能
+    startCountdown() {
+      if (!this.isEmailValid || !this.emailExists) return; // 如果邮箱不合法或邮箱未注册，不能发送验证码
+      this.isSending = true;
+      this.countdownText = `${this.countdown}秒`;
+
+      const interval = setInterval(() => {
+        this.countdown--;
+        this.countdownText = `${this.countdown}秒`;
+
+        if (this.countdown <= 0) {
+          clearInterval(interval);
+          this.countdownText = '重新发送';
+          this.countdown = 60; // 重置倒计时
+          this.isSending = false;
+        }
+      }, 1000);
+    },
+
+    // 处理登录或注册
+    async handleLoginOrRegister() {
+      if (this.isEmailValid && this.captcha.length === 6) {
+        // 模拟后端邮箱验证逻辑
+        const isRegistered = await this.checkEmailExistence(); // 判断邮箱是否存在
+        if (isRegistered && this.isCaptchaValid()) {
+          this.login(); // 执行登录操作
+        } else if (!isRegistered && this.isCaptchaValid()) {
+          this.register(); // 邮箱不存在，跳转到注册界面
+        }
+      }
+    },
+
+    // 登录操作
+    login() {
+      console.log('执行登录操作...');
+      // 在这里模拟登录成功
+      alert('登录成功');
+    },
+    logout() {
+      // 执行登出逻辑
+      alert('已退出登录');
+      this.isLoggedIn = false; // 设为未登录状态
+    },
+    // 注册操作
+    register() {
+      console.log('执行注册操作...');
+      // 在这里模拟跳转到注册界面
+      alert('邮箱未注册，跳转到注册页面...');
+    },
+
+    // 模拟检查邮箱是否已注册
+    async checkEmailExistence() {
+      // 这里模拟的逻辑：如果邮箱是 "existing@example.com"，则认为该邮箱已注册
+      if (this.email === 'existing@example.com') {
+        this.emailExists = true;  // 模拟邮箱已注册
+        return true;
+      } else {
+        this.emailExists = false; // 模拟邮箱未注册
+        return false;
+      }
+    },
+
+    // 验证验证码是否有效（此处根据需要你可以改为实际的验证码校验）
+    isCaptchaValid() {
+      // 这里只是一个简单的模拟验证码校验，实际应根据后端的验证码逻辑来验证
+      return this.captcha === '123456';  // 假设验证码是 "123456"
+    },
+
     goToResources(type) {
       // 根据传入的类型进行路由跳转逻辑
       if (type === 'video') {
@@ -66,12 +293,12 @@ export default {
         this.$router.push('/resources/article');
       }
     }
-  }
+  },
 };
 </script>
 
-  
-  <style scoped>
+
+<style scoped>
 .nav-container {
   position: fixed;
   top: 0;
@@ -80,7 +307,7 @@ export default {
   height: 80px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   background-color: rgb(68, 165, 146);
-  z-index: 2000;
+  z-index: 100;
 }
 
 header {
@@ -168,20 +395,6 @@ header {
   object-fit: cover;
 }
 
-.login-button {
-  padding: 0.5rem 1.5rem;
-  background-color: #66ac91;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-}
-
-.login-button:hover {
-  background-color: #64c8b7;
-}
 
 .navbar {
   background-color: #8cb3da;
@@ -275,5 +488,344 @@ header {
   background-color: #f0f0f0;
   color: #4CAF50;
 }
-  </style>
-  
+
+/* 登录框的样式 */
+.login-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* 背景遮罩 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 13;
+}
+
+.login-modal-content {
+  position: relative; /* 保证伪元素可以相对于此元素定位 */
+  padding: 30px;  /* 增加内边距 */
+  border-radius: 10px;  /* 增加圆角效果 */
+  width: 500px;  /* 增大宽度 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* 增大阴影 */
+  /* 移除背景颜色，让背景图片透过伪元素显示 */
+}
+
+.login-modal-content::before {
+  content: ''; /* 必须设置content属性 */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('@/assets/imgs/background/6.png'),
+  #e3e6f4; /* 第二个参数是背景颜色，最后一个数字是透明度 */
+  background-position:right bottom;
+  background-size: 50%;
+  background-blend-mode: multiply; /* 可选：混合模式可以使颜色和图片更好地融合 */
+  z-index: -1; /* 确保背景图片和颜色位于内容之下 */
+  border-radius: 10px;  /* 确保伪元素也有圆角效果 */
+}
+
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* 右上角的关闭按钮 */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+  background: none;
+  border: none;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.3s;
+}
+
+.close-btn:hover {
+  color: #ff4d4d; /* 鼠标悬停时改变颜色 */
+}
+
+
+/* 包裹按钮的父元素 */
+.button-group {
+  display: flex;  /* 使用 flexbox 布局 */
+  justify-content: center;  /* 在水平方向上平均分配按钮 */
+  gap: 10px;  /* 按钮之间的间隔，可以根据需要调整 */
+}
+
+/* 按钮样式 */
+.btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #1fc75a;  /* 鼠标悬停时的背景色 */
+}
+
+
+/* 登录框中的标签和输入框样式 */
+.login-tabs {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center;     /* 垂直居中 */
+  font-size: 16px;         /* 字体大小 */
+  color: #333;             /* 默认字体颜色 */
+  gap: 0; /* 去除子元素之间的间隙 */
+  margin-bottom: 20px;
+}
+
+.login-tabs span {
+  cursor: pointer;
+  padding: 0 10px;
+  transition: color 0.3s;
+}
+
+.login-tabs span.active {
+  font-weight: bold;
+  color: #007BFF; /* 激活状态字体颜色 */
+}
+
+.login-tabs span:hover {
+  color: #0056b3; /* 鼠标悬停字体颜色 */
+}
+
+
+.login-form {
+  display: flex;
+  flex-direction: column; /* 让每个字段垂直排列 */
+  width: 100%;
+}
+
+.form-group {
+  display: flex; /* 使用 flex 布局 */
+  flex-direction: row; /* 标签和输入框横向排列 */
+  align-items: center; /* 垂直居中 */
+  height: 40px;
+  width: 80%; /* 确保有足够宽度 */
+  border: 1px solid #ccc; /* 整体框的边框 */
+  border-radius: 4px; /* 整体框的圆角 */
+  background-color: #f5f5f5; /* 背景色 */
+  margin: 0 auto 10px auto; /* 居中并设置底部间距 */
+}
+
+
+.input-label {
+  width: 20%; /* 标签占 20% 宽度 */
+  padding: 0 12px; /* 控制标签内边距 */
+  font-size: 14px; /* 标签字体大小 */
+  display: flex; /* 使用 flex 布局 */
+  justify-content: center; /* 标签内容水平居中 */
+  align-items: center; /* 标签内容垂直居中 */
+}
+
+.input-field {
+  width: 80%; /* 输入框占 80% 宽度 */
+  height: 100%; /* 确保输入框高度和 .form-group 一致 */
+  font-size: 14px;
+  border: none; /* 移除输入框的边框 */
+  background-color: transparent; /* 背景色透明 */
+  border-radius: 0; /* 让输入框的边框和整体框拼接 */
+  margin-top: auto;
+  /* 确保文本垂直居中 */
+  display: flex;
+  align-items: center; /* 让文本垂直居中 */
+  justify-content: flex-start; /* 文本从左侧开始 */
+  outline: none; /* 移除焦点时的外边框 */
+}
+
+/* 让验证码区域有独立的布局 */
+.captcha-group {
+  display: flex; /* 使用 flex 布局 */
+  flex-direction: row; /* 标签和输入框横向排列 */
+  align-items: center; /* 垂直居中 */
+  height: 40px;
+  width: 80%; /* 确保有足够宽度 */
+  border: 1px solid #ccc; /* 整体框的边框 */
+  border-radius: 4px; /* 整体框的圆角 */
+  background-color: #f5f5f5; /* 背景色 */
+  margin: 0 auto 10px auto; /* 居中并设置底部间距 */
+}
+
+
+/* 验证码输入框标签样式，仿照密码输入框的标签 */
+.captcha-input-label {
+  width: 20%;
+  padding: 0 12px; /* 控制标签内边距 */
+  font-size: 14px; /* 标签字体大小 */
+  display: flex; /* 使用 flex 布局 */
+  justify-content: center; /* 标签内容水平居中 */
+  align-items: center; /* 标签内容垂直居中 */
+}
+
+/* 验证码输入框样式 */
+.captcha-input {
+  width: 50%; /* 输入框占 80% 宽度 */
+  height: 100%; /* 确保输入框高度和 .form-group 一致 */
+  font-size: 14px;
+  border: none; /* 移除输入框的边框 */
+  background-color: transparent; /* 背景色透明 */
+  border-radius: 0; /* 让输入框的边框和整体框拼接 */
+  margin-top: auto;
+  /* 确保文本垂直居中 */
+  display: flex;
+  align-items: center; /* 让文本垂直居中 */
+  justify-content: flex-start; /* 文本从左侧开始 */
+  outline: none; /* 移除焦点时的外边框 */
+  -moz-appearance: textfield; /* 去除 Firefox 默认的增减符号 */
+  -webkit-appearance: none; /* 去除 WebKit 默认的增减符号 */
+}
+
+/* 去除数字输入框增减符号 */
+.captcha-input::-webkit-outer-spin-button,
+.captcha-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* 发送验证码按钮样式 */
+.captcha-btn {
+  width: 30%;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  border: none;
+  background-color: transparent;
+  transition: color 0.3s ease;
+  color: #1e9be3;
+}
+
+/* 禁用状态下的按钮样式 */
+.captcha-btn:disabled {
+  cursor: not-allowed;  /* 禁用时鼠标显示禁止符号 */
+  color: #ccc;  /* 禁用时的文字颜色 */
+  text-decoration: none;  /* 禁用时移除下划线 */
+}
+.agreement-text {
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.agreement-text a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.agreement-text a:hover {
+  text-decoration: underline;
+}
+.user-avatar-container {
+  position: relative;
+  display: inline-block;
+  text-align: center; /* 确保头像容器内的内容水平居中 */
+  z-index: 10;
+
+}
+
+.user-avatar-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%; /* 保持圆形 */
+  transition: transform 0.3s ease;
+  position: relative;
+  z-index: 11;
+  box-shadow: 0 0 0 3px hsl(124, 44%, 93%); /* 模拟圆形边框 */
+}
+
+.user-avatar-img:hover {
+  transform: scale(1.2); /* 鼠标悬停时可以做放大效果 */
+}
+
+
+.dropdown-menu {
+  position: absolute;
+  top: 45px; /* 头像高度 + 一些间距 */
+  left: 50%; /* 水平居中 */
+  transform: translateX(-50%); /* 调整位置使其完全居中 */
+  background-color: rgb(255, 255, 255);
+  width: auto; /* 自适应宽度 */
+  min-width: 150px; /* 设置最小宽度 */
+  max-width: 300px; /* 限制最大宽度 */
+  box-shadow: 0 1px 4px rgba(234, 74, 74, 0.1);
+  border-radius: 4px;
+  padding-top: 0.1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 确保内容居中 */
+  z-index: 10; /* 确保下拉菜单在头像之下 */
+}
+
+
+.dropdown-menu .user-info {
+  margin-bottom: 10px;
+  text-align: center; /* 确保用户名等文本居中 */
+}
+
+.dropdown-menu .username {
+  font-size: 15px;
+  margin-top: 20px;
+  font-weight: bold;
+}
+.dropdown-menu .button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* 增加按钮之间的间距 */
+  width: 100%; /* 确保按钮组占满整个宽度 */
+}
+
+.dropdown-menu .button {
+  display: flex;
+  align-items: center; /* 图标和文字垂直居中 */
+  justify-content: flex-start; /* 图标和文字靠左对齐 */
+  gap: 10px; /* 图标和文字之间的水平间距 */
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border-radius: 4px;
+  text-align: left; /* 确保内容靠左对齐 */
+}
+
+.dropdown-menu .button:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdown-menu .button:last-child {
+  border-bottom: none;
+}
+
+.dropdown-menu .button img {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.dropdown-menu .button span {
+  font-size: 15px;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+}
+
+</style>
