@@ -1,20 +1,40 @@
 <!-- src/views/ArticleDetail.vue -->
 <template>
   <div class="article-detail">
-    <h1>{{ article.title }}</h1>
-    <img :src="article.image" alt="Article Image" class="article-image" />
-    <p>{{ article.content }}</p>
-
+    <div class="article-content">
+      <!-- 左侧图片 -->
+      <img :src="article.picture" alt="Article Image" class="article-image" />
+      <!-- 右侧文字内容 -->
+      <div class="article-text">
+        <h1>{{ article.title }}</h1>
+        <p class="article-section">
+          <strong>症状类别：</strong>
+          {{ article.type }}
+        </p>
+        <p class="article-section">
+          <strong>症状描述：</strong>
+          {{ article.symptom }}
+        </p>
+        <p class="article-section">
+          <strong>原因分析：</strong>
+          {{ article.causes }}
+        </p>
+        <p class="article-section">
+          <strong>治疗方法：</strong>
+          {{ article.treatment }}
+        </p>
+      </div>
+    </div>
     <!-- 相关文章推荐 -->
     <h2 class="related-title">相关推荐</h2>
     <div class="related-articles">
-      <RelatedArticleBox 
-        v-for="related in relatedArticles" 
-        :key="related.id"
-        :id="related.id"
-        :image="related.image" 
-        :title="related.title"
-        @article-click="goToArticle"
+      <RelatedArticleBox
+          v-for="related in relatedArticles"
+          :key="related.id"
+          :id="related.id"
+          :image="related.image"
+          :title="related.title"
+          @article-click="goToArticle"
       />
     </div>
   </div>
@@ -22,6 +42,8 @@
   
 <script>
 import RelatedArticleBox from '@/components/RelatedArticleBox.vue';
+import axios from "axios";
+
   export default {
     name: "ArticleDetail",
     components: {
@@ -41,14 +63,24 @@ import RelatedArticleBox from '@/components/RelatedArticleBox.vue';
     methods: {
     async fetchArticle(id) {
       try {
-        // const response = await axios.get(/api/articles/${id});
-        this.article.title="Article "+id;
-        this.article.content = "This is the content of Article "+id; // response.data; 假设后端返回的文章对象
-        this.article.image = "/resources/"+id;
-        if (id==4||id==7||id==10||id==15||id==16||id==20)
-          this.article.image+=".png";
-        else
-          this.article.image+=".jpg";
+        const response = await axios.get(`/api/introductions/${id}`);
+        const articleData = response.data;
+        console.log(response.data);
+        console.log("===================")
+
+        console.log('原始article.image值:', articleData.picture); // 输出原始的image字段值
+        console.log('原始article.image类型:', typeof articleData.picture); // 输出原始的image字段数据类型
+
+        if(articleData.picture){
+          articleData.picture = require('@/assets/imgs/'+articleData.picture);
+          console.log('处理后article.image值:', articleData.picture); // 输出处理后的image字段值
+        }
+        this.article = articleData;
+
+      this.$nextTick(() => {
+        this.article = articleData;
+      });
+
       } catch (error) {
         console.error("Error fetching article:", error);
       }
@@ -77,18 +109,43 @@ import RelatedArticleBox from '@/components/RelatedArticleBox.vue';
   
 <style scoped>
 
-  .article-detail {
-    padding: 20px;
-    text-align: center; /* 内容居中 */
-    margin-top: 100px;
-  }
+.article-detail {
+  padding: 20px;
+  margin-top: 100px;
+}
 
-  .article-image {
-    max-width: 30%; /* 图片自适应宽度 */
-    height: auto; /* 保持比例 */
-    margin: 20px 0; /* 图片上下间距 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 阴影效果 */
-  }
+.article-content {
+  display: flex;
+  gap: 20px; /* 图片和文字之间的间距 */
+  align-items: flex-start; /* 图片和文字顶部对齐 */
+}
+
+.article-image {
+  max-width: 40%; /* 图片宽度占40% */
+  height: auto;
+  border-radius: 10px; /* 圆角 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 图片阴影效果 */
+}
+
+.article-text {
+  flex: 1; /* 文字区域占剩余空间 */
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* 各段文字之间的间距 */
+  line-height: 1.8; /* 行高，增加可读性 */
+}
+
+.article-text h1 {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.article-text .article-section {
+  font-size: 1rem;
+  color: #555;
+  text-align: justify; /* 文字两端对齐 */
+}
 
   .related-title {
     margin-top: 100px; /* 控制“相关推荐”标题上方的空白，40px 代表大约两行间距 */

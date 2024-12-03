@@ -5,11 +5,17 @@ import cn.mentalhealth.dao.impl.IntroductionDaoImpl;
 import cn.mentalhealth.domain.Introduction;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+@Service
 public class IntroductionService {
 
     private IntroductionDao introductionDao = new IntroductionDaoImpl();
@@ -19,6 +25,10 @@ public class IntroductionService {
     public IntroductionService() {
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         objectMapper.setDateFormat(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+    }
+    // 根据ID获取特定介绍信息，并以JSON报文格式返回
+    public Introduction getIntroductionById(int iid) {
+        return introductionDao.getIntroductionById(iid);
     }
 
     // 获取所有介绍信息，并以JSON报文格式返回
@@ -113,5 +123,27 @@ public class IntroductionService {
             e.printStackTrace();
             return "{\"success\": false, \"message\": \"删除介绍信息时出错\"}";
         }
+    }
+
+    // 添加新的方法，用于获取符合前端article组件需求格式的数据列表
+    public List<Map<String, Object>> getArticlesData() {
+        List<Introduction> introductions = introductionDao.getAllIntroductions();
+        //List<Introduction> introductions = (List<Introduction>) introductionDao.getIntroductionById(1);
+        List<Map<String, Object>> articleDataList = new ArrayList<>();
+
+        for (Introduction introduction : introductions) {
+            Map<String, Object> articleData = new HashMap<>();
+            articleData.put("id", introduction.getIid());
+            System.out.println(introduction.getIid());
+            articleData.put("title", introduction.getType());
+            System.out.println(introduction.getType());
+            articleData.put("description", introduction.getSymptom());
+            System.out.println(introduction.getSymptom());
+            articleData.put("image", introduction.getPicture());
+            System.out.println(introduction.getPicture());
+            articleDataList.add(articleData);
+        }
+
+        return articleDataList;
     }
 }
