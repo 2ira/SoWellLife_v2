@@ -5,11 +5,14 @@ import cn.mentalhealth.dao.impl.ResourceDaoImpl;
 import cn.mentalhealth.domain.Resource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+@Service
 public class ResourceService {
 
     private ResourceDao resourceDao = new ResourceDaoImpl();

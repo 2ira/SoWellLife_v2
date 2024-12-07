@@ -31,6 +31,7 @@ public class ResourceDaoImpl implements ResourceDao {
                 resource.setRstore(resultSet.getInt("Rstore"));
                 resource.setRtag(resultSet.getString("Rtag"));
                 resource.setRabstract(resultSet.getString("Rabstract"));
+                resource.setRimg(resultSet.getString("aimg")); // 设置图片字段
                 resourceList.add(resource);
             }
         } catch (SQLException e) {
@@ -55,6 +56,7 @@ public class ResourceDaoImpl implements ResourceDao {
                     resource.setRstore(resultSet.getInt("Rstore"));
                     resource.setRtag(resultSet.getString("Rtag"));
                     resource.setRabstract(resultSet.getString("Rabstract"));
+                    resource.setRimg(resultSet.getString("aimg"));
                 }
             }
         } catch (SQLException e) {
@@ -80,6 +82,7 @@ public class ResourceDaoImpl implements ResourceDao {
                     resource.setRstore(resultSet.getInt("Rstore"));
                     resource.setRtag(resultSet.getString("Rtag"));
                     resource.setRabstract(resultSet.getString("Rabstract"));
+                    resource.setRimg(resultSet.getString("aimg"));
                     resourceList.add(resource);
                 }
             }
@@ -106,6 +109,7 @@ public class ResourceDaoImpl implements ResourceDao {
                     resource.setRstore(resultSet.getInt("Rstore"));
                     resource.setRtag(resultSet.getString("Rtag"));
                     resource.setRabstract(resultSet.getString("Rabstract"));
+                    resource.setRimg(resultSet.getString("aimg"));
                     resourceList.add(resource);
                 }
             }
@@ -126,6 +130,7 @@ public class ResourceDaoImpl implements ResourceDao {
             preparedStatement.setInt(4, resource.getRstore());
             preparedStatement.setString(5, resource.getRtag());
             preparedStatement.setString(6, resource.getRabstract());
+            preparedStatement.setString(7, resource.getRimg());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -145,6 +150,7 @@ public class ResourceDaoImpl implements ResourceDao {
             preparedStatement.setInt(4, resource.getRstore());
             preparedStatement.setString(5, resource.getRtag());
             preparedStatement.setString(6, resource.getRabstract());
+            preparedStatement.setString(7, resource.getRimg());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

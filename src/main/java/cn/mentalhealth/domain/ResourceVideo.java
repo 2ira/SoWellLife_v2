@@ -8,6 +8,7 @@ public class ResourceVideo {
     private int Rstore;
     private String Rtag;
     private String Rabstract;
+    private String rimg;  // 新增的字段，用于存储资源的图片路径
 
     public ResourceVideo() {
     }
@@ -68,4 +69,8 @@ public class ResourceVideo {
     public void setRabstract(String Rabstract) {
         this.Rabstract = Rabstract;
     }
+
+    public String getRimg() {return rimg;}
+
+    public void setRimg(String Rimg) {this.rimg = Rimg;}
 }

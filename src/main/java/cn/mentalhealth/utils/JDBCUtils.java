@@ -23,14 +23,14 @@ public class JDBCUtils {
     private static String username;
     private static String password;
 
-    private static final String CONFIG_FILE_PATH = "D:\\So\\SoWellLife\\src\\main\\resources\\druid.properties";
+    private static final String CONFIG_FILE_PATH = "D:\\maven\\projects\\SoWellLife_v2\\src\\main\\resources\\druid.properties";
     private static Properties properties;
 
     // 静态代码块，在类加载时执行，用于初始化数据库连接相关配置和数据源
     static {
         try {
             // 加载配置文件
-           // InputStream is = JDBCUtils.class.getClassLoader().getResourceAsStream("D:\\So\\SoWellLife\\src\\main\\resources\\druid.properties");
+            // InputStream is = JDBCUtils.class.getClassLoader().getResourceAsStream("D:\\So\\SoWellLife\\src\\main\\resources\\druid.properties");
             Properties properties = new Properties();
             InputStream is = new FileInputStream(CONFIG_FILE_PATH);
             properties.load(is);

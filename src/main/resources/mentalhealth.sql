@@ -1,50 +1,21 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : root
+ Source Server         : data
  Source Server Type    : MySQL
  Source Server Version : 80018
  Source Host           : localhost:3306
- Source Schema         : mentalhealth5
+ Source Schema         : practice
 
  Target Server Type    : MySQL
  Target Server Version : 80018
  File Encoding         : 65001
 
- Date: 29/10/2024 21:56:31
+ Date: 05/12/2024 21:10:01
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
-
--- ----------------------------
--- Table structure for doc_information
--- ----------------------------
-DROP TABLE IF EXISTS `doc_information`;
-CREATE TABLE `doc_information`  (
-  `doc_id` int(11) NOT NULL AUTO_INCREMENT,
-  `doc_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `doc_specialties` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `doc_profile` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
-  `doc_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `doc_hospital` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `hos_url` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`doc_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of doc_information
--- ----------------------------
-INSERT INTO `doc_information` VALUES (1, '陈医生', '精神科', '陈医生，北京大学第六医院，精神科，主任医师。擅长顽固性失眠、抑郁症、焦虑症、精神分裂症、妄想症、幻听幻视幻觉、神经衰弱、双相情感障碍、强迫症、精神障碍、躁狂症、恐惧症、癔症、躯体化障碍、神经官能症、植物神经紊乱、头痛头晕、睡眠障碍、心理障碍、青少年儿童心理咨询、躁郁症等精神、心理疾病的诊疗。', 'resource/image1.jpg', '北京大学第六医院', 'https://m.youlai.cn/yyk/docindex/11805/doctorinfo.html');
-INSERT INTO `doc_information` VALUES (2, '曹医生', '儿童病房', '副主任医师，儿童病房主任，心理学博士，擅长儿童青少年精神及心理障碍、多动症、情绪障碍、边缘型人格障碍等问题。', 'resource/image2.jpg', '北京大学第六医院', 'https://www.pkuh6.cn/Html/Doctors/Main/Index_267.html');
-INSERT INTO `doc_information` VALUES (3, '陈医生', '精神科', '陈医生，上海市精神卫生中心，精神科，副主任医师。擅长失眠症、强迫症、抑郁症、精神分裂症、躁狂症、恐惧症、焦虑症、幻觉幻听症、神经衰弱、失眠多梦、脑损伤、精神障碍、青少年抑郁症、双相情感障碍、疑病症、植物神经紊乱、情绪障碍心理治疗、心理干预、创伤后应激障碍等精神心理疾病的诊断与精准个性化治疗。擅于运用心理学原理疏导情绪问题、人际关系问题。', 'resource/image3.jpg', '上海市精神卫生中心', 'https://www.smhc.org.cn/MedicalGuide/contents/1264/80.html');
-INSERT INTO `doc_information` VALUES (4, '戴医生', '精神科', '戴医生，男，主任医师，教授，现任病区主任，本科，学士学位，担任广州医学院精神科内聘教授，《国际中华神经精神医学杂志》编委。精神分裂症，青少年抑郁症，青少年情绪障碍，抑郁症，产后抑郁症，焦虑症，双相障碍，躁狂症，强迫症，恐惧症，睡眠障碍，应激障碍，酒精以及其他物质滥用所致的精神障碍。', 'resource/image4.jpg', '广州医科大学附属脑科医院', 'https://www.gzbrain.cn/myzj/info.aspx?itemid=3199&lcid=');
-INSERT INTO `doc_information` VALUES (5, '卢医生', '心身医学科', '卢医生，女，江西宜春人，硕士生导师，博士在读，副主任医师，心理治疗师，擅长失眠症、神经衰弱、焦虑症、抑郁症、强迫症、恐怖症、躯体形式障碍、癔症、神经性厌食、神经性贪食、神经性呕吐、精神分裂症、心境障碍、人格障碍、性心理障碍、儿童少年期多动障碍与品行障碍、网络成瘾、躯体疾病中的心理问题、社会适应性障碍、各种心理危机（自杀倾向、工作学习问题、正常人的恋爱婚姻家庭问题、就业问题等）', 'resource/image5.jpg', '南昌大学第二附属医院', 'https://www.jxndefy.cn/info/1324/11704.htm');
-INSERT INTO `doc_information` VALUES (6, '周医生', '心理科', '周医生，男，空军军医大学西京医院精神卫生研究所，全军心理卫生研究中心副主任医师，临床心理医生，青少年团体治疗师，国际人际心理治疗师。擅长青少年抑郁症、网瘾、产后抑郁症、更年期抑郁症、广泛性焦虑障碍、注意缺陷多动障碍、性心理障碍、应激障碍、赌瘾、创伤后应激障碍、酒精成瘾、妄想症、边缘型人格障碍、进食障碍、神经性厌食症、惊恐障碍、神经衰弱、精神分裂症、躁狂症、洁癖、恋物癖、社交恐惧症、幽闭恐惧症、恐艾心理、躯体症状障碍、恐高症、拖延症', 'resource/image6.jpg', '空军军医大学西京医院', 'https://xjwww.fmmu.edu.cn/info/1303/1894.htm');
-INSERT INTO `doc_information` VALUES (7, '陈医生', '医学心理科', '陈医生，南京脑科医院医学，心理医学科，副主任医师。长期从事心理咨询的临床工作，擅长对有关焦虑症、强迫症、恐惧症、抑郁症、躁狂症、躯体形式障碍、儿童青少年心理障碍、及人格障碍的心理咨询与心理治疗。硕士。九三学社社员，南京市鼓楼区政协委员。具有临床医学、社会工作、心理学三个专业背景。', 'resource/image7.jpg', '南京脑科医院', 'https://yyk.familydoctor.com.cn/doctor/190345/');
-INSERT INTO `doc_information` VALUES (8, '江医生', '儿童青少年精神科', '江医生，上海市精神卫生中心，儿童青少年精神科，副主任医师。擅长学龄及学龄前注意缺陷多动障碍及其相关伴发问题的评估、诊断和治疗，发育水平及相关问题的心理评估', 'resource/image8.jpg', '上海市精神卫生中心', 'https://m.youlai.cn/yyk/docindex/35871/');
-INSERT INTO `doc_information` VALUES (9, '朱医生', '心理科', '朱医生，上海第十人民医院，心理科，主任医师，教授。擅长心理障碍的诊治（含性心理障碍）、精神疾病诊治（器质性精神障碍）、治疗反社会型人格障碍及自恋型人格障碍。', 'resource/image9.jpg', '上海第十人民医院', 'https://www.shdsyy.com.cn/web/index.php?classid=9054&id=349&t=show');
-INSERT INTO `doc_information` VALUES (10, '张医生', '精神心理科', '张医生，男，哈尔滨医科大学附属第四医院，精神心理科主任硕士研究生导师。擅长双相情感障碍、焦虑症、精神分裂症、社交焦虑障碍等的治疗', 'resource/image10.jpg', '哈尔滨医科大学附属第四医院', 'https://www.hrbmu.edu.cn/xlkxyjkglzx/info/1092/1268.htm');
 
 -- ----------------------------
 -- Table structure for favorite
@@ -53,6 +24,7 @@ DROP TABLE IF EXISTS `favorite`;
 CREATE TABLE `favorite`  (
   `Uid` int(10) UNSIGNED ZEROFILL NOT NULL COMMENT '用户id，外键',
   `Rid` int(11) NOT NULL COMMENT '资源id，外键',
+  `isFavorite` int(11) NULL DEFAULT NULL COMMENT '是否被收藏（1收藏 0未被收藏）',
   PRIMARY KEY (`Uid`, `Rid`) USING BTREE,
   INDEX `fk_rid_favorite`(`Rid` ASC) USING BTREE,
   CONSTRAINT `fk_rid_favorite` FOREIGN KEY (`Rid`) REFERENCES `resource` (`Rid`) ON DELETE RESTRICT ON UPDATE RESTRICT,
@@ -96,7 +68,7 @@ CREATE TABLE `introduction`  (
   `Treatment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '治疗措施',
   `Picture` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '症状对应的图片，为相对路径，放在resources文件夹下',
   PRIMARY KEY (`Iid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of introduction
@@ -149,38 +121,38 @@ CREATE TABLE `resource`  (
   `Rstore` int(11) NULL DEFAULT NULL,
   `Rtag` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `Rabstract` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `aimg` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   PRIMARY KEY (`Rid`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of resource
 -- ----------------------------
-INSERT INTO `resource` VALUES (1, '偏执型人格障碍指南', '2022-04-01 00:00:00', 'https://www.msdmanuals.cn/home/mental-health-disorders/schizophrenia-and-related-disorders/delusional-disorder?query=%E8%A2%AB%E5%AE%B3%E5%A6%84%E6%83%B3%EF%BC%9A', 0, '被害妄想症', '偏执型人格障碍以对他人持久的怀疑和不信任为特征，患者常误解他人动机。治疗通常包括认知行为疗法和药物治疗。');
-INSERT INTO `resource` VALUES (2, '边缘型人格障碍手册', '2023-01-01 00:00:00', 'https://www.nami.org/Your-Journey/Individuals-with-Mental-Illness/Borderline-Personality-Disorder', 0, '边缘型人格障碍', '边缘型人格障碍患者常经历情绪波动和冲动行为，治疗方法包括 DBT（辩证行为疗法）。');
-INSERT INTO `resource` VALUES (3, '边缘型人格障碍指南', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/topics/borderline-personality-disorder', 0, '边缘型人格障碍', '边缘型人格障碍表现为情绪不稳定、强烈的被抛弃恐惧和冲动行为，患者常经历人际关系的剧烈波动。');
-INSERT INTO `resource` VALUES (4, '成瘾疾病研究', '2020-01-01 00:00:00', 'https://www.ncbi.nlm.nih.gov/books/NBK424847/', 0, '成瘾', '成瘾是一种复杂的疾病，涉及大脑的奖励系统，治疗通常包括心理治疗和药物干预。');
-INSERT INTO `resource` VALUES (5, '成瘾疾病手册', '2019-01-01 00:00:00', 'https://www.ncbi.nlm.nih.gov/books/NBK424849/', 0, '成瘾', '成瘾是一种复杂的脑疾病，涉及生物、心理和社会因素，常导致个体对物质或行为的强烈依赖。');
-INSERT INTO `resource` VALUES (6, 'PTSD 症状与治疗', '2023-01-01 00:00:00', 'https://www.apa.org/topics/ptsd', 0, '创伤后应激障碍', '创伤后应激障碍是对创伤经历的反应，症状包括闪回、回避和情绪麻木，治疗包括认知行为疗法和药物。');
-INSERT INTO `resource` VALUES (7, 'PTSD 症状与治疗指南', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/topics/post-traumatic-stress-disorder-ptsd', 0, '创伤后应激障碍', 'PTSD 影响许多人，尤其是经历过创伤事件的人，常见症状包括焦虑和抑郁。');
-INSERT INTO `resource` VALUES (8, '多动症治疗指南', '2023-01-01 00:00:00', 'https://www.cdc.gov/adhd/about/?CDC_AAref_Val=https://www.cdc.gov/ncbddd/adhd/facts.html', 0, '多动症', '多动症是一种常见的神经发育障碍，表现为注意力不集中和过度活跃，治疗包括行为疗法和药物。');
-INSERT INTO `resource` VALUES (9, '反社会人格障碍研究', '2020-01-01 00:00:00', 'https://www.ncbi.nlm.nih.gov/books/NBK207194/', 0, '反社会型人格障碍', '反社会型人格障碍的患者常表现出冲动和欺骗行为，社会功能受损。');
-INSERT INTO `resource` VALUES (10, '反社会人格障碍研究手册', '2023-01-01 00:00:00', 'https://www.psychiatry.org/News-room/APA-Blogs/Antisocial-Personality-Disorder-Often-Overlooked', 0, '反社会型人格障碍', 'ASPD 患者通常缺乏同情心，经常被忽视和未治疗，治疗难度较大，常需结合心理治疗和药物治疗。');
-INSERT INTO `resource` VALUES (11, '分裂样人格障碍解析指南', '2020-01-01 00:00:00', 'https://zhuanlan.zhihu.com/p/670363612', 0, '分裂样人格障碍', '疯子中的天才、孤僻的旁观者：分裂样人格障碍。');
-INSERT INTO `resource` VALUES (12, '分裂样人格障碍解析', '2020-01-01 00:00:00', 'https://en.wikipedia.org/wiki/Schizoid_personality_disorder', 0, '分裂样人格障碍', '是一种人格障碍，其特征是对社会关系缺乏兴趣，倾向于孤独或隐蔽的生活方式、隐瞒、情感冷淡、疏离和冷漠。受影响的个体可能无法与他人形成亲密的依恋，同时拥有一个丰富而复杂但完全内在的幻想世界。');
-INSERT INTO `resource` VALUES (13, '分裂型人格障碍症状', '2020-01-01 00:00:00', 'https://www.mayoclinic.org/diseases-conditions/schizotypal-personality-disorder/symptoms-causes/syc-20353919', 0, '分裂型人格障碍', '分裂型人格障碍患者通常被描述为古怪或古怪，他们通常很少（如果有的话）亲密关系。他们通常不知道关系是如何形成的，也不知道他们的行为如何影响他人。他们还倾向于误解他人的动机和行为，并极度不信任他人。');
-INSERT INTO `resource` VALUES (14, '回避型人格障碍科普', '2020-01-01 00:00:00', 'https://zhuanlan.zhihu.com/p/666931809', 0, '回避型人格障碍', '一直在逃跑的人生：回避型人格障碍万字科普。与他们接触的人，常常觉得他们冷若冰霜、难以靠近。你的积极主动很难得到同等的回应，他们也很少向你表达真实的想法和感受。但事实上，回避型的「回避」是被动的，行为上他们逃得远远的，内心却十分想与他人发展亲密的关系，这种每时每刻的矛盾让他们备受折磨。而当这种折磨变成更为持久的、适应不良的、缺乏弹性的，就有可能发展成一种回避型人格障碍。');
-INSERT INTO `resource` VALUES (15, '焦虑症治疗手册', '2020-01-01 00:00:00', 'https://www.msdmanuals.cn/home/mental-health-disorders/personality-disorders/avoidant-personality-disorder#%E7%97%87%E7%8A%B6_v36026687_zh', 0, '回避型人格障碍', '医生诊断回避型人格障碍的标准是，患者必须持续避免社交接触，有不恰当感，并对批评和拒绝过分敏感，至少符合以下中的 4 点：在工作中，他们避免涉及与人际接触的活动，因为他们担心他们会受到批评或拒绝，或者人们会反对他们。除非他们确定被人喜欢，否则他们不愿意与人打交道。他们只留在亲密关系中，因为他们害怕被嘲笑或羞辱。他们先入为主地认为在社交场合会受到批评或被拒绝。他们在新的社交场合特别拘束，因为他们觉得自己不适当。他们认为自己社交无能，没有吸引力，或比其他人逊色。他们不愿冒险或参加任何新活动，因为他们可能会感到尴尬。此外，症状早在成年早期就已经开始了。');
-INSERT INTO `resource` VALUES (16, '焦虑症治疗手册', '2020-01-01 00:00:00', 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7071237/', 0, '焦虑', '焦虑症的种类繁多，包括广泛性焦虑症和社交焦虑障碍，治疗方法包括药物和心理治疗。');
-INSERT INTO `resource` VALUES (17, '进食障碍研究', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/topics/eating-disorders', 0, '进食障碍', '进食障碍包括神经性厌食和神经性贪食，通常与心理因素密切相关。');
-INSERT INTO `resource` VALUES (18, '精神分裂症症状', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/statistics/schizophrenia', 0, '精神分裂症', '精神分裂症是一种严重的精神障碍，表现为幻觉、妄想和认知功能障碍。');
-INSERT INTO `resource` VALUES (19, '恐慌症症状与治疗', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/statistics/panic-disorder', 0, '恐慌症', '恐慌症表现为突发的强烈恐惧，伴随身体症状，可能导致患者避免特定场合。');
-INSERT INTO `resource` VALUES (20, '强迫症治疗指南', '2024-01-01 00:00:00', 'https://www.msdmanuals.cn/home/mental-health-disorders/obsessive-compulsive-and-related-disorders/obsessive-compulsive-disorder-ocd', 0, '强迫症', '强迫症 (OCD) 患者存在强迫观念——反复出现一些想法、画面或冲动，即使患者并不想这样。这些强迫观念可侵入患者的脑海，即使是在患者考虑或做其他事情时。另外，强迫观念通常可导致极大的困苦或焦虑。强迫观念的主题包括伤害（对自己或他人）、清洗或污染、禁止或禁忌的想法（例如，攻击性或性强迫观念）以及苛求对称性。担心污染（如担心接触门把手会引起疾病）多疑（例如担心家正门没有锁）担心物品没有完全排整齐或放平由于强迫观念不使人愉悦，所以患者经常会试图忽视和／或控制它们。');
-INSERT INTO `resource` VALUES (21, '双相情感障碍手册', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/statistics/bipolar-disorder', 0, '双相情感障碍', '双相情感障碍表现为情绪的极端波动，包括躁狂和抑郁发作。');
-INSERT INTO `resource` VALUES (22, '睡眠相位后移综合征', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/statistics/bipolar-disorder', 0, '睡眠相位后移综合征 DSPS', '睡眠开始和醒来的时间，比理想情况不可控制的晚。每天入睡时间基本相同。一旦入睡，并不会轻易醒来。在早晨理想时间起床是非常困难的。相对非常严重的，没有能力去把睡眠相位提前，如强迫在正常的时间睡觉和起床。');
-INSERT INTO `resource` VALUES (23, '偷窃癖症状与治疗', '2024-01-01 00:00:00', 'https://www.mayoclinic.org/zh-hans/diseases-conditions/kleptomania/symptoms-causes/syc-20364732', 0, '偷窃癖 Kleptomania', '偷窃癖是一种心理健康障碍，表现为反复且无法抑制的偷窃冲动，并且偷窃的物品通常您实际上并不需要。偷窃的物品往往价值不大，您可以买得起。偷窃癖一种罕见却非常严重的问题。如果不加以治疗，可能对您和亲人造成情感伤害，甚至法律问题。偷窃癖是一种冲动控制障碍，表现为情感或行为自控出现问题。如果患有冲动控制障碍，您会很难抵抗诱惑或强烈冲动，做一些对自己或他人过分或有害的行为。');
-INSERT INTO `resource` VALUES (24, '抑郁症症状与治疗', '2023-03-31 00:00:00', 'https://www.who.int/zh/news-room/fact-sheets/detail/depression', 0, '抑郁症 Depression', '一个人会经历抑郁情绪（感到悲伤、烦躁、空虚）。他们可能会感到失去乐趣或对活动的兴趣。注意力不集中过度内疚或自我价值感低下对未来感到绝望有死亡或自杀的想法睡眠紊乱食欲或体重变化感觉非常疲倦或精力不足。');
-INSERT INTO `resource` VALUES (25, '自闭症谱系障碍解析', '2023-03-31 00:00:00', 'https://www.msdmanuals.cn/home/children-s-health-issues/learning-and-developmental-disorders/autism-spectrum-disorder', 0, '自闭症 Autismn', '管患儿在和父母分开后会表现得沮丧，但他们不像其他儿童一样从父母那里寻找安全感。大龄儿童多会自己玩游戏，不会形成亲密的私人关系，尤其是在家之外的地方。与其他孩子互动时，他们可能不会使用眼神交流和面部表情来建立社交联系，并且难以解读他人的情绪和表情。他们可能很难知道如何以及何时加入对话，并且难以识别不适当或有害的言语。这些因素可能会导致其他人将其视为古怪或怪异的人，从而导致社交孤立。自闭症谱系障碍患者通常对变化的抗拒很强，例如新食物、玩具、家具布置和衣服。他们可能过度依恋特定的无生命物体。他们经常重复地做某件事。年幼或更严重的患儿常重复某些动作，如摇摆、挥手或转动物体等。有些患者可能通过重复的行为伤害自己，如撞头或咬自己。患病较轻的人可能会多次观看同一视频，或者坚持每餐都吃相同食物。患有 ASD 的人通常会有非常专业、不同寻常的兴趣。例如，孩子可能会沉迷于真空吸尘器。');
-INSERT INTO `resource` VALUES (26, '自恋型人格障碍研究', '2023-01-01 00:00:00', 'https://www.psychologytoday.com/us/conditions/narcissistic-personality-disorder', 0, '自恋型人格障碍', '自恋型人格障碍表现为对自我的过度关注和缺乏同情心，患者常寻求他人的赞美。');
+INSERT INTO `resource` VALUES (1, '偏执型人格障碍指南', '2022-04-01 00:00:00', 'https://www.msdmanuals.cn/home/mental-health-disorders/schizophrenia-and-related-disorders/delusional-disorder?query=%E8%A2%AB%E5%AE%B3%E5%A6%84%E6%83%B3%EF%BC%9A', 0, '被害妄想症', '偏执型人格障碍以对他人持久的怀疑和不信任为特征，患者常误解他人动机。治疗通常包括认知行为疗法和药物治疗。', 'assets/imgs/article/1.jpg');
+INSERT INTO `resource` VALUES (2, '边缘型人格障碍手册', '2023-01-01 00:00:00', 'https://www.nami.org/Your-Journey/Individuals-with-Mental-Illness/Borderline-Personality-Disorder', 0, '边缘型人格障碍', '边缘型人格障碍患者常经历情绪波动和冲动行为，治疗方法包括 DBT（辩证行为疗法）。', 'assets/imgs/article/2.png');
+INSERT INTO `resource` VALUES (3, '边缘型人格障碍指南', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/topics/borderline-personality-disorder', 0, '边缘型人格障碍', '边缘型人格障碍表现为情绪不稳定、强烈的被抛弃恐惧和冲动行为，患者常经历人际关系的剧烈波动。', 'assets/imgs/article/3.jpg');
+INSERT INTO `resource` VALUES (4, 'IMPORTANT FACTS ABOUT ALCOHOL AND DRUGS', '2020-01-01 00:00:00', 'https://www.ncbi.nlm.nih.gov/books/NBK424847/', 0, '成瘾', '成瘾是一种复杂的疾病，涉及大脑的奖励系统，治疗通常包括心理治疗和药物干预。', 'assets/imgs/article/4.jpg');
+INSERT INTO `resource` VALUES (5, 'THE NEUROBIOLOGY OF SUBSTANCE USE, MISUSE, AND ADDICTION', '2023-01-01 00:00:00', 'https://www.apa.org/topics/ptsd', 0, '创伤后应激障碍', '创伤后应激障碍是对创伤经历的反应，症状包括闪回、回避和情绪麻木，治疗包括认知行为疗法和药物。', 'assets/imgs/article/5.jpg');
+INSERT INTO `resource` VALUES (6, 'PTSD 症状与治疗', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/topics/post-traumatic-stress-disorder-ptsd', 0, '创伤后应激障碍', 'PTSD 影响许多人，尤其是经历过创伤事件的人，常见症状包括焦虑和抑郁。', 'assets/imgs/article/6.jpg');
+INSERT INTO `resource` VALUES (7, '多动症治疗指南', '2023-01-01 00:00:00', 'https://www.cdc.gov/adhd/about/?CDC_AAref_Val=https://www.cdc.gov/ncbddd/adhd/facts.html', 0, '多动症', '多动症是一种常见的神经发育障碍，表现为注意力不集中和过度活跃，治疗包括行为疗法和药物。', 'assets/imgs/article/7.png');
+INSERT INTO `resource` VALUES (8, '反社会人格障碍研究', '2020-01-01 00:00:00', 'https://www.ncbi.nlm.nih.gov/books/NBK207194/', 0, '反社会型人格障碍', '反社会型人格障碍的患者常表现出冲动和欺骗行为，社会功能受损。', 'assets/imgs/article/8.png');
+INSERT INTO `resource` VALUES (9, 'Antisocial Personality Disorder: Often Overlooked and Untreated', '2023-01-01 00:00:00', 'https://www.psychiatry.org/News-room/APA-Blogs/Antisocial-Personality-Disorder-Often-Overlooked', 0, '反社会型人格障碍', 'ASPD 患者通常缺乏同情心，经常被忽视和未治疗，治疗难度较大，常需结合心理治疗和药物治疗。', 'assets/imgs/article/9.jpg');
+INSERT INTO `resource` VALUES (10, '分裂样人格障碍解析指南', '2020-01-01 00:00:00', 'https://zhuanlan.zhihu.com/p/670363612', 0, '分裂样人格障碍', '疯子中的天才、孤僻的旁观者：分裂样人格障碍。', 'assets/imgs/article/10.jpg');
+INSERT INTO `resource` VALUES (11, '分裂样人格障碍解析', '2020-01-01 00:00:00', 'https://en.wikipedia.org/wiki/Schizoid_personality_disorder', 0, '分裂样人格障碍', '是一种人格障碍，其特征是对社会关系缺乏兴趣，倾向于孤独或隐蔽的生活方式、隐瞒、情感冷淡、疏离和冷漠。受影响的个体可能无法与他人形成亲密的依恋，同时拥有一个丰富而复杂但完全内在的幻想世界。', 'assets/imgs/article/11.jpg');
+INSERT INTO `resource` VALUES (12, '分裂型人格障碍症状', '2020-01-01 00:00:00', 'https://www.mayoclinic.org/diseases-conditions/schizotypal-personality-disorder/symptoms-causes/syc-20353919', 0, '分裂型人格障碍', '分裂型人格障碍患者通常被描述为古怪或古怪，他们通常很少（如果有的话）亲密关系。他们通常不知道关系是如何形成的，也不知道他们的行为如何影响他人。他们还倾向于误解他人的动机和行为，并极度不信任他人。', 'assets/imgs/article/12.png');
+INSERT INTO `resource` VALUES (13, '一直在逃跑的人生：回避型人格障碍万字科普', '2020-01-01 00:00:00', 'https://zhuanlan.zhihu.com/p/666931809', 0, '回避型人格障碍', '一直在逃跑的人生：回避型人格障碍万字科普。与他们接触的人，常常觉得他们冷若冰霜、难以靠近。你的积极主动很难得到同等的回应，他们也很少向你表达真实的想法和感受。但事实上，回避型的「回避」是被动的，行为上他们逃得远远的，内心却十分想与他人发展亲密的关系，这种每时每刻的矛盾让他们备受折磨。而当这种折磨变成更为持久的、适应不良的、缺乏弹性的，就有可能发展成一种回避型人格障碍。', 'assets/imgs/article/13.jpg');
+INSERT INTO `resource` VALUES (14, '成瘾疾病研究', '2020-01-01 00:00:00', 'https://www.msdmanuals.cn/home/mental-health-disorders/personality-disorders/avoidant-personality-disorder#%E7%97%87%E7%8A%B6_v36026687_zh', 0, '回避型人格障碍', '医生诊断回避型人格障碍的标准是，患者必须持续避免社交接触，有不恰当感，并对批评和拒绝过分敏感，至少符合以下中的 4 点：在工作中，他们避免涉及与人际接触的活动，因为他们担心他们会受到批评或拒绝，或者人们会反对他们。除非他们确定被人喜欢，否则他们不愿意与人打交道。他们只留在亲密关系中，因为他们害怕被嘲笑或羞辱。他们先入为主地认为在社交场合会受到批评或被拒绝。他们在新的社交场合特别拘束，因为他们觉得自己不适当。他们认为自己社交无能，没有吸引力，或比其他人逊色。他们不愿冒险或参加任何新活动，因为他们可能会感到尴尬。此外，症状早在成年早期就已经开始了。', 'assets/imgs/article/14.jpg');
+INSERT INTO `resource` VALUES (15, '焦虑症治疗手册', '2020-01-01 00:00:00', 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7071237/', 0, '焦虑', '焦虑症的种类繁多，包括广泛性焦虑症和社交焦虑障碍，治疗方法包括药物和心理治疗。', 'assets/imgs/article/15.png');
+INSERT INTO `resource` VALUES (16, '进食障碍研究', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/topics/eating-disorders', 0, '进食障碍', '进食障碍包括神经性厌食和神经性贪食，通常与心理因素密切相关。', 'assets/imgs/article/16.jpg');
+INSERT INTO `resource` VALUES (17, 'Transforming the understanding and treatment of mental illnesses.', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/statistics/schizophrenia', 0, '精神分裂症', '精神分裂症是一种严重的精神障碍，表现为幻觉、妄想和认知功能障碍。', 'assets/imgs/article/17.jpg');
+INSERT INTO `resource` VALUES (18, '恐慌症症状与治疗', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/statistics/panic-disorder', 0, '恐慌症', '恐慌症表现为突发的强烈恐惧，伴随身体症状，可能导致患者避免特定场合。', 'assets/imgs/article/18.jpg');
+INSERT INTO `resource` VALUES (19, '强迫症治疗指南', '2024-01-01 00:00:00', 'https://www.msdmanuals.cn/home/mental-health-disorders/obsessive-compulsive-and-related-disorders/obsessive-compulsive-disorder-ocd', 0, '强迫症', '强迫症 (OCD) 患者存在强迫观念——反复出现一些想法、画面或冲动，即使患者并不想这样。这些强迫观念可侵入患者的脑海，即使是在患者考虑或做其他事情时。另外，强迫观念通常可导致极大的困苦或焦虑。强迫观念的主题包括伤害（对自己或他人）、清洗或污染、禁止或禁忌的想法（例如，攻击性或性强迫观念）以及苛求对称性。担心污染（如担心接触门把手会引起疾病）多疑（例如担心家正门没有锁）担心物品没有完全排整齐或放平由于强迫观念不使人愉悦，所以患者经常会试图忽视和／或控制它们。', 'assets/imgs/article/19.jpg');
+INSERT INTO `resource` VALUES (20, '双相情感障碍手册', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/statistics/bipolar-disorder', 0, '双相情感障碍', '双相情感障碍表现为情绪的极端波动，包括躁狂和抑郁发作。', 'assets/imgs/article/20.jpg');
+INSERT INTO `resource` VALUES (21, '睡眠相位后移综合征', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/statistics/bipolar-disorder', 0, '睡眠相位后移综合征 DSPS', '睡眠开始和醒来的时间，比理想情况不可控制的晚。每天入睡时间基本相同。一旦入睡，并不会轻易醒来。在早晨理想时间起床是非常困难的。相对非常严重的，没有能力去把睡眠相位提前，如强迫在正常的时间睡觉和起床。', 'assets/imgs/article/21.jpg');
+INSERT INTO `resource` VALUES (22, '偷窃癖症状与治疗', '2024-01-01 00:00:00', 'https://www.mayoclinic.org/zh-hans/diseases-conditions/kleptomania/symptoms-causes/syc-20364732', 0, '偷窃癖 Kleptomania', '偷窃癖是一种心理健康障碍，表现为反复且无法抑制的偷窃冲动，并且偷窃的物品通常您实际上并不需要。偷窃的物品往往价值不大，您可以买得起。偷窃癖一种罕见却非常严重的问题。如果不加以治疗，可能对您和亲人造成情感伤害，甚至法律问题。偷窃癖是一种冲动控制障碍，表现为情感或行为自控出现问题。如果患有冲动控制障碍，您会很难抵抗诱惑或强烈冲动，做一些对自己或他人过分或有害的行为。', 'assets/imgs/article/22.jpg');
+INSERT INTO `resource` VALUES (23, '抑郁症症状与治疗', '2023-03-31 00:00:00', 'https://www.who.int/zh/news-room/fact-sheets/detail/depression', 0, '抑郁症 Depression', '一个人会经历抑郁情绪（感到悲伤、烦躁、空虚）。他们可能会感到失去乐趣或对活动的兴趣。注意力不集中过度内疚或自我价值感低下对未来感到绝望有死亡或自杀的想法睡眠紊乱食欲或体重变化感觉非常疲倦或精力不足。', 'assets/imgs/article/23.jpg');
+INSERT INTO `resource` VALUES (24, '自闭症谱系障碍解析', '2023-03-31 00:00:00', 'https://www.msdmanuals.cn/home/children-s-health-issues/learning-and-developmental-disorders/autism-spectrum-disorder', 0, '自闭症 Autismn', '管患儿在和父母分开后会表现得沮丧，但他们不像其他儿童一样从父母那里寻找安全感。大龄儿童多会自己玩游戏，不会形成亲密的私人关系，尤其是在家之外的地方。与其他孩子互动时，他们可能不会使用眼神交流和面部表情来建立社交联系，并且难以解读他人的情绪和表情。他们可能很难知道如何以及何时加入对话，并且难以识别不适当或有害的言语。这些因素可能会导致其他人将其视为古怪或怪异的人，从而导致社交孤立。自闭症谱系障碍患者通常对变化的抗拒很强，例如新食物、玩具、家具布置和衣服。他们可能过度依恋特定的无生命物体。他们经常重复地做某件事。年幼或更严重的患儿常重复某些动作，如摇摆、挥手或转动物体等。有些患者可能通过重复的行为伤害自己，如撞头或咬自己。患病较轻的人可能会多次观看同一视频，或者坚持每餐都吃相同食物。患有 ASD 的人通常会有非常专业、不同寻常的兴趣。例如，孩子可能会沉迷于真空吸尘器。', 'assets/imgs/article/24.jpg');
+INSERT INTO `resource` VALUES (25, '自恋型人格障碍研究', '2023-01-01 00:00:00', 'https://www.psychologytoday.com/us/conditions/narcissistic-personality-disorder', 0, '自恋型人格障碍', '自恋型人格障碍表现为对自我的过度关注和缺乏同情心，患者常寻求他人的赞美。', 'assets/imgs/article/25.jpg');
 
 -- ----------------------------
 -- Table structure for resource_video
@@ -194,54 +166,66 @@ CREATE TABLE `resource_video`  (
   `Rstore` int(11) NULL DEFAULT NULL,
   `Rtag` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `Rabstract` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `vimg` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   PRIMARY KEY (`Rid`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of resource_video
 -- ----------------------------
-INSERT INTO `resource_video` VALUES (1, '【科普】被害妄想症', '2023-12-23 16:31:34', 'https://www.bilibili.com/video/BV1Vi4y1Y76a/?vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '被害妄想症', '被害妄想症是一种精神疾病，患者坚信自己被他人恶意迫害，表现为极度敏感多疑、幻觉频发及难以区分现实与幻想，多见于孤寡老人及精神受创者。');
-INSERT INTO `resource_video` VALUES (2, '什么是边缘型人格障碍|特征和症状', '2024-09-23 10:08:00', 'https://www.bilibili.com/video/BV1Ars2efEod?spm_id_from=333.788.videopod.sections&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '边缘型人格障碍', '介绍了边缘型人格障碍（BPD）的基本概念及其典型特征，通过形象生动的比喻描绘了BPD患者情绪波动大、自我认知不稳定的特性。引用日本电影《惹人嫌弃的松子》中的女主角作为典型案例，深入剖析了BPD患者的内心世界。同时，简要提及了多重人格障碍（DID）与BPD的关联，并预告了后续将探讨BPD症状成因的内容。');
-INSERT INTO `resource_video` VALUES (3, '边缘型人格障碍介于毁灭与清醒之间,常有被害妄想的恐惧焦虑【脑科学】', '2023-06-14 22:05:17', 'https://www.bilibili.com/video/BV1wh4y137Sw/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '边缘型人格障碍、焦虑、抑郁、恐慌', '探讨了边缘型人格障碍（BPD）的概念、成因及其对个体的影响。通过生动的比喻，文章描述了BPD患者内心的痛苦与挣扎，指出其根源在于人格的边缘化。');
-INSERT INTO `resource_video` VALUES (4, '了解成瘾的神经机制', '2023-07-24 16:13:31', 'https://www.bilibili.com/video/BV18j411R7tm/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '成瘾', '本视频介绍了肾上腺瘤引发的成瘾机制，并说明了毒品如何破坏这一系统。');
-INSERT INTO `resource_video` VALUES (5, '【干货】成瘾始于痛苦，戒瘾终于平衡！深度解读多巴胺机制，用身体“内稳态”禁欲、戒瘾，保持自律', '2023-08-03 18:00:00', 'https://www.bilibili.com/video/BV1Vm4y1x7JF/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '成瘾', '视频讲述了成瘾的本质和多巴胺在成瘾中的作用机制。成瘾行为虽然能带来短暂的快乐，但长期重复会导致快乐感受的丧失，并带来更深的痛苦。多巴胺，作为一种神经递质，在大脑中的作用不仅仅是带来快乐，更重要的是驱动人们产生获得奖励的动机。大脑中有自我调节机制，会通过痛苦来平衡过度的快乐。视频还介绍了三种戒瘾的方法：以痛治痛，物理阻断和激进诚实，帮助恢复大脑奖赏回路的平衡，降低戒断痛苦，提高自控力。');
-INSERT INTO `resource_video` VALUES (6, '【TED科普】这12个迹象表明，你可能患上了复杂型创伤后应激障碍', '2024-06-21 21:36:02', 'https://www.bilibili.com/video/BV1ff421B7VU/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '创伤后应激障碍', '视频介绍了复杂型创伤后应激障碍（ Complex PTSD）的基本概念、症状以及可能的治愈方法。这种心理状况是在长时间暴露于创伤性事件中，如情感忽视、欺凌、虐待等，尤其是在生命的前15年内经历这些事件的人。视频列举了12个 Complex PTSD的主要症状，并鼓励观众自我反思这些症状是否适用于他们。最后，视频提出了治愈复杂型PTSD的一些方法，强调了学会爱自己、寻找合适的治疗师以及重新学习如何给予和接受爱的重要性。');
-INSERT INTO `resource_video` VALUES (7, '创伤制造ADHD注意力障碍?多巴胺封锁会加重多动症抑郁焦虑反应', '2024-03-24 21:00:52', 'https://www.bilibili.com/video/BV1pK421e7AC/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '多动症、焦虑、抑郁', '视频讲述了注意力缺陷障碍（ADHD）对孩子的影响，以及如何通过合适的环境和教育来帮助他们。导演通过跟踪拍摄三名ADHD孩子的日常生活，揭示了他们在学习上的困难和社会对待他们的态度。视频还讨论了多巴胺水平对ADHD症状的影响，以及如何通过生活方式的改变来缓解ADHD症状。');
-INSERT INTO `resource_video` VALUES (8, '又妖又神？反社会人格障碍到底什么样？', '2023-08-05 19:00:00', 'https://www.bilibili.com/video/BV1iN411h7bf/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '反社会型人格障碍', '本视频澄清了反社会人格障碍（ASPD）与反社会行为和精神病态的区别，探讨了ASPD的核心特征、影响因素和治疗。ASPD患者缺少一部分情绪感知能力，无法直觉地体会内疚、焦虑、罪恶感等情绪。高压环境、易感基因和精神病史等因素增加了ASPD的风险，但不是必然的充分条件。治疗应包括良好的家庭教育、心理辅导和常识规训，以帮助ASPD患者学会用逻辑替代共情的生存方式。');
-INSERT INTO `resource_video` VALUES (9, '【精神分析】分裂样人格科普/人格特质/防御机制/形成原因/相处方式', '2022-01-10 23:07:40', 'https://www.bilibili.com/video/BV1ab4y1H7JE/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '分裂样人格障碍', '视频详细介绍了分裂样人格的特质、防御机制、形成原因及相处方式，强调分裂样人格并非精神分裂，而是一种独特的人格特质，表现为与世隔绝、漠视社会期待、强烈的自我保护意识和对亲密关系的矛盾情感。视频还探讨了分裂样人格的形成原因，包括先天敏感性和后天环境影响，并提供了与这类人格相处的建议。');
-INSERT INTO `resource_video` VALUES (10, '详解分裂型人格的11个特征【给力心理】', '2023-08-02 17:56:16', 'https://www.bilibili.com/video/BV1vP41147EK/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '分裂型人格障碍', '视频详细介绍了分裂型人格的11个特征，包括牵连观念、奇异的信念和想法、知觉障碍、逻辑混乱的思维和语言、猜疑或偏执观念、不恰当或受限制的情感、古怪的行为或外表、缺乏密友、过度的社交焦虑和社交恐惧、侵略性较强、以及高共病率。视频强调了分裂型人格者的行为和思维方式，提醒我们在早期识别这些特征后保持安全距离。');
-INSERT INTO `resource_video` VALUES (11, '回避型人格如何疗愈自己？这里有5条建议【武志红】', '2021-07-09 12:24:03', 'https://www.bilibili.com/video/BV1BM4y1M796/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '回避型人格障碍、焦虑', '本视频讲述了回避型人格障碍的特点、成因以及如何与之相处和自我疗愈。回避型人格障碍是一种心理疾病，其特点包括害怕批评、否定或排斥而回避涉涉及到人接触较多的职业活动，不愿意被人浇灌，害羞或怕被嘲弄而在亲密关系中表现拘谨等。视频作者强调，面对回避型人格障碍，我们需要保持自己的风格，理解并接纳他们，同时要直面真相，不要过度贬低自己，尝试控制可以控制的人或事物，并寻求专业人士的帮助。');
-INSERT INTO `resource_video` VALUES (12, '你不知道的7种焦虑症', '2023-08-23 20:09:33', 'https://www.bilibili.com/video/BV1cw411Q7C2?spm_id_from=333.788.videopod.sections&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '焦虑症、创伤后应激障碍、恐慌', '视频介绍了七种焦虑症：广泛性焦虑症、分离焦虑症、社交恐惧症和选择性缄默症、急性焦虑症（惊恐发作）、广场恐惧症、特定恐惧症和创伤后引起障碍、强迫症。虽然这些症状在某些情境下是正常的，但长期的焦虑和恐惧感会影响正常生活和工作。');
-INSERT INTO `resource_video` VALUES (13, '【心理学】6种进食障碍：暴饮暴食，神经性厌食症？', '2019-03-25 01:32:37', 'https://www.bilibili.com/video/BV1hb41147kG/?spm_id_from=333.337.search-card.all.click', 0, '进食障碍', '视频讨论了六种饮食失调类型，旨在打破刻板印象并提供知识以帮助那些患有此类失调症的人。视频分享了个人经历，并强调了寻求治疗以及不让饮食失调定义一个人生活的重要性。');
-INSERT INTO `resource_video` VALUES (14, '【TED科普】什么是精神分裂症（中英字幕）', '2023-06-04 19:25:50', 'https://www.bilibili.com/video/BV1XM4y1q7jt/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '精神分裂', '精神分裂症是一种由多种相关症状组成的综合症，它可能涉及许多与其类似但有不同原因的疾病。每个精神分裂症患有略有不同的症状，第一次表现可能是微妙的个性变化、恼易或不寻常的思想渐入。患有精神分裂症的人在初次心智症状发作时通常获得诊断，这通常在男性晚 teenager 或 early twenties，女性晚 twenties 或 early thirties 初发。精神分裂症的治疗包括心智症状阻止剂和其他干预，如认知行为治疗和再次刺激疗法。早期干预至关重要，长期未经治疗的精神分裂症症状可能会嵌入个性中，并且与此诊断相关的非人性化标签可能会阻止人们寻求帮助。');
-INSERT INTO `resource_video` VALUES (15, '惊恐发作（也称恐慌症）症状、病因和疗法', '2020-05-19 10:30:23', 'https://www.bilibili.com/video/BV1FC4y1p7rS/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '恐慌症、抑郁、创伤后应激障碍', '惊恐症是一种心理障碍，主要表现为患者突然出现强烈的恐惧或不适，伴有心悸、呼吸急促和颤抖等身体症状。这些症状可能非常可怕，有时会让患者认为自己正在心脏病发作或患有其他危及生命的疾病。');
-INSERT INTO `resource_video` VALUES (16, '严肃地科普一下强迫症', '2022-04-01 16:51:34', 'https://www.bilibili.com/video/BV1LY41177XP/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '强迫症、抑郁、焦虑、精神分裂', '视频介绍了强迫症的相关知识，包括强迫症的定义、临床症状、病因以及治疗方法。强迫症可以分为强迫思维性和强迫行为性，其中强迫行为包括强迫检查、强迫秩序、强迫清洗等，强迫思维包括强迫忧虑、强迫画面等。病因涉及心理、生理、社会三方面的因素。治疗强迫症主要有药物治疗和心理治疗两种方法。');
-INSERT INTO `resource_video` VALUES (17, '【正经医生】精神科医生科普，什么是双相情感障碍！', '2021-03-24 18:07:18', 'https://www.bilibili.com/video/BV1K54y1h7AC/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '双向情感障碍、抑郁', '深圳市康宁医院精神科医生对双向障碍的介绍。双向障碍是一种间歇性的病症,患者的情绪会交替处于两个极端,可能表现为躁狂或抑郁发作。在发作期间,患者的言语和行为可能会增多或减少,严重时可能伴有一些精神病性的症状。虽然双向障碍可以治愈,但需要注意维持治疗和监测病情的变化以防止反复发作。');
-INSERT INTO `resource_video` VALUES (18, '睡眠相位后移综合征：小伙伴们，你最近睡得还好吗？', '2021-03-15 10:04:22', 'https://www.bilibili.com/video/BV1DV411Y7DQ/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '睡眠相位后移综合征', '视频讨论了睡眠相位后移综合征（Delayed Sleep Phase Syndrome, DSPS），这是一种常见的睡眠障碍，表现为入睡和醒来的时间比理想情况晚，且难以调整。视频还提到了熬夜对情绪和心理健康的影响，以及如何应对这种睡眠模式。');
-INSERT INTO `resource_video` VALUES (19, '什么是偷窃癖', '2023-09-01 09:07:53', 'https://www.bilibili.com/video/BV1aw411S7fF/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '偷窃癖', '偷窃癖是一种在变态心理支配下的反常行为，患者会反复出现不可 resist 的偷窃冲动，并且会将偷来的东西隐藏或暗暗地送给他人。这种行为通常会在偷窃前后产生紧张和满足感，并且在儿童或少年期就可能开始。');
-INSERT INTO `resource_video` VALUES (20, '抑郁症，是怎么改变你大脑的？', '2022-06-19 11:33:55', 'https://www.bilibili.com/video/BV1da411s7BM/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '抑郁症', '抑郁症会带来大量的压力激素，破坏前额叶（负责理性思维的区域）中神经元之间的信号传递，从而导致思维变得迟缓、记忆力下降等问题。同时，抑郁症还会侵入海马体（记忆的驿站），造成记忆力大大下降。除此之外，抑郁症还会对情绪中心LEFT habenula产生影响，使患者更容易冲动、发脾气、失眠等。');
-INSERT INTO `resource_video` VALUES (21, '自闭症科普', '2024-10-21 08:23:16', 'https://www.bilibili.com/video/BV1eqyqYEEkT/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '自闭症', '本视频是关于自闭症的普及科普，阐述了自闭症的特征、原因、治疗方法和关爱方式，并强调了对这些来自星星的孩子的关注和帮助对社会至关重要。');
-INSERT INTO `resource_video` VALUES (22, '自闭症眼中的世界到底是怎样的？', '2021-04-01 13:55:06', 'https://www.bilibili.com/video/BV16A41157PT/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '自闭症', '自闭症患儿眼中的世界。他们可能将世界理解为一款3D游戏,难以理解我们传递的信息。自闭症患者面临着生活无法自理和家庭经济的压力,但政府和社会的关注和支持正在改善他们的状况。然而,融入社会仍然需要每个人的关爱。他们是星星的孩子,与我们共同生活在这个地球上,我们任重而道远。');
-INSERT INTO `resource_video` VALUES (23, '9个迹象表明，Ta或有自恋型人格障碍！', '2022-06-06 16:55:59', 'https://www.bilibili.com/video/BV1C5411Q7w3/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '自恋型人格障碍', '本视频主要介绍了自恋型人格障碍的九个迹象。自恋者常常不愿意听取他人的意见，而是在自己的想法上裹足不前。他们常常在关系中欺骗，以建立自己的自尊心。他们需要不断地被赞美，对批评反应过度。他们没有内疚或羞耻感，常常利用他人来满足自己的需求。他们会贬低他人，以证明自己比别人更好。这些迹象表明自恋者可能有心理障碍。');
+INSERT INTO `resource_video` VALUES (1, '【科普】被害妄想症', '2023-12-23 16:31:34', 'https://www.bilibili.com/video/BV1Vi4y1Y76a/?vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '被害妄想症', '被害妄想症是一种精神疾病，患者坚信自己被他人恶意迫害，表现为极度敏感多疑、幻觉频发及难以区分现实与幻想，多见于孤寡老人及精神受创者。', 'assets/imgs/video/1.png');
+INSERT INTO `resource_video` VALUES (2, '什么是边缘型人格障碍|特征和症状', '2024-09-23 10:08:00', 'https://www.bilibili.com/video/BV1Ars2efEod?spm_id_from=333.788.videopod.sections&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '边缘型人格障碍', '介绍了边缘型人格障碍（BPD）的基本概念及其典型特征，通过形象生动的比喻描绘了BPD患者情绪波动大、自我认知不稳定的特性。引用日本电影《惹人嫌弃的松子》中的女主角作为典型案例，深入剖析了BPD患者的内心世界。同时，简要提及了多重人格障碍（DID）与BPD的关联，并预告了后续将探讨BPD症状成因的内容。', 'assets/imgs/video/2.png');
+INSERT INTO `resource_video` VALUES (3, '边缘型人格障碍介于毁灭与清醒之间,常有被害妄想的恐惧焦虑【脑科学】', '2023-06-14 22:05:17', 'https://www.bilibili.com/video/BV1wh4y137Sw/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '边缘型人格障碍、焦虑、抑郁、恐慌', '探讨了边缘型人格障碍（BPD）的概念、成因及其对个体的影响。通过生动的比喻，文章描述了BPD患者内心的痛苦与挣扎，指出其根源在于人格的边缘化。', 'assets/imgs/video/3.png');
+INSERT INTO `resource_video` VALUES (4, '了解成瘾的神经机制', '2023-07-24 16:13:31', 'https://www.bilibili.com/video/BV18j411R7tm/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '成瘾', '本视频介绍了肾上腺瘤引发的成瘾机制，并说明了毒品如何破坏这一系统。', 'assets/imgs/video/4.png');
+INSERT INTO `resource_video` VALUES (5, '【干货】成瘾始于痛苦，戒瘾终于平衡！深度解读多巴胺机制，用身体“内稳态”禁欲、戒瘾，保持自律', '2023-08-03 18:00:00', 'https://www.bilibili.com/video/BV1Vm4y1x7JF/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '成瘾', '视频讲述了成瘾的本质和多巴胺在成瘾中的作用机制。成瘾行为虽然能带来短暂的快乐，但长期重复会导致快乐感受的丧失，并带来更深的痛苦。多巴胺，作为一种神经递质，在大脑中的作用不仅仅是带来快乐，更重要的是驱动人们产生获得奖励的动机。大脑中有自我调节机制，会通过痛苦来平衡过度的快乐。视频还介绍了三种戒瘾的方法：以痛治痛，物理阻断和激进诚实，帮助恢复大脑奖赏回路的平衡，降低戒断痛苦，提高自控力。', 'assets/imgs/video/5.png');
+INSERT INTO `resource_video` VALUES (6, '【TED科普】这12个迹象表明，你可能患上了复杂型创伤后应激障碍', '2024-06-21 21:36:02', 'https://www.bilibili.com/video/BV1ff421B7VU/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '创伤后应激障碍', '视频介绍了复杂型创伤后应激障碍（ Complex PTSD）的基本概念、症状以及可能的治愈方法。这种心理状况是在长时间暴露于创伤性事件中，如情感忽视、欺凌、虐待等，尤其是在生命的前15年内经历这些事件的人。视频列举了12个 Complex PTSD的主要症状，并鼓励观众自我反思这些症状是否适用于他们。最后，视频提出了治愈复杂型PTSD的一些方法，强调了学会爱自己、寻找合适的治疗师以及重新学习如何给予和接受爱的重要性。', 'assets/imgs/video/6.png');
+INSERT INTO `resource_video` VALUES (7, '创伤制造ADHD注意力障碍?多巴胺封锁会加重多动症抑郁焦虑反应', '2024-03-24 21:00:52', 'https://www.bilibili.com/video/BV1pK421e7AC/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '多动症、焦虑、抑郁', '视频讲述了注意力缺陷障碍（ADHD）对孩子的影响，以及如何通过合适的环境和教育来帮助他们。导演通过跟踪拍摄三名ADHD孩子的日常生活，揭示了他们在学习上的困难和社会对待他们的态度。视频还讨论了多巴胺水平对ADHD症状的影响，以及如何通过生活方式的改变来缓解ADHD症状。', 'assets/imgs/video/7.png');
+INSERT INTO `resource_video` VALUES (8, '又妖又神？反社会人格障碍到底什么样？', '2023-08-05 19:00:00', 'https://www.bilibili.com/video/BV1iN411h7bf/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '反社会型人格障碍', '本视频澄清了反社会人格障碍（ASPD）与反社会行为和精神病态的区别，探讨了ASPD的核心特征、影响因素和治疗。ASPD患者缺少一部分情绪感知能力，无法直觉地体会内疚、焦虑、罪恶感等情绪。高压环境、易感基因和精神病史等因素增加了ASPD的风险，但不是必然的充分条件。治疗应包括良好的家庭教育、心理辅导和常识规训，以帮助ASPD患者学会用逻辑替代共情的生存方式。', 'assets/imgs/video/8.png');
+INSERT INTO `resource_video` VALUES (9, '【精神分析】分裂样人格科普/人格特质/防御机制/形成原因/相处方式', '2022-01-10 23:07:40', 'https://www.bilibili.com/video/BV1ab4y1H7JE/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '分裂样人格障碍', '视频详细介绍了分裂样人格的特质、防御机制、形成原因及相处方式，强调分裂样人格并非精神分裂，而是一种独特的人格特质，表现为与世隔绝、漠视社会期待、强烈的自我保护意识和对亲密关系的矛盾情感。视频还探讨了分裂样人格的形成原因，包括先天敏感性和后天环境影响，并提供了与这类人格相处的建议。', 'assets/imgs/video/9.png');
+INSERT INTO `resource_video` VALUES (10, '详解分裂型人格的11个特征【给力心理】', '2023-08-02 17:56:16', 'https://www.bilibili.com/video/BV1vP41147EK/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '分裂型人格障碍', '视频详细介绍了分裂型人格的11个特征，包括牵连观念、奇异的信念和想法、知觉障碍、逻辑混乱的思维和语言、猜疑或偏执观念、不恰当或受限制的情感、古怪的行为或外表、缺乏密友、过度的社交焦虑和社交恐惧、侵略性较强、以及高共病率。视频强调了分裂型人格者的行为和思维方式，提醒我们在早期识别这些特征后保持安全距离。', 'assets/imgs/video/10.png');
+INSERT INTO `resource_video` VALUES (11, '回避型人格如何疗愈自己？这里有5条建议【武志红】', '2021-07-09 12:24:03', 'https://www.bilibili.com/video/BV1BM4y1M796/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '回避型人格障碍、焦虑', '本视频讲述了回避型人格障碍的特点、成因以及如何与之相处和自我疗愈。回避型人格障碍是一种心理疾病，其特点包括害怕批评、否定或排斥而回避涉涉及到人接触较多的职业活动，不愿意被人浇灌，害羞或怕被嘲弄而在亲密关系中表现拘谨等。视频作者强调，面对回避型人格障碍，我们需要保持自己的风格，理解并接纳他们，同时要直面真相，不要过度贬低自己，尝试控制可以控制的人或事物，并寻求专业人士的帮助。', 'assets/imgs/video/11.png');
+INSERT INTO `resource_video` VALUES (12, '你不知道的7种焦虑症', '2023-08-23 20:09:33', 'https://www.bilibili.com/video/BV1cw411Q7C2?spm_id_from=333.788.videopod.sections&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '焦虑症、创伤后应激障碍、恐慌', '视频介绍了七种焦虑症：广泛性焦虑症、分离焦虑症、社交恐惧症和选择性缄默症、急性焦虑症（惊恐发作）、广场恐惧症、特定恐惧症和创伤后引起障碍、强迫症。虽然这些症状在某些情境下是正常的，但长期的焦虑和恐惧感会影响正常生活和工作。', 'assets/imgs/video/12.png');
+INSERT INTO `resource_video` VALUES (13, '【心理学】6种进食障碍：暴饮暴食，神经性厌食症？', '2019-03-25 01:32:37', 'https://www.bilibili.com/video/BV1hb41147kG/?spm_id_from=333.337.search-card.all.click', 0, '进食障碍', '视频讨论了六种饮食失调类型，旨在打破刻板印象并提供知识以帮助那些患有此类失调症的人。视频分享了个人经历，并强调了寻求治疗以及不让饮食失调定义一个人生活的重要性。', 'assets/imgs/video/13.png');
+INSERT INTO `resource_video` VALUES (14, '【TED科普】什么是精神分裂症（中英字幕）', '2023-06-04 19:25:50', 'https://www.bilibili.com/video/BV1XM4y1q7jt/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '精神分裂', '精神分裂症是一种由多种相关症状组成的综合症，它可能涉及许多与其类似但有不同原因的疾病。每个精神分裂症患有略有不同的症状，第一次表现可能是微妙的个性变化、恼易或不寻常的思想渐入。患有精神分裂症的人在初次心智症状发作时通常获得诊断，这通常在男性晚 teenager 或 early twenties，女性晚 twenties 或 early thirties 初发。精神分裂症的治疗包括心智症状阻止剂和其他干预，如认知行为治疗和再次刺激疗法。早期干预至关重要，长期未经治疗的精神分裂症症状可能会嵌入个性中，并且与此诊断相关的非人性化标签可能会阻止人们寻求帮助。', 'assets/imgs/video/14.png');
+INSERT INTO `resource_video` VALUES (15, '惊恐发作（也称恐慌症）症状、病因和疗法', '2020-05-19 10:30:23', 'https://www.bilibili.com/video/BV1FC4y1p7rS/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '恐慌症、抑郁、创伤后应激障碍', '惊恐症是一种心理障碍，主要表现为患者突然出现强烈的恐惧或不适，伴有心悸、呼吸急促和颤抖等身体症状。这些症状可能非常可怕，有时会让患者认为自己正在心脏病发作或患有其他危及生命的疾病。', 'assets/imgs/video/15.png');
+INSERT INTO `resource_video` VALUES (16, '严肃地科普一下强迫症', '2022-04-01 16:51:34', 'https://www.bilibili.com/video/BV1LY41177XP/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '强迫症、抑郁、焦虑、精神分裂', '视频介绍了强迫症的相关知识，包括强迫症的定义、临床症状、病因以及治疗方法。强迫症可以分为强迫思维性和强迫行为性，其中强迫行为包括强迫检查、强迫秩序、强迫清洗等，强迫思维包括强迫忧虑、强迫画面等。病因涉及心理、生理、社会三方面的因素。治疗强迫症主要有药物治疗和心理治疗两种方法。', 'assets/imgs/video/16.png');
+INSERT INTO `resource_video` VALUES (17, '【正经医生】精神科医生科普，什么是双相情感障碍！', '2021-03-24 18:07:18', 'https://www.bilibili.com/video/BV1K54y1h7AC/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '双向情感障碍、抑郁', '深圳市康宁医院精神科医生对双向障碍的介绍。双向障碍是一种间歇性的病症,患者的情绪会交替处于两个极端,可能表现为躁狂或抑郁发作。在发作期间,患者的言语和行为可能会增多或减少,严重时可能伴有一些精神病性的症状。虽然双向障碍可以治愈,但需要注意维持治疗和监测病情的变化以防止反复发作。', 'assets/imgs/video/17.png');
+INSERT INTO `resource_video` VALUES (18, '睡眠相位后移综合征：小伙伴们，你最近睡得还好吗？', '2021-03-15 10:04:22', 'https://www.bilibili.com/video/BV1DV411Y7DQ/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '睡眠相位后移综合征', '视频讨论了睡眠相位后移综合征（Delayed Sleep Phase Syndrome, DSPS），这是一种常见的睡眠障碍，表现为入睡和醒来的时间比理想情况晚，且难以调整。视频还提到了熬夜对情绪和心理健康的影响，以及如何应对这种睡眠模式。', 'assets/imgs/video/18.png');
+INSERT INTO `resource_video` VALUES (19, '什么是偷窃癖', '2023-09-01 09:07:53', 'https://www.bilibili.com/video/BV1aw411S7fF/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '偷窃癖', '偷窃癖是一种在变态心理支配下的反常行为，患者会反复出现不可 resist 的偷窃冲动，并且会将偷来的东西隐藏或暗暗地送给他人。这种行为通常会在偷窃前后产生紧张和满足感，并且在儿童或少年期就可能开始。', 'assets/imgs/video/19.png');
+INSERT INTO `resource_video` VALUES (20, '抑郁症，是怎么改变你大脑的？', '2022-06-19 11:33:55', 'https://www.bilibili.com/video/BV1da411s7BM/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '抑郁症', '抑郁症会带来大量的压力激素，破坏前额叶（负责理性思维的区域）中神经元之间的信号传递，从而导致思维变得迟缓、记忆力下降等问题。同时，抑郁症还会侵入海马体（记忆的驿站），造成记忆力大大下降。除此之外，抑郁症还会对情绪中心LEFT habenula产生影响，使患者更容易冲动、发脾气、失眠等。', 'assets/imgs/video/20.png');
+INSERT INTO `resource_video` VALUES (21, '自闭症科普', '2024-10-21 08:23:16', 'https://www.bilibili.com/video/BV1eqyqYEEkT/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '自闭症', '本视频是关于自闭症的普及科普，阐述了自闭症的特征、原因、治疗方法和关爱方式，并强调了对这些来自星星的孩子的关注和帮助对社会至关重要。', 'assets/imgs/video/21.png');
+INSERT INTO `resource_video` VALUES (22, '自闭症眼中的世界到底是怎样的？', '2021-04-01 13:55:06', 'https://www.bilibili.com/video/BV16A41157PT/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '自闭症', '自闭症患儿眼中的世界。他们可能将世界理解为一款3D游戏,难以理解我们传递的信息。自闭症患者面临着生活无法自理和家庭经济的压力,但政府和社会的关注和支持正在改善他们的状况。然而,融入社会仍然需要每个人的关爱。他们是星星的孩子,与我们共同生活在这个地球上,我们任重而道远。', 'assets/imgs/video/22.png');
+INSERT INTO `resource_video` VALUES (23, '9个迹象表明，Ta或有自恋型人格障碍！', '2022-06-06 16:55:59', 'https://www.bilibili.com/video/BV1C5411Q7w3/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '自恋型人格障碍', '本视频主要介绍了自恋型人格障碍的九个迹象。自恋者常常不愿意听取他人的意见，而是在自己的想法上裹足不前。他们常常在关系中欺骗，以建立自己的自尊心。他们需要不断地被赞美，对批评反应过度。他们没有内疚或羞耻感，常常利用他人来满足自己的需求。他们会贬低他人，以证明自己比别人更好。这些迹象表明自恋者可能有心理障碍。', 'assets/imgs/video/23.png');
+INSERT INTO `resource_video` VALUES (24, '如何对付NPD型人格？自恋人格障碍者是你能拯救的吗？', NULL, 'https://www.bilibili.com/video/BV1P14y117Ry/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73', 0, '自恋型人格障碍', NULL, 'assets/imgs/video/24.png');
 
 -- ----------------------------
 -- Table structure for test
 -- ----------------------------
 DROP TABLE IF EXISTS `test`;
 CREATE TABLE `test`  (
-  `Tid` int(11) NOT NULL AUTO_INCREMENT COMMENT '测试id，标记某一次测试，自增',
-  `Uid` int(10) UNSIGNED ZEROFILL NOT NULL COMMENT '用户id，外键',
-  `Time` datetime NOT NULL COMMENT '测试时间',
-  `Tag` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '测试标签，其实就是测试表的名字',
-  `Result` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '测试结果',
-  PRIMARY KEY (`Tid`, `Uid`, `Time`) USING BTREE,
-  INDEX `fk_uid2`(`Uid` ASC) USING BTREE,
-  CONSTRAINT `fk_uid2` FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+  `Tid` int(11) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
+  `Tag` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `img` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`Tid`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of test
 -- ----------------------------
+INSERT INTO `test` VALUES (00000000001, '被害妄想症', 'https://www.kuioo.cn/do-you-have-persecutory-delusions/question/', '测试你有被害妄想症吗？', '“出现幻觉妄想！测试你有被害妄想症吗？”是一项被害妄想症测试，通过模拟情景和行为反应，评价个体是否存在被害妄想倾向，帮助了解个人心理状态，提倡心理健康意识。', 'assets/imgs/tests/1.png');
+INSERT INTO `test` VALUES (00000000002, '边缘型人格障碍', 'https://www.kuioo.cn/borderline-personality-disorder-bpd-test/question/', '「边缘型人格测试」你有BPD边缘性人格障碍吗？', '“边缘型人格测试”是一种用于评价BPD（边缘性人格障碍）特征的心理健康工具。通过bpd测试，可以更好地了解个人的心理状态，寻求专业帮助。', 'assets/imgs/tests/2.png');
+INSERT INTO `test` VALUES (00000000003, '多动症', 'https://www.kuioo.cn/adult-adhd-test-do-you-have-attention-deficit-hyperactivity-disorder/question/', '成人多动症测试：你有注意力缺陷多动障碍吗？', '事实上，研究表明，在18岁至44岁的成年人中，约有4%的人患有多动症。对于一些成年人来说，他们的多动症可能从小就没有得到诊断和治疗，这进一步加剧了他们面临的挑战。如果你担心自己可能患有多动症，可以考虑参加多动症测试，看看是否有必要由合格的医疗专业人员进行进一步评估。早期诊断和适当的治疗可以帮助多动症患者更好地控制症状，提高生活质量。', 'assets/imgs/tests/3.png');
+INSERT INTO `test` VALUES (00000000004, '反社会型人格障碍', 'https://www.kuioo.cn/am-i-antisocial-antisocial-personality-disorder-quiz/question/', '反社会人格倾向测试', '三分钟反社会人格测试是一项用于评价个人社交行为和互动方式的测试。这项反社会人格测试可以帮助人们了解自己在社交方面可能存在的问题，并提供相应的建议和帮助。', 'assets/imgs/tests/4.png');
+INSERT INTO `test` VALUES (00000000005, '回避型人格障碍', 'https://www.kuioo.cn/avoidant-personality-disorder-test-do-i-have-avpd/question/', '「回避型人格障碍测试」你有回避性人格吗？', '“回避型人格障碍测试”是一种心理评价工具，用于评价个体是否具有回避型人格特征，如过度敏感、社交恐惧和低自尊。通过测试，可以更好地理解自己的行为模式，寻求帮助。', 'assets/imgs/tests/5.png');
+INSERT INTO `test` VALUES (00000000006, '焦虑', 'https://www.kuioo.cn/anxiety-test-find-out-your-anxiety-level/question/', '焦虑症测试：你的焦虑程度有多深？', '焦虑症是一种常见的情绪障碍，它以过度、持续的担忧和恐惧为特征。这种情绪状态可能会严重影响个人的日常生活和心理健康。了解焦虑症并评价自己的焦虑水平，对于采取适当的应对措施至关重要。', 'assets/imgs/tests/6.png');
+INSERT INTO `test` VALUES (00000000007, '恐慌症', 'https://www.kuioo.cn/panic-disorder-test-do-i-have-panic-disorder/question/', '「恐慌症症状测试」你的恐慌症指数有多高？', '想知道你的恐慌指数吗？试试“恐慌症测试”，简单几个问题，轻松了解你的焦虑水平，帮助你更好地管理情绪。', 'assets/imgs/tests/7.png');
+INSERT INTO `test` VALUES (00000000008, '强迫症', 'https://www.kuioo.cn/obsessive-compulsive-personality-disorder-test-ocpd/question/', '「强迫症测验」你有强迫型人格障碍倾向吗？', '「强迫症测验」快速评估你的强迫症倾向，你有强迫型人格障碍倾向吗？测强迫症指数了解你是否有过度强迫的行为和思维，为你的心理健康提供一个自我了解的窗口。', 'assets/imgs/tests/8.png');
+INSERT INTO `test` VALUES (00000000009, '抑郁症', 'https://www.kuioo.cn/depression-quiz-am-i-depressed/question/', '抑郁症心理测验「你有否患抑郁症？」快速测试', '探索心理健康，快速了解是否可能患有抑郁症。这个简短的自我评估抑郁症测试提供初步筛查，帮助你识别抑郁症状，及时寻求专业帮助。在我们的日常生活中，心理健康问题越来越受到关注，其中抑郁症是一种常见的情绪障碍。为了帮助个人更好地理解自己的心理状态，我们提供了一系列的抑郁症测试，抑郁症测试旨在评价您可能面临的抑郁症状，并提供相应的建议和指导。', 'assets/imgs/tests/9.png');
+INSERT INTO `test` VALUES (00000000010, '自闭症', 'https://www.kuioo.cn/autism-spectrum-quotient-test-are-you-autistic/question/', '自闭症倾向测试', '如果你怀疑自己或你认识的人可能患有自闭症，从合格的医疗保健提供者那里获得专业诊断是很重要的。亚斯伯格症测试可以帮助你识别自闭症的一些常见症状，但它不能代替专业诊断。', 'assets/imgs/tests/10.png');
+INSERT INTO `test` VALUES (00000000011, '自恋型人格障碍', 'https://www.kuioo.cn/narcissistic-personality-disorder-quiz/question/', '「自恋型人格测试」测你有多自恋？', '你是否有过度关注自己外貌或成就的倾向？是否经常期待别人给予赞美和关注？通过自恋型人格测试，你可以探索自己是否具有自恋型人格的特征。这个自恋型人格测试虽然不是临床诊断，但可以提供关于自我形象和行为模式的有趣见解。', 'assets/imgs/tests/11.png');
 
 -- ----------------------------
 -- Table structure for user
@@ -253,7 +237,7 @@ CREATE TABLE `user`  (
   `UName` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'HelloWorld' COMMENT '用户名，不为空，默认值：HelloWorld',
   `AvatarUser` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户自定义头像，图片相对路径',
   PRIMARY KEY (`Uid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of user

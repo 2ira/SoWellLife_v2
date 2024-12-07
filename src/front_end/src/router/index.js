@@ -4,7 +4,6 @@ import IHome from '@/views/IHome.vue'; // 新增 IHome 页面
 import IDetail from '@/views/IDetail.vue';
 import DoctorPage from '@/views/DoctorPage.vue';
 import Doctor_Detail from '@/views/Doctor_Detail.vue';
-import Resources from '@/views/Resources.vue';
 import VideoResources from '@/views/VideoResources.vue';
 import ArticleResources from '@/views/ArticleResources.vue';
 import AIChat from '../views/AIChat.vue'
@@ -39,11 +38,6 @@ const routes = [
     path: '/doctor_detail',
     name: 'Doctor_Detail',
     component: Doctor_Detail
-  },
-  {
-    path: '/Resources',
-    name: 'ResourcePage',
-    component: Resources
   },
   {
     path: '/resources/video',
