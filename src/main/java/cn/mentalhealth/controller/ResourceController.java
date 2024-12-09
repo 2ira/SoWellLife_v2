@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +52,10 @@ public class ResourceController {
     @GetMapping("/by-tag")
     public String getResourcesByTag(HttpServletRequest request) {
         logger.info("开始根据标签获取资源数据");
+        // 打印所有的请求参数，帮助排查问题
+        request.getParameterMap().forEach((key, value) -> {
+            logger.info("参数名: {}, 参数值: {}", key, Arrays.toString(value));
+        });
         String result = resourceService.getResourcesByTagAsJson(request);
         logger.info("根据标签获取到的资源数据: {}", result);
         return result;

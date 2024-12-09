@@ -96,10 +96,10 @@ public class ResourceVideoDaoImpl implements ResourceVideoDao {
     @Override
     public List<ResourceVideo> getResourceVideosByTag(String rtag) {
         List<ResourceVideo> resourceVideoList = new ArrayList<>();
-        String sql = "SELECT * FROM resource_video WHERE Rtag LIKE '%' +? + '%'";
+        String sql = "SELECT * FROM resource_video WHERE Rtag LIKE ?";
         try (Connection connection = jdbcUtils.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, rtag);
+            preparedStatement.setString(1, "%" + rtag + "%");
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     ResourceVideo resourceVideo = new ResourceVideo();
