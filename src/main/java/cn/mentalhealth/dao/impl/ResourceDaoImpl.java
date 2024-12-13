@@ -31,6 +31,7 @@ public class ResourceDaoImpl implements ResourceDao {
                 resource.setRstore(resultSet.getInt("Rstore"));
                 resource.setRtag(resultSet.getString("Rtag"));
                 resource.setRabstract(resultSet.getString("Rabstract"));
+                resource.setRimg(resultSet.getString("aimg")); // 设置图片字段
                 resourceList.add(resource);
             }
         } catch (SQLException e) {
@@ -55,6 +56,7 @@ public class ResourceDaoImpl implements ResourceDao {
                     resource.setRstore(resultSet.getInt("Rstore"));
                     resource.setRtag(resultSet.getString("Rtag"));
                     resource.setRabstract(resultSet.getString("Rabstract"));
+                    resource.setRimg(resultSet.getString("aimg"));
                 }
             }
         } catch (SQLException e) {
@@ -80,6 +82,7 @@ public class ResourceDaoImpl implements ResourceDao {
                     resource.setRstore(resultSet.getInt("Rstore"));
                     resource.setRtag(resultSet.getString("Rtag"));
                     resource.setRabstract(resultSet.getString("Rabstract"));
+                    resource.setRimg(resultSet.getString("aimg"));
                     resourceList.add(resource);
                 }
             }
@@ -92,10 +95,14 @@ public class ResourceDaoImpl implements ResourceDao {
     @Override
     public List<Resource> getResourcesByTag(String rtag) {
         List<Resource> resourceList = new ArrayList<>();
-        String sql = "SELECT * FROM resource WHERE Rtag LIKE '%' +? + '%'";
+        String sql = "SELECT * FROM resource WHERE Rtag LIKE ?";
+        if (rtag == null || rtag.trim().isEmpty()) {
+            return resourceList;  // 如果 rtag 是 null 或空字符串，直接返回空结果
+        }
         try (Connection connection = jdbcUtils.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, rtag);
+            // 在设置参数时拼接通配符
+            preparedStatement.setString(1, "%" + rtag + "%");
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     Resource resource = new Resource();
@@ -106,6 +113,7 @@ public class ResourceDaoImpl implements ResourceDao {
                     resource.setRstore(resultSet.getInt("Rstore"));
                     resource.setRtag(resultSet.getString("Rtag"));
                     resource.setRabstract(resultSet.getString("Rabstract"));
+                    resource.setRimg(resultSet.getString("aimg"));
                     resourceList.add(resource);
                 }
             }
@@ -126,6 +134,7 @@ public class ResourceDaoImpl implements ResourceDao {
             preparedStatement.setInt(4, resource.getRstore());
             preparedStatement.setString(5, resource.getRtag());
             preparedStatement.setString(6, resource.getRabstract());
+            preparedStatement.setString(7, resource.getRimg());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -145,6 +154,7 @@ public class ResourceDaoImpl implements ResourceDao {
             preparedStatement.setInt(4, resource.getRstore());
             preparedStatement.setString(5, resource.getRtag());
             preparedStatement.setString(6, resource.getRabstract());
+            preparedStatement.setString(7, resource.getRimg());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

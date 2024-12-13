@@ -32,6 +32,7 @@ public class ResourceVideoDaoImpl implements ResourceVideoDao {
                 resourceVideo.setRstore(resultSet.getInt("Rstore"));
                 resourceVideo.setRtag(resultSet.getString("Rtag"));
                 resourceVideo.setRabstract(resultSet.getString("Rabstract"));
+                resourceVideo.setRimg(resultSet.getString("vimg")); // 设置图片字段
                 resourceVideoList.add(resourceVideo);
             }
         } catch (SQLException e) {
@@ -56,6 +57,7 @@ public class ResourceVideoDaoImpl implements ResourceVideoDao {
                     resourceVideo.setRstore(resultSet.getInt("Rstore"));
                     resourceVideo.setRtag(resultSet.getString("Rtag"));
                     resourceVideo.setRabstract(resultSet.getString("Rabstract"));
+                    resourceVideo.setRimg(resultSet.getString("vimg")); // 设置图片字段
                 }
             }
         } catch (SQLException e) {
@@ -81,6 +83,7 @@ public class ResourceVideoDaoImpl implements ResourceVideoDao {
                     resourceVideo.setRstore(resultSet.getInt("Rstore"));
                     resourceVideo.setRtag(resultSet.getString("Rtag"));
                     resourceVideo.setRabstract(resultSet.getString("Rabstract"));
+                    resourceVideo.setRimg(resultSet.getString("vimg")); // 设置图片字段
                     resourceVideoList.add(resourceVideo);
                 }
             }
@@ -93,10 +96,10 @@ public class ResourceVideoDaoImpl implements ResourceVideoDao {
     @Override
     public List<ResourceVideo> getResourceVideosByTag(String rtag) {
         List<ResourceVideo> resourceVideoList = new ArrayList<>();
-        String sql = "SELECT * FROM resource_video WHERE Rtag LIKE '%' +? + '%'";
+        String sql = "SELECT * FROM resource_video WHERE Rtag LIKE ?";
         try (Connection connection = jdbcUtils.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, rtag);
+            preparedStatement.setString(1, "%" + rtag + "%");
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     ResourceVideo resourceVideo = new ResourceVideo();
@@ -107,6 +110,7 @@ public class ResourceVideoDaoImpl implements ResourceVideoDao {
                     resourceVideo.setRstore(resultSet.getInt("Rstore"));
                     resourceVideo.setRtag(resultSet.getString("Rtag"));
                     resourceVideo.setRabstract(resultSet.getString("Rabstract"));
+                    resourceVideo.setRimg(resultSet.getString("vimg")); // 设置图片字段
                     resourceVideoList.add(resourceVideo);
                 }
             }
@@ -127,6 +131,7 @@ public class ResourceVideoDaoImpl implements ResourceVideoDao {
             preparedStatement.setInt(4, resourceVideo.getRstore());
             preparedStatement.setString(5, resourceVideo.getRtag());
             preparedStatement.setString(6, resourceVideo.getRabstract());
+            preparedStatement.setString(7, resourceVideo.getRimg());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -144,6 +149,7 @@ public class ResourceVideoDaoImpl implements ResourceVideoDao {
             preparedStatement.setInt(4, resourceVideo.getRstore());
             preparedStatement.setString(5, resourceVideo.getRtag());
             preparedStatement.setString(6, resourceVideo.getRabstract());
+            preparedStatement.setString(7, resourceVideo.getRimg());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

@@ -1,19 +1,26 @@
 package cn.mentalhealth.service;
 
+import cn.mentalhealth.controller.ResourceController;
 import cn.mentalhealth.dao.ResourceVideoDao;
 import cn.mentalhealth.dao.impl.ResourceVideoDaoImpl;
 import cn.mentalhealth.domain.ResourceVideo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+@Service
 public class ResourceVideoService {
 
     private ResourceVideoDao resourceVideoDao = new ResourceVideoDaoImpl();
     private ObjectMapper objectMapper = new ObjectMapper();
+    private static final Logger logger = LoggerFactory.getLogger(ResourceController.class);
 
     // 初始化ObjectMapper，设置序列化时的一些特性，比如日期格式等（可根据实际需求调整）
     public ResourceVideoService() {
@@ -63,8 +70,8 @@ public class ResourceVideoService {
     // 根据资源视频标签获取相关资源视频记录，并以JSON报文格式返回
     public String getResourceVideosByTagAsJson(HttpServletRequest request) {
         try {
-            String rtag = request.getParameter("rtag");
-
+            String rtag = request.getParameter("name");
+            logger.info("在video中传入的标签: {}", rtag);
             List<ResourceVideo> resourceVideos = resourceVideoDao.getResourceVideosByTag(rtag);
             return objectMapper.writeValueAsString(resourceVideos);
         } catch (NumberFormatException | IOException e) {

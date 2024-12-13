@@ -31,10 +31,9 @@
       <RelatedArticleBox
           v-for="related in relatedArticles"
           :key="related.id"
-          :id="related.id"
-          :image="related.image"
-          :title="related.title"
-          @article-click="goToArticle"
+          :rimg="related.rimg"
+          :rname="related.rname"
+          :rurl="related.rurl"
       />
     </div>
   </div>
@@ -57,8 +56,8 @@ import axios from "axios";
     },
     created() {
       const articleId = this.$route.params.id;
+      console.log('文章id: ', articleId);
       this.fetchArticle(articleId);
-      this.fetchRelatedArticles(this.article.title);  // 通过 Rtag 匹配相关资源
     },
     methods: {
     async fetchArticle(id) {
@@ -77,7 +76,10 @@ import axios from "axios";
         }
         this.article = articleData;
 
-      this.$nextTick(() => {
+        // 确保获取到 article.type 后再获取相关资源
+        this.fetchRelatedArticles(this.article.type);
+
+        this.$nextTick(() => {
         this.article = articleData;
       });
 
@@ -85,20 +87,33 @@ import axios from "axios";
         console.error("Error fetching article:", error);
       }
     },
-    async fetchRelatedArticles(title) {
+    async fetchRelatedArticles(symptomName) {
       try {
         // 假设后端 API 可以通过标题搜索相关文章
         // const response = await axios.get(`/api/articles?relatedTo=${encodeURIComponent(title)}`);
-        this.relatedArticles = [
-      { id: 1, title: title+": 1", image: this.article.image },
-      { id: 2, title: title+": 2", image: this.article.image },
-      { id: 3, title: title+": 3", image: this.article.image },
-      { id: 4, title: title+": 4", image: this.article.image },
-      { id: 5, title: title+": 5", image: this.article.image },
-      { id: 6, title: title+": 6", image: this.article.image },
-      { id: 7, title: title+": 7", image: this.article.image },
-      { id: 8, title: title+": 8", image: this.article.image }
-    ] // response.data;  // 返回相关文章数组
+        // 调用后端 API，根据症状名称查询相关资源
+        console.log('需要检索的rtag: ', symptomName);
+        const resourcesResponse = await axios.get(`/api/resources/by-tag`, {
+          params: { name: symptomName } // 将症状名称作为查询参数传递
+        });
+        // 获取来自视频资源（resourcevideo）的相关文章
+        const videoResponse = await axios.get(`/api/resourceVideos/byTag`, {
+          params: { name: symptomName }
+        });
+
+        // 合并两个 API 返回的数据
+        const combinedArticles = [
+          ...resourcesResponse.data,
+          ...videoResponse.data
+        ];
+
+        // 打印每个相关文章的图片路径
+        this.relatedArticles.forEach((related, index) => {
+          console.log(`相关文章 ${index + 1} 的标题:`, related.title);
+        });
+
+        // 设置相关推荐
+        this.relatedArticles = combinedArticles;
       } catch (error) {
         console.error("Error fetching related articles:", error);
       }
@@ -149,17 +164,20 @@ import axios from "axios";
 
   .related-title {
     margin-top: 100px; /* 控制“相关推荐”标题上方的空白，40px 代表大约两行间距 */
+    margin-left: 100px;
   }
 
   .related-articles {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 20px;
+    margin-left: 100px;
   }
 
   .related-articles > * {
-    flex: 1 1 calc(25% - 20px); /* 每个方框宽度为 25%，中间有间距 */
+    flex: 1 1 calc(25% - 20px); /* 一行三个格子，每个占三分之一的宽度 */
+    max-width: 300px; /* 最大宽度 */
     box-sizing: border-box;
   }
 
