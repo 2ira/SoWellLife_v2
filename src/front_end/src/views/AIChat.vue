@@ -46,32 +46,65 @@
           </template>
 
           <template v-else>
-            <!-- 消息气泡部分 -->
-            <div class="max-w-3xl mx-auto space-y-4 px-12">
+<!--            &lt;!&ndash; 消息气泡部分 &ndash;&gt;-->
+<!--            <div class="max-w-3xl mx-auto space-y-4 px-12">-->
+<!--              <div v-for="(message, index) in messages"-->
+<!--                   :key="index"-->
+<!--                   class="flex items-start gap-4 mb-6"-->
+<!--                   :class="[message.role === 'user' ? 'mr-4 justify-end' : 'ml-4 justify-start']"-->
+<!--              >-->
+<!--                &lt;!&ndash; 头像部分 &ndash;&gt;-->
+<!--                <div class="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden">-->
+<!--                  <img-->
+<!--                      :src="message.role === 'user'-->
+<!--              ? require('@/assets/imgs/icon/default-avatar.jpg')-->
+<!--              : require('@/assets/imgs/icon/ai-avatar.png')"-->
+<!--                      :alt="message.role === 'user' ? '用户头像' : 'AI头像'"-->
+<!--                      class="w-full h-full object-cover"-->
+<!--                  >-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; 消息内容部分 - 移到头像的同级 &ndash;&gt;-->
+<!--                <div class="flex flex-col max-w-[40%]">-->
+<!--                  <div class="px-4 py-3 rounded-lg"-->
+<!--                       :class="[-->
+<!--               message.role === 'user'-->
+<!--                 ? 'bg-blue-500 text-white rounded-tr-none'-->
+<!--                 : 'bg-white text-gray-800 rounded-tl-none'-->
+<!--             ]"-->
+<!--                  >-->
+<!--                    {{ message.content }}-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            <div class="max-w-4xl mx-auto space-y-6">-->
+            <div class="max-w-6xl ml-1 mr-auto space-y-4">
               <div v-for="(message, index) in messages"
                    :key="index"
-                   class="flex items-start gap-4 mb-6"
-                   :class="[message.role === 'user' ? 'mr-4 justify-end' : 'ml-4 justify-start']"
+                   class="flex items-start gap-2 mb-5"
+                   :class="[message.role === 'user' ? 'flex-row-reverse pr-0' : 'pl-0']"
               >
                 <!-- 头像部分 -->
                 <div class="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden">
                   <img
                       :src="message.role === 'user'
-              ? require('@/assets/imgs/icon/default-avatar.jpg')
-              : require('@/assets/imgs/icon/ai-avatar.png')"
+          ? require('@/assets/imgs/icon/default-avatar.jpg')
+          : require('@/assets/imgs/icon/ai-avatar.png')"
                       :alt="message.role === 'user' ? '用户头像' : 'AI头像'"
                       class="w-full h-full object-cover"
                   >
                 </div>
 
-                <!-- 消息内容部分 - 移到头像的同级 -->
-                <div class="flex flex-col max-w-[40%]">
-                  <div class="px-4 py-3 rounded-lg"
+                <!-- 消息内容部分 -->
+                <div class="flex flex-col max-w-[65%]">
+                  <div class="px-3 py-3 rounded-lg"
                        :class="[
-               message.role === 'user'
-                 ? 'bg-blue-500 text-white rounded-tr-none'
-                 : 'bg-white text-gray-800 rounded-tl-none'
-             ]"
+           message.role === 'user'
+             ? 'bg-blue-500 text-white rounded-tr-none ml-auto'
+             : 'bg-white text-gray-800 rounded-tl-none mr-auto'
+         ]"
                   >
                     {{ message.content }}
                   </div>
@@ -152,6 +185,31 @@ onMounted(async () => {
 })
 
 
+
+// 在 <script setup> 的顶部添加
+axios.defaults.baseURL = 'http://localhost:8080'; // 替换为你的后端服务地址
+axios.defaults.timeout = 10000; // 10秒超时
+axios.interceptors.request.use(config => {
+  console.log('发送请求:', config);
+  return config;
+});
+
+axios.interceptors.response.use(
+    response => {
+      console.log('收到响应:', response);
+      return response;
+    },
+    error => {
+      console.error('请求错误:', {
+        url: error.config?.url,
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
+      });
+      return Promise.reject(error);
+    }
+);
+
 async function loadChatSessions() {
   try {
     const response = await axios.get(`${API_BASE_URL}/sessions/${uid.value}`)
@@ -215,53 +273,58 @@ async function selectChat(cid) {
 
 // 发送消息
 async function sendMessage() {
-  if (!inputMessage.value.trim() || !currentCid.value) return
-
-  const messageContent = inputMessage.value
-  inputMessage.value = ''
+  if (!inputMessage.value.trim() || !currentCid.value) return;
+  const messageContent = inputMessage.value;
+  inputMessage.value = '';
 
   // 添加用户消息
-  const userMessage = {
+  messages.value.push({
     content: messageContent,
-    role: 'user',  // 确保设置 role
+    role: 'user',
     htime: new Date()
+  });
+
+  // 如果没有当前会话ID，先创建新会话
+  if (!currentCid.value) {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/sessions/new`, {
+        uid: uid.value,
+        initialMessage: inputMessage.value
+      });
+      currentCid.value = response.data;
+    } catch (error) {
+      console.error('创建新会话失败:', error);
+      return;
+    }
   }
-  messages.value.push(userMessage)
 
   try {
     const response = await axios.post(`${API_BASE_URL}/send`, {
-      cid: currentCid.value,
-      uid: uid.value,
-      content: messageContent,
-      role: 'user'
-    })
+      cid: parseInt(currentCid.value),
+      uid: parseInt(uid.value),
+      content: messageContent
+    });
 
-    // 添加 AI 响应
-    if (response.data) {
+    if (response.data && response.data.content) {
       messages.value.push({
-        ...response.data,
-        role: 'ai'  // 确保 AI 响应也有 role
-      })
-    } else {
-      // 测试用的模拟响应
-      messages.value.push({
-        content: `这是对 "${messageContent}" 的模拟回复`,
+        content: response.data.content,
         role: 'ai',
         htime: new Date()
-      })
+      });
+    } else {
+      throw new Error('无效的响应数据');
     }
-
-    await scrollToBottom()
-    await loadChatSessions() // 刷新会话列表
   } catch (error) {
-    console.error('Failed to send message:', error)
-    // 添加错误提示
+    console.error('发送消息失败:', error);
+    const errorMessage = error.response?.data?.message || error.message || '服务器错误';
     messages.value.push({
-      content: '消息发送失败，请重试',
+      content: `消息发送失败：${errorMessage}`,
       role: 'system',
       htime: new Date()
-    })
+    });
   }
+
+  await scrollToBottom();
 }
 
 

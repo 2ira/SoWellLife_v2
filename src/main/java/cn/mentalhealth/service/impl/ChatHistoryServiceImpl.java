@@ -3,7 +3,9 @@ package cn.mentalhealth.service.impl;
 import cn.mentalhealth.dao.ChatHistoryDao;
 import cn.mentalhealth.dao.impl.ChatHistoryDaoImpl;
 import cn.mentalhealth.domain.ChatHistory;
+import cn.mentalhealth.service.AIService;
 import cn.mentalhealth.service.ChatHistoryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,10 +17,12 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
 
     private ChatHistoryDao chatHistoryDao = new ChatHistoryDaoImpl();
 
+    @Autowired
+    private AIService aiService;
+
     @Override
     public List<ChatHistory> getUserChatSessions(Integer uid) {
         List<ChatHistory> allUserChats = chatHistoryDao.getChatHistoryByUid(uid);
-        // 按照Cid分组，只返回每个会话的最后一条消息
         return allUserChats.stream()
                 .collect(Collectors.groupingBy(ChatHistory::getCid))
                 .values()
@@ -34,7 +38,7 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
 
     @Override
     public Integer createNewChatSession(Integer uid, String initialMessage) {
-        // 生成新的会话ID（这里示例使用时间戳，实际应用中可能需要更复杂的逻辑）
+        // 生成新的会话ID
         Integer newCid = (int) (System.currentTimeMillis() / 1000);
 
         // 创建初始消息记录
@@ -66,30 +70,45 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
 
     @Override
     public ChatHistory sendMessage(Integer cid, Integer uid, String message) {
-        // 保存用户消息
-        ChatHistory userMessage = new ChatHistory();
-        userMessage.setCid(cid);
-        userMessage.setUid(uid);
-        userMessage.setHtime(LocalDateTime.now());
-        userMessage.setContent(message);
-        userMessage.setHName(getChatHistoryByCid(cid).get(0).getHName()); // 使用已有的会话名称
-        userMessage.setRole("user");
+        try {
+            List<ChatHistory> chatHistory = getChatHistoryByCid(cid);
 
-        chatHistoryDao.insertChatHistory(userMessage);
+            // 创建用户消息
+            ChatHistory userMessage = new ChatHistory();
+            userMessage.setCid(cid);
+            userMessage.setUid(uid);
+            userMessage.setHtime(LocalDateTime.now());
+            userMessage.setContent(message);
 
-        // 这里应该调用AI服务获取回复
-        // 示例中使用简单的回复，实际应用中需要集成具体的AI服务
-        ChatHistory aiResponse = new ChatHistory();
-        aiResponse.setCid(cid);
-        aiResponse.setUid(uid);
-        aiResponse.setHtime(LocalDateTime.now());
-        aiResponse.setContent("收到您的消息：" + message);  // 实际中应该是AI的响应
-        aiResponse.setHName(userMessage.getHName());
-        aiResponse.setRole("ai");
+            String chatName;
+            if (chatHistory.isEmpty()) {
+                chatName = message.length() > 6 ? message.substring(0, 6) : message;
+            } else {
+                chatName = chatHistory.get(0).getHName();
+            }
+            userMessage.setHName(chatName);
+            userMessage.setRole("user");
 
-        chatHistoryDao.insertChatHistory(aiResponse);
+            chatHistoryDao.insertChatHistory(userMessage);
 
-        return aiResponse;
+            // 获取 AI 响应
+            String aiReply = aiService.getAIResponse(message);
+
+            // 创建 AI 响应
+            ChatHistory aiResponse = new ChatHistory();
+            aiResponse.setCid(cid);
+            aiResponse.setUid(uid);
+            aiResponse.setHtime(LocalDateTime.now());
+            aiResponse.setContent(aiReply);
+            aiResponse.setHName(chatName);
+            aiResponse.setRole("ai");
+
+            chatHistoryDao.insertChatHistory(aiResponse);
+
+            return aiResponse;
+        } catch (Exception e) {
+            throw new RuntimeException("发送消息失败: " + e.getMessage());
+        }
     }
 
     @Override
