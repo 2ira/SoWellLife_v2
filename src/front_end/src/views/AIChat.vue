@@ -1,6 +1,5 @@
 # AIChat.vue
 <template>
-<!--  <div class="mt-[115px] flex h-[calc(100vh-164px)] bg-gray-100">-->
   <div class="fixed top-[120px] bottom-0 left-0 right-0 flex bg-gray-100">
     <!-- 左侧边栏 -->
 
@@ -37,7 +36,7 @@
     <!-- 右侧聊天区域 -->
     <div class="flex-1 flex flex-col">
       <!-- 聊天消息区域 -->
-      <div class="flex-1 overflow-y-auto p-4 pb-2" ref="messageContainer">
+      <div class="flex-1 overflow-y-auto p-4 pb-24" ref="messageContainer">
         <div class="max-w-3xl mx-auto space-y-4">
           <template v-if="messages.length === 0">
             <div class="flex items-center justify-center h-full"> <!-- 使用 flex 和高度充满来居中 -->
@@ -46,40 +45,7 @@
           </template>
 
           <template v-else>
-<!--            &lt;!&ndash; 消息气泡部分 &ndash;&gt;-->
-<!--            <div class="max-w-3xl mx-auto space-y-4 px-12">-->
-<!--              <div v-for="(message, index) in messages"-->
-<!--                   :key="index"-->
-<!--                   class="flex items-start gap-4 mb-6"-->
-<!--                   :class="[message.role === 'user' ? 'mr-4 justify-end' : 'ml-4 justify-start']"-->
-<!--              >-->
-<!--                &lt;!&ndash; 头像部分 &ndash;&gt;-->
-<!--                <div class="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden">-->
-<!--                  <img-->
-<!--                      :src="message.role === 'user'-->
-<!--              ? require('@/assets/imgs/icon/default-avatar.jpg')-->
-<!--              : require('@/assets/imgs/icon/ai-avatar.png')"-->
-<!--                      :alt="message.role === 'user' ? '用户头像' : 'AI头像'"-->
-<!--                      class="w-full h-full object-cover"-->
-<!--                  >-->
-<!--                </div>-->
 
-<!--                &lt;!&ndash; 消息内容部分 - 移到头像的同级 &ndash;&gt;-->
-<!--                <div class="flex flex-col max-w-[40%]">-->
-<!--                  <div class="px-4 py-3 rounded-lg"-->
-<!--                       :class="[-->
-<!--               message.role === 'user'-->
-<!--                 ? 'bg-blue-500 text-white rounded-tr-none'-->
-<!--                 : 'bg-white text-gray-800 rounded-tl-none'-->
-<!--             ]"-->
-<!--                  >-->
-<!--                    {{ message.content }}-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>-->
-
-<!--            <div class="max-w-4xl mx-auto space-y-6">-->
             <div class="max-w-6xl ml-1 mr-auto space-y-4">
               <div v-for="(message, index) in messages"
                    :key="index"
@@ -110,6 +76,27 @@
                   </div>
                 </div>
               </div>
+
+              <!-- 加载动画 -->
+              <div v-if="isLoading" class="flex items-start gap-2 mb-5">
+                <div class="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden">
+                  <img
+                      :src="require('@/assets/imgs/icon/ai-avatar.png')"
+                      alt="AI头像"
+                      class="w-full h-full object-cover"
+                  >
+                </div>
+                <div class="flex flex-col max-w-[65%]">
+                  <div class="px-6 py-4 rounded-lg bg-white text-gray-800 rounded-tl-none mr-auto">
+                    <div class="flex space-x-2">
+                      <div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+                      <div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                      <div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </template>
         </div>
@@ -144,26 +131,26 @@ import { ref, onMounted, nextTick, watch } from 'vue'
 import axios from 'axios'
 
 // 状态定义
-// const inputMessage = ref('')
 // const messages = ref([])
 // const chatSessions = ref([])
 // const currentCid = ref(null)
 // const messageContainer = ref(null)
+const isLoading = ref(false)  // 新增加载状态
 const inputMessage = ref('')
-const messages = ref([
-  // 确保每条测试消息都有 role 字段
-  {
-    content: '你好！',
-    role: 'user',
-    htime: new Date()
-  },
-  {
-    content: '你好！我是AI助手，很高兴为您服务。',
-    role: 'ai',
-    htime: new Date()
-  }
-])
-
+// const messages = ref([
+//   // 确保每条测试消息都有 role 字段
+//   {
+//     content: '你好！',
+//     role: 'user',
+//     htime: new Date()
+//   },
+//   {
+//     content: '你好！我是AI助手，很高兴为您服务。',
+//     role: 'ai',
+//     htime: new Date()
+//   }
+// ])
+const messages = ref([])
 const chatSessions = ref([
   // 测试数据，实际应从API获取
   { cid: 1, hName: '对话 1' },
@@ -273,9 +260,11 @@ async function selectChat(cid) {
 
 // 发送消息
 async function sendMessage() {
-  if (!inputMessage.value.trim() || !currentCid.value) return;
+  if (!inputMessage.value.trim() || !currentCid.value || isLoading.value) return;
+
   const messageContent = inputMessage.value;
   inputMessage.value = '';
+  isLoading.value = true;  // 开始加载
 
   // 添加用户消息
   messages.value.push({
@@ -284,21 +273,16 @@ async function sendMessage() {
     htime: new Date()
   });
 
-  // 如果没有当前会话ID，先创建新会话
-  if (!currentCid.value) {
-    try {
+  try {
+    // 如果没有当前会话ID，先创建新会话
+    if (!currentCid.value) {
       const response = await axios.post(`${API_BASE_URL}/sessions/new`, {
         uid: uid.value,
-        initialMessage: inputMessage.value
+        initialMessage: messageContent
       });
       currentCid.value = response.data;
-    } catch (error) {
-      console.error('创建新会话失败:', error);
-      return;
     }
-  }
 
-  try {
     const response = await axios.post(`${API_BASE_URL}/send`, {
       cid: parseInt(currentCid.value),
       uid: parseInt(uid.value),
@@ -322,9 +306,10 @@ async function sendMessage() {
       role: 'system',
       htime: new Date()
     });
+  } finally {
+    isLoading.value = false;  // 结束加载
+    await scrollToBottom();
   }
-
-  await scrollToBottom();
 }
 
 
@@ -361,5 +346,15 @@ watch(messages, async () => {
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: #D1D5DB;
+}
+
+/* 加载动画样式 */
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0.0) }
+  40% { transform: scale(1.0) }
+}
+
+.animate-bounce {
+  animation: bounce 1.4s infinite ease-in-out both;
 }
 </style>
