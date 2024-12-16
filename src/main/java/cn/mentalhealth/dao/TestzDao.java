@@ -1,7 +1,6 @@
 package cn.mentalhealth.dao;
 
 import cn.mentalhealth.domain.Testz;
-
 import java.util.List;
 
 public interface TestzDao {
@@ -9,13 +8,13 @@ public interface TestzDao {
     List<Testz> getAllTests();
 
     // 根据测试ID获取特定测试记录
-    Testz getTestById(int tid);
+    Testz getTestById(int Tid);
 
     // 根据用户ID获取该用户的所有测试记录
-    List<Testz> getTestsByUid(int uid);
+    List<Testz> getTestsByUid(int Uid);
 
     // 根据测试标签获取相关测试记录
-    List<Testz> getTestsByTag(String tag);
+    List<Testz> getTestsByTag(String Tag);
 
     // 插入新的测试记录
     void insertTest(Testz test);

@@ -1,21 +1,52 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : data
+ Source Server         : root
  Source Server Type    : MySQL
  Source Server Version : 80018
  Source Host           : localhost:3306
- Source Schema         : practice
+ Source Schema         : mentalhealth
 
  Target Server Type    : MySQL
  Target Server Version : 80018
  File Encoding         : 65001
 
- Date: 05/12/2024 21:10:01
+ Date: 16/12/2024 16:58:42
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for doc_information
+-- ----------------------------
+DROP TABLE IF EXISTS `doc_information`;
+CREATE TABLE `doc_information`  (
+  `doc_id` int(11) NOT NULL AUTO_INCREMENT,
+  `doc_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `doc_specialties` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `doc_profile` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
+  `doc_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `doc_hospital` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `hos_url` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `spec_symptom` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`doc_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of doc_information
+-- ----------------------------
+INSERT INTO `doc_information` VALUES (1, '陈医生', '精神科', '陈医生，北京大学第六医院，精神科，主任医师。擅长顽固性失眠、抑郁症、焦虑症、精神分裂症、妄想症、幻听幻视幻觉、神经衰弱、双相情感障碍、强迫症、精神障碍、躁狂症、恐惧症、癔症、躯体化障碍、神经官能症、植物神经紊乱、头痛头晕、睡眠障碍、心理障碍、青少年儿童心理咨询、躁郁症等精神、心理疾病的诊疗。', 'doctors/doctor1.jpg', '北京大学第六医院', 'https://m.youlai.cn/yyk/docindex/11805/doctorinfo.html', '医生', '心理疾病');
+INSERT INTO `doc_information` VALUES (2, '曹医生', '儿童病房', '副主任医师，儿童病房主任，心理学博士，擅长儿童青少年精神及心理障碍、多动症、情绪障碍、边缘型人格障碍等问题。', 'doctors/doctor2.jpg', '北京大学第六医院', 'https://www.pkuh6.cn/Html/Doctors/Main/Index_267.html', '医生', '心理疾病');
+INSERT INTO `doc_information` VALUES (3, '陈医生', '精神科', '陈医生，上海市精神卫生中心，精神科，副主任医师。擅长失眠症、强迫症、抑郁症、精神分裂症、躁狂症、恐惧症、焦虑症、幻觉幻听症、神经衰弱、失眠多梦、脑损伤、精神障碍、青少年抑郁症、双相情感障碍、疑病症、植物神经紊乱、情绪障碍心理治疗、心理干预、创伤后应激障碍等精神心理疾病的诊断与精准个性化治疗。擅于运用心理学原理疏导情绪问题、人际关系问题。', 'doctors/doctor3.jpg', '上海市精神卫生中心', 'https://www.smhc.org.cn/MedicalGuide/contents/1264/80.html', '医生', '心理疾病');
+INSERT INTO `doc_information` VALUES (4, '戴医生', '精神科', '戴医生，男，主任医师，教授，现任病区主任，本科，学士学位，担任广州医学院精神科内聘教授，《国际中华神经精神医学杂志》编委。精神分裂症，青少年抑郁症，青少年情绪障碍，抑郁症，产后抑郁症，焦虑症，双相障碍，躁狂症，强迫症，恐惧症，睡眠障碍，应激障碍，酒精以及其他物质滥用所致的精神障碍。', 'doctors/doctor4.jpg', '广州医科大学附属脑科医院', 'https://www.gzbrain.cn/myzj/info.aspx?itemid=3199&lcid=', '医生', '心理疾病');
+INSERT INTO `doc_information` VALUES (5, '卢医生', '心身医学科', '卢医生，女，江西宜春人，硕士生导师，博士在读，副主任医师，心理治疗师，擅长失眠症、神经衰弱、焦虑症、抑郁症、强迫症、恐怖症、躯体形式障碍、癔症、神经性厌食、神经性贪食、神经性呕吐、精神分裂症、心境障碍、人格障碍、性心理障碍、儿童少年期多动障碍与品行障碍、网络成瘾、躯体疾病中的心理问题、社会适应性障碍、各种心理危机（自杀倾向、工作学习问题、正常人的恋爱婚姻家庭问题、就业问题等）', 'doctors/doctor2.jpg', '南昌大学第二附属医院', 'https://www.jxndefy.cn/info/1324/11704.htm', '医生', '心理疾病');
+INSERT INTO `doc_information` VALUES (6, '周医生', '心理科', '周医生，男，空军军医大学西京医院精神卫生研究所，全军心理卫生研究中心副主任医师，临床心理医生，青少年团体治疗师，国际人际心理治疗师。擅长青少年抑郁症、网瘾、产后抑郁症、更年期抑郁症、广泛性焦虑障碍、注意缺陷多动障碍、性心理障碍、应激障碍、赌瘾、创伤后应激障碍、酒精成瘾、妄想症、边缘型人格障碍、进食障碍、神经性厌食症、惊恐障碍、神经衰弱、精神分裂症、躁狂症、洁癖、恋物癖、社交恐惧症、幽闭恐惧症、恐艾心理、躯体症状障碍、恐高症、拖延症', 'doctors/doctor2.jpg', '空军军医大学西京医院', 'https://xjwww.fmmu.edu.cn/info/1303/1894.htm', '医生', '心理疾病');
+INSERT INTO `doc_information` VALUES (7, '陈医生', '医学心理科', '陈医生，南京脑科医院医学，心理医学科，副主任医师。长期从事心理咨询的临床工作，擅长对有关焦虑症、强迫症、恐惧症、抑郁症、躁狂症、躯体形式障碍、儿童青少年心理障碍、及人格障碍的心理咨询与心理治疗。硕士。九三学社社员，南京市鼓楼区政协委员。具有临床医学、社会工作、心理学三个专业背景。', 'doctors/doctor2.jpg', '南京脑科医院', 'https://yyk.familydoctor.com.cn/doctor/190345/', '医生', '心理疾病');
+INSERT INTO `doc_information` VALUES (8, '江医生', '儿童青少年精神科', '江医生，上海市精神卫生中心，儿童青少年精神科，副主任医师。擅长学龄及学龄前注意缺陷多动障碍及其相关伴发问题的评估、诊断和治疗，发育水平及相关问题的心理评估', 'doctors/doctor2.jpg', '上海市精神卫生中心', 'https://m.youlai.cn/yyk/docindex/35871/', '医生', '心理疾病');
+INSERT INTO `doc_information` VALUES (9, '朱医生', '心理科', '朱医生，上海第十人民医院，心理科，主任医师，教授。擅长心理障碍的诊治（含性心理障碍）、精神疾病诊治（器质性精神障碍）、治疗反社会型人格障碍及自恋型人格障碍。', 'doctors/doctor2.jpg', '上海第十人民医院', 'https://www.shdsyy.com.cn/web/index.php?classid=9054&id=349&t=show', '医生', '心理疾病');
+INSERT INTO `doc_information` VALUES (10, '张医生', '精神心理科', '张医生，男，哈尔滨医科大学附属第四医院，精神心理科主任硕士研究生导师。擅长双相情感障碍、焦虑症、精神分裂症、社交焦虑障碍等的治疗', 'doctors/doctor2.jpg', '哈尔滨医科大学附属第四医院', 'https://www.hrbmu.edu.cn/xlkxyjkglzx/info/1092/1268.htm', '医生', '心理疾病');
 
 -- ----------------------------
 -- Table structure for favorite
@@ -210,7 +241,7 @@ CREATE TABLE `test`  (
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `img` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   PRIMARY KEY (`Tid`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of test
@@ -236,11 +267,13 @@ CREATE TABLE `user`  (
   `Email` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户邮箱，不为空',
   `UName` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'HelloWorld' COMMENT '用户名，不为空，默认值：HelloWorld',
   `AvatarUser` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户自定义头像，图片相对路径',
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户密码',
   PRIMARY KEY (`Uid`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
+INSERT INTO `user` VALUES (0000000001, 'example@example.com', 'HelloWorld', 'homepage/default-avatar.jpg', '123456');
 
 SET FOREIGN_KEY_CHECKS = 1;
