@@ -11,17 +11,18 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 @Configuration
 @PropertySource("classpath:application.properties")
 public class OpenAIConfig {
 
-    @Value("${openai.timeout}")
-    private Integer timeout;
+    @Value("${openai.retry-count:5}")
+    private Integer retryCount;
+
+    @Value("${openai.initial-timeout:10000}")
+    private Integer initialTimeout;
 
     @Bean
     public RestTemplate restTemplate() {
@@ -38,8 +39,8 @@ public class OpenAIConfig {
 
         // 配置请求工厂
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-        factory.setConnectTimeout(timeout * 1000);
-        factory.setReadTimeout(timeout * 1000);
+        factory.setConnectTimeout(initialTimeout);
+        factory.setReadTimeout(initialTimeout);
         restTemplate.setRequestFactory(factory);
 
         return restTemplate;

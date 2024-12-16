@@ -41,75 +41,99 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
         // 生成新的会话ID
         Integer newCid = (int) (System.currentTimeMillis() / 1000);
 
-        // 创建初始消息记录
-        ChatHistory chatHistory = new ChatHistory();
-        chatHistory.setCid(newCid);
-        chatHistory.setUid(uid);
-        chatHistory.setHtime(LocalDateTime.now());
-        chatHistory.setContent(initialMessage);
-        chatHistory.setHName(initialMessage.length() > 6 ?
-                initialMessage.substring(0, 6) : initialMessage);
-        chatHistory.setRole("user");
+        // 1. 首先插入系统指令
+        ChatHistory systemPrompt = new ChatHistory();
+        systemPrompt.setCid(newCid);
+        systemPrompt.setUid(uid);
+        systemPrompt.setHtime(LocalDateTime.now());
+        systemPrompt.setContent("你是一个AI心理健康助手，名字叫\"沙包\"，你需要尽量以温柔的语气与用户对话，因为他们大多数是来寻求心理帮助的，你要表现得尽量温和善良");
+        systemPrompt.setHName("新对话");
+        systemPrompt.setRole("system");  // 使用特殊的role标记系统指令
 
-        // 保存到数据库
-        chatHistoryDao.insertChatHistory(chatHistory);
+        chatHistoryDao.insertChatHistory(systemPrompt);
 
-        // 创建AI的自动回复
-        ChatHistory aiResponse = new ChatHistory();
-        aiResponse.setCid(newCid);
-        aiResponse.setUid(uid);
-        aiResponse.setHtime(LocalDateTime.now());
-        aiResponse.setContent("您好！我是心理AI助手沙包，很高兴为您服务。");
-        aiResponse.setHName(chatHistory.getHName());
-        aiResponse.setRole("ai");
+        // 2. 插入AI的欢迎语
+        ChatHistory welcomeMessage = new ChatHistory();
+        welcomeMessage.setCid(newCid);
+        welcomeMessage.setUid(uid);
+        welcomeMessage.setHtime(LocalDateTime.now());
+        welcomeMessage.setContent("你好！我是AI心理助手\"沙包\"，很高兴和你一起聊天😊");
+        welcomeMessage.setHName("新对话");
+        welcomeMessage.setRole("ai");
 
-        chatHistoryDao.insertChatHistory(aiResponse);
+        chatHistoryDao.insertChatHistory(welcomeMessage);
+
+        // 3. 如果有初始消息，则创建用户的消息记录
+        if (initialMessage != null && !initialMessage.trim().isEmpty()) {
+            ChatHistory userMessage = new ChatHistory();
+            userMessage.setCid(newCid);
+            userMessage.setUid(uid);
+            userMessage.setHtime(LocalDateTime.now());
+            userMessage.setContent(initialMessage);
+            userMessage.setHName(initialMessage.length() > 6 ?
+                    initialMessage.substring(0, 6) : initialMessage);
+            userMessage.setRole("user");
+
+            chatHistoryDao.insertChatHistory(userMessage);
+        }
 
         return newCid;
     }
 
     @Override
-    public ChatHistory sendMessage(Integer cid, Integer uid, String message) {
+    public ChatHistory sendMessage(Integer cid, Integer uid, String message, Boolean shouldSave) {
         try {
-            List<ChatHistory> chatHistory = getChatHistoryByCid(cid);
+            // 获取AI响应
+            String aiReply = aiService.getAIResponse(cid, message);
 
-            // 创建用户消息
-            ChatHistory userMessage = new ChatHistory();
-            userMessage.setCid(cid);
-            userMessage.setUid(uid);
-            userMessage.setHtime(LocalDateTime.now());
-            userMessage.setContent(message);
-
-            String chatName;
-            if (chatHistory.isEmpty()) {
-                chatName = message.length() > 6 ? message.substring(0, 6) : message;
-            } else {
-                chatName = chatHistory.get(0).getHName();
+            // 如果是错误消息，直接返回但不保存
+            if (aiReply.equals("沙包出了点小问题，后面再试试吧~😀")) {
+                ChatHistory errorResponse = new ChatHistory();
+                errorResponse.setContent(aiReply);
+                errorResponse.setRole("ai");
+                return errorResponse;
             }
-            userMessage.setHName(chatName);
-            userMessage.setRole("user");
 
-            chatHistoryDao.insertChatHistory(userMessage);
+            // 只有在需要保存且不是错误消息时才保存到数据库
+            if (shouldSave) {
+                // 保存用户消息
+                ChatHistory userMessage = new ChatHistory();
+                userMessage.setCid(cid);
+                userMessage.setUid(uid);
+                userMessage.setHtime(LocalDateTime.now());
+                userMessage.setContent(message);
+                userMessage.setRole("user");
 
-            // 获取 AI 响应
-            String aiReply = aiService.getAIResponse(message);
+                ChatHistory existingChat = chatHistoryDao.getLastMessageByCid(cid);
+                String chatName = existingChat != null ? existingChat.getHName() :
+                        (message.length() > 6 ? message.substring(0, 6) : message);
+                userMessage.setHName(chatName);
 
-            // 创建 AI 响应
-            ChatHistory aiResponse = new ChatHistory();
-            aiResponse.setCid(cid);
-            aiResponse.setUid(uid);
-            aiResponse.setHtime(LocalDateTime.now());
-            aiResponse.setContent(aiReply);
-            aiResponse.setHName(chatName);
-            aiResponse.setRole("ai");
+                chatHistoryDao.insertChatHistory(userMessage);
 
-            chatHistoryDao.insertChatHistory(aiResponse);
+                // 保存AI响应
+                ChatHistory aiResponse = new ChatHistory();
+                aiResponse.setCid(cid);
+                aiResponse.setUid(uid);
+                aiResponse.setHtime(LocalDateTime.now());
+                aiResponse.setContent(aiReply);
+                aiResponse.setHName(chatName);
+                aiResponse.setRole("ai");
 
-            return aiResponse;
+                chatHistoryDao.insertChatHistory(aiResponse);
+                return aiResponse;
+            } else {
+                // 不保存到数据库，只返回响应
+                ChatHistory aiResponse = new ChatHistory();
+                aiResponse.setContent(aiReply);
+                aiResponse.setRole("ai");
+                return aiResponse;
+            }
         } catch (Exception e) {
             throw new RuntimeException("发送消息失败: " + e.getMessage());
         }
     }
+
 
     @Override
     public void deleteChatSession(Integer cid) {

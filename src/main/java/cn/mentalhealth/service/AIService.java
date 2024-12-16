@@ -3,5 +3,5 @@
 package cn.mentalhealth.service;
 
 public interface AIService {
-    String getAIResponse(String userMessage);
+    String getAIResponse(Integer cid, String userMessage);  // 修改接口方法
 }

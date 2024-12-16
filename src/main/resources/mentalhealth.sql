@@ -46,7 +46,7 @@ CREATE TABLE `history`  (
   `Htime` datetime NOT NULL COMMENT '对话时间',
   `Content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '对话内容',
   `HName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '会话名称，默认是问题的前6个字符，用户可修改',
-  `Role` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '角色，ai或者用户',
+  `Role` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '角色，ai或者用户或者System',
   PRIMARY KEY (`Hid`) USING BTREE,
   INDEX `fk_uid`(`Uid` ASC) USING BTREE,
   CONSTRAINT `fk_uid` FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`) ON DELETE RESTRICT ON UPDATE RESTRICT

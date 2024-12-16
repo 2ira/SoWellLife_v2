@@ -1,3 +1,4 @@
+// main/java/cn/mentalhealth/dao/ChatHistoryDaoImpl.java
 package cn.mentalhealth.dao;
 
 import cn.mentalhealth.domain.ChatHistory;

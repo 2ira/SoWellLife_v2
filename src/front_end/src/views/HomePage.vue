@@ -75,129 +75,120 @@
   </div>
 </template>
 
-<script>
-  import AppNavbar from '@/components/AppNavbar.vue';
-  import HomeCarousel from "@/components/HomeCarousel.vue";
-  import ResourceCard from "@/components/ResourceCard.vue";
-  import TestCard from "@/components/TestCard.vue";
-  import DoctorCard from "@/components/DoctorCard.vue";
-  
-  export default {
-    name: "HomePage",
-    methods: {
-      goToResources(type) {
-        if (type === 'video') {
-          this.$router.push('/resources/video');
-        } else if (type === 'article') {
-          this.$router.push('/resources/article');
-        } else {
-          this.$router.push('/resources/video');
-        }
-      }
-    },
-    components: {
-      AppNavbar,
-      HomeCarousel,
-      ResourceCard,
-      TestCard,
-      DoctorCard
-    
-  },
+<script setup>
+  import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
+  import AppNavbar from '@/components/AppNavbar.vue'
+  import HomeCarousel from "@/components/HomeCarousel.vue"
+  import ResourceCard from "@/components/ResourceCard.vue"
+  import TestCard from "@/components/TestCard.vue"
+  import DoctorCard from "@/components/DoctorCard.vue"
 
-  data() {
-    return {
-      carouselItems: [
-        {
-          id: 1,
-          image: require('@/assets/imgs/resources/ppd.jpg'),
-          title: 'Why Is It Still So Hard To Diagnose Adult ADHD?',
-          category: 'HEALTH NEWS',
-          author: 'By hhh'
-        },
-        {
-          id: 2,
-          image: require('@/assets/imgs/resources/schizotypal.jpg'),
-          title: 'Why Is It Still So Hard To Diagnose Adult ADHD?',
-          category: 'HEALTH NEWS',
-          author: 'By hhhh'
-        },       
-      ],
-      resources: [
-        {
-          id: 1,
-          title: 'New Guidelines May Help Lower Your Stroke Risk: Key Updates You Need to Know',
-          author: 'By hhhhh',
-          time: '15 hours ago'
-        },
-        {
-          id: 2,
-          title: 'This Simple Tip Can Help You Adjust to the Daylight Saving Time Change',
-          author: 'By hhhhh',
-          time: '19 hours ago'
-        },
-        {
-          id: 3,
-          title: 'This Simple Tip Can Help You Adjust to the Daylight Saving Time Change',
-          author: 'By Stephanie Brown',
-          time: '19 hours ago'
-        },
-        {
-          id: 4,
-          title: 'This Simple Tip Can Help You Adjust to the Daylight Saving Time Change',
-          author: 'By Stephanie Brown',
-          time: '19 hours ago'
-        },
-      ],
-      tests: [
-        {
-          id: 1,
-          image: require('@/assets/imgs/tests/ocd.jpg'),
-          title: '强迫症 OCD'
-        },
-        {
-          id: 2,
-          image: require('@/assets/imgs/tests/bipolar.jpg'),
-          title: '双相情感障碍 Bipolar Disorder'
-        },
-        {
-          id: 3,
-          image: require('@/assets/imgs/tests/depression.jpg'),
-          title: '抑郁症 Depression'
-        }
-      ],
-      doctors: [
-        {
-          id: 1,
-          image: require('@/assets/imgs/doctors/doctor1.jpg'),
-          name: '陈医生',
-          hospital: '中大五院',
-          description: '精神科医生，擅长精神病学、精神分裂症、抑郁症、强迫症、躁狂症等精神疾病的治疗。'
-        },
-        {
-          id: 2,
-          image: require('@/assets/imgs/doctors/doctor2.jpg'),
-          name: '苏医生',
-          hospital: '中大三院',
-          description: '精神科医生，擅长精神病学、精神分裂症、抑郁症、强迫症、躁狂症等精神疾病的治疗。'
-        },
-        {
-          id: 3,
-          image: require('@/assets/imgs/doctors/doctor3.jpg'),
-          name: '李医生',
-          hospital: '中大四院',
-          description: '精神科医生，擅长精神病学、精神分裂症、抑郁症、强迫症、躁狂症等精神疾病的治疗。'
-        },
-        {
-          id: 4,
-          image: require('@/assets/imgs/doctors/doctor4.jpg'),
-          name: '唐医生',
-          hospital: '中大三院',
-          description: '精神科医生，擅长精神病学、精神分裂症、抑郁症、强迫症、躁狂症等精神疾病的治疗。'
-        }
-      ]
+  const router = useRouter()
+  // 方法
+  const goToResources = (type) => {
+    if (type === 'video') {
+      router.push('/resources/video')
+    } else if (type === 'article') {
+      router.push('/resources/article')
+    } else {
+      router.push('/resources/video')
     }
   }
-}
+
+  // 数据
+  const carouselItems = ref([
+    {
+      id: 1,
+      image: require('@/assets/imgs/resources/ppd.jpg'),
+      title: 'Why Is It Still So Hard To Diagnose Adult ADHD?',
+      category: 'HEALTH NEWS',
+      author: 'By hhh'
+    },
+    {
+      id: 2,
+      image: require('@/assets/imgs/resources/schizotypal.jpg'),
+      title: 'Why Is It Still So Hard To Diagnose Adult ADHD?',
+      category: 'HEALTH NEWS',
+      author: 'By hhhh'
+    },
+  ])
+
+  const resources = ref([
+    {
+      id: 1,
+      title: 'New Guidelines May Help Lower Your Stroke Risk: Key Updates You Need to Know',
+      author: 'By hhhhh',
+      time: '15 hours ago'
+    },
+    {
+      id: 2,
+      title: 'This Simple Tip Can Help You Adjust to the Daylight Saving Time Change',
+      author: 'By hhhhh',
+      time: '19 hours ago'
+    },
+    {
+      id: 3,
+      title: 'This Simple Tip Can Help You Adjust to the Daylight Saving Time Change',
+      author: 'By Stephanie Brown',
+      time: '19 hours ago'
+    },
+    {
+      id: 4,
+      title: 'This Simple Tip Can Help You Adjust to the Daylight Saving Time Change',
+      author: 'By Stephanie Brown',
+      time: '19 hours ago'
+    },
+  ])
+
+  const tests = ref([
+    {
+      id: 1,
+      image: require('@/assets/imgs/tests/ocd.jpg'),
+      title: '强迫症 OCD'
+    },
+    {
+      id: 2,
+      image: require('@/assets/imgs/tests/bipolar.jpg'),
+      title: '双相情感障碍 Bipolar Disorder'
+    },
+    {
+      id: 3,
+      image: require('@/assets/imgs/tests/depression.jpg'),
+      title: '抑郁症 Depression'
+    }
+  ])
+
+  const doctors = ref([
+    {
+      id: 1,
+      image: require('@/assets/imgs/doctors/doctor1.jpg'),
+      name: '陈医生',
+      hospital: '中大五院',
+      description: '精神科医生，擅长精神病学、精神分裂症、抑郁症、强迫症、躁狂症等精神疾病的治疗。'
+    },
+    {
+      id: 2,
+      image: require('@/assets/imgs/doctors/doctor2.jpg'),
+      name: '苏医生',
+      hospital: '中大三院',
+      description: '精神科医生，擅长精神病学、精神分裂症、抑郁症、强迫症、躁狂症等精神疾病的治疗。'
+    },
+    {
+      id: 3,
+      image: require('@/assets/imgs/doctors/doctor3.jpg'),
+      name: '李医生',
+      hospital: '中大四院',
+      description: '精神科医生，擅长精神病学、精神分裂症、抑郁症、强迫症、躁狂症等精神疾病的治疗。'
+    },
+    {
+      id: 4,
+      image: require('@/assets/imgs/doctors/doctor4.jpg'),
+      name: '唐医生',
+      hospital: '中大三院',
+      description: '精神科医生，擅长精神病学、精神分裂症、抑郁症、强迫症、躁狂症等精神疾病的治疗。'
+    }
+  ])
 </script>
 
   

@@ -11,7 +11,21 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import cn.mentalhealth.dao.ChatHistoryDao;
+import cn.mentalhealth.domain.ChatHistory;
+import cn.mentalhealth.utils.JDBCUtils;
+import org.springframework.stereotype.Repository;  // 添加这个导入
+import org.springframework.beans.factory.annotation.Autowired;
+import javax.sql.DataSource;  // 如果你使用 Spring 的数据源管理
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+@Repository
 public class ChatHistoryDaoImpl implements ChatHistoryDao {
 
     @Override

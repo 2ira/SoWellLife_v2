@@ -4,10 +4,46 @@
     <!-- 左侧边栏 -->
 
     <div class="w-64 bg-white border-r border-gray-200 flex flex-col">
-      <!-- 对话列表 -->
+
+      <!-- AI头像和名称 -->
+      <div class="p-4 flex items-center">
+        <div class="w-12 h-12 rounded-full overflow-hidden">
+          <img
+              :src="require('@/assets/imgs/icon/ai-avatar.svg')"
+              alt="AI头像"
+              class="w-full h-full object-cover"
+          >
+        </div>
+        <span class="ml-3 text-lg font-bold text-gray-900">沙包</span>
+      </div>
+
+      <!-- 分割线 -->
+      <div class="h-px bg-gray-200 mx-4"></div>
+
+
+      <!-- 对话列表区域 -->
       <div class="flex-1 overflow-y-auto">
-        <div class="px-4 py-2 text-base font-medium text-gray-1000">最近对话</div>
-        <div class="space-y-1 px-2">
+        <!-- 最近对话标题和折叠按钮 -->
+        <div
+            class="px-4 py-2 flex items-center justify-between cursor-pointer hover:bg-gray-50"
+            @click="toggleChatList"
+        >
+          <div class="flex items-center">
+            <span class="mr-2">💬</span>
+            <span class="text-base font-medium text-gray-900">最近对话</span>
+          </div>
+          <svg
+              class="w-4 h-4 text-gray-500 transform transition-transform duration-200"
+              :class="{'rotate-90': !isChatListCollapsed}"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+          >
+            <path fill-rule="evenodd" d="M7.293 4.293a1 1 0 011.414 0L14.414 10l-5.707 5.707a1 1 0 01-1.414-1.414L11.586 10 7.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </div>
+
+        <!-- 对话列表 -->
+        <div v-show="!isChatListCollapsed" class="space-y-1 px-2">
           <button
               v-for="chat in chatSessions"
               :key="chat.cid"
@@ -19,6 +55,23 @@
           </button>
         </div>
       </div>
+
+
+<!--      &lt;!&ndash; 对话列表 &ndash;&gt;-->
+<!--      <div class="flex-1 overflow-y-auto">-->
+<!--        <div class="px-4 py-2 text-base font-medium text-gray-1000">最近对话</div>-->
+<!--        <div class="space-y-1 px-2">-->
+<!--          <button-->
+<!--              v-for="chat in chatSessions"-->
+<!--              :key="chat.cid"-->
+<!--              @click="selectChat(chat.cid)"-->
+<!--              class="w-full px-4 py-3 text-left rounded-lg hover:bg-gray-100 text-base"-->
+<!--              :class="{'bg-blue-50 text-blue-600': currentCid === chat.cid}"-->
+<!--          >-->
+<!--            {{ chat.hName || '新对话' }}-->
+<!--          </button>-->
+<!--        </div>-->
+<!--      </div>-->
 
       <!-- 新建对话按钮固定在底部 -->
       <div class="p-4 border-t border-gray-200">
@@ -36,16 +89,19 @@
     <!-- 右侧聊天区域 -->
     <div class="flex-1 flex flex-col">
       <!-- 聊天消息区域 -->
-      <div class="flex-1 overflow-y-auto p-4 pb-24" ref="messageContainer">
+      <div class="flex-1 overflow-y-auto p-4 pb-24 relative" ref="messageContainer">
         <div class="max-w-3xl mx-auto space-y-4">
-          <template v-if="messages.length === 0">
-            <div class="flex items-center justify-center h-full"> <!-- 使用 flex 和高度充满来居中 -->
-              <p class="text-2xl text-gray-500 font-medium">开始新的对话吧！</p> <!-- 调整字体大小和粗细 -->
-            </div>
+<!--          <template v-if="messages.length === 0">-->
+<!--            <div class="absolute inset-0 flex items-center justify-center"> &lt;!&ndash; 使用 flex 和高度充满来居中 &ndash;&gt;-->
+<!--              <p class="text-2xl text-gray-500 font-medium">开始新的对话吧！</p> &lt;!&ndash; 调整字体大小和粗细 &ndash;&gt;-->
+<!--            </div>-->
+<!--          </template>-->
+          <template v-if="showWelcome">
+            <!-- 使用 React 组件作为欢迎界面 -->
+            <WelcomeAnimation />
           </template>
 
           <template v-else>
-
             <div class="max-w-6xl ml-1 mr-auto space-y-4">
               <div v-for="(message, index) in messages"
                    :key="index"
@@ -57,7 +113,7 @@
                   <img
                       :src="message.role === 'user'
           ? require('@/assets/imgs/icon/default-avatar.jpg')
-          : require('@/assets/imgs/icon/ai-avatar.png')"
+          : require('@/assets/imgs/icon/ai-avatar.svg')"
                       :alt="message.role === 'user' ? '用户头像' : 'AI头像'"
                       class="w-full h-full object-cover"
                   >
@@ -81,7 +137,7 @@
               <div v-if="isLoading" class="flex items-start gap-2 mb-5">
                 <div class="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden">
                   <img
-                      :src="require('@/assets/imgs/icon/ai-avatar.png')"
+                      :src="require('@/assets/imgs/icon/ai-avatar.svg')"
                       alt="AI头像"
                       class="w-full h-full object-cover"
                   >
@@ -129,36 +185,21 @@
 <script setup>
 import { ref, onMounted, nextTick, watch } from 'vue'
 import axios from 'axios'
+import WelcomeAnimation from '@/components/WelcomeAnimation.vue' // 导入欢迎动画组件
 
 // 状态定义
-// const messages = ref([])
-// const chatSessions = ref([])
-// const currentCid = ref(null)
-// const messageContainer = ref(null)
+
+const showWelcome = ref(true)  // 新增：控制是否显示欢迎界面
+
 const isLoading = ref(false)  // 新增加载状态
 const inputMessage = ref('')
-// const messages = ref([
-//   // 确保每条测试消息都有 role 字段
-//   {
-//     content: '你好！',
-//     role: 'user',
-//     htime: new Date()
-//   },
-//   {
-//     content: '你好！我是AI助手，很高兴为您服务。',
-//     role: 'ai',
-//     htime: new Date()
-//   }
-// ])
+
 const messages = ref([])
-const chatSessions = ref([
-  // 测试数据，实际应从API获取
-  { cid: 1, hName: '对话 1' },
-  { cid: 2, hName: '对话 2' }
-])
+const chatSessions = ref([])
 const currentCid = ref(null)
 const messageContainer = ref(null)
-
+// 添加折叠状态控制
+const isChatListCollapsed = ref(false)
 
 // 从本地存储获取用户ID，实际应用中应该从用户认证系统获取
 const uid = ref(parseInt(localStorage.getItem('userId')) || 1)
@@ -171,7 +212,10 @@ onMounted(async () => {
   await loadChatSessions()
 })
 
-
+// 切换折叠状态的函数
+const toggleChatList = () => {
+  isChatListCollapsed.value = !isChatListCollapsed.value
+}
 
 // 在 <script setup> 的顶部添加
 axios.defaults.baseURL = 'http://localhost:8080'; // 替换为你的后端服务地址
@@ -206,11 +250,6 @@ async function loadChatSessions() {
     }
   } catch (error) {
     console.error('Failed to load chat sessions:', error)
-    // 使用测试数据
-    chatSessions.value = [
-      { cid: 1, hName: '测试对话 1' },
-      { cid: 2, hName: '测试对话 2' }
-    ]
   }
 }
 
@@ -219,7 +258,6 @@ async function createNewChat() {
   try {
     const response = await axios.post(`${API_BASE_URL}/sessions/new`, {
       uid: uid.value,
-      initialMessage: "开始新的对话"
     })
     const newCid = response.data
     await loadChatSessions()
@@ -239,23 +277,24 @@ async function createNewChat() {
 // 选择会话
 // 在选择会话的函数中也确保数据格式正确
 async function selectChat(cid) {
-  currentCid.value = cid
+  showWelcome.value = false;
+  currentCid.value = cid;
   try {
-    const response = await axios.get(`${API_BASE_URL}/messages/${cid}`)
-    // 确保每条消息都有 role 字段
-    messages.value = response.data.map(msg => ({
-      ...msg,
-      role: msg.role || 'ai' // 如果没有 role 字段，默认设置为 'ai'
-    }))
+    const response = await axios.get(`${API_BASE_URL}/messages/${cid}`);
+    // 过滤掉系统指令消息
+    messages.value = response.data
+        .filter(msg => msg.role !== 'system')
+        .map(msg => ({
+          ...msg,
+          role: msg.role || 'ai'
+        }));
   } catch (error) {
-    console.error('Failed to load chat messages:', error)
-    // 测试数据也要包含 role
+    console.error('Failed to load chat messages:', error);
     messages.value = [
-      { content: '你好！', role: 'user', htime: new Date() },
-      { content: '你好！我是AI助手，很高兴为您服务。', role: 'ai', htime: new Date() }
-    ]
+      { content: '你好！我是AI心理助手"沙包"，很高兴和你一起聊天😊', role: 'ai', htime: new Date() }
+    ];
   }
-  await scrollToBottom()
+  await scrollToBottom();
 }
 
 // 发送消息
@@ -264,54 +303,74 @@ async function sendMessage() {
 
   const messageContent = inputMessage.value;
   inputMessage.value = '';
-  isLoading.value = true;  // 开始加载
+  isLoading.value = true;
 
-  // 添加用户消息
-  messages.value.push({
+  // 先在界面上显示用户消息，但不保存到数据库
+  const userMessage = {
     content: messageContent,
     role: 'user',
-    htime: new Date()
-  });
+    htime: new Date(),
+    tempId: Date.now() // 添加临时ID用于标识
+  };
+  messages.value.push(userMessage);
 
-  try {
-    // 如果没有当前会话ID，先创建新会话
-    if (!currentCid.value) {
-      const response = await axios.post(`${API_BASE_URL}/sessions/new`, {
-        uid: uid.value,
-        initialMessage: messageContent
+  // 重试相关变量
+  const maxRetries = 5;
+  let currentTry = 0;
+  let success = false;
+
+  while (currentTry < maxRetries && !success) {
+    try {
+      // 如果没有当前会话ID，先创建新会话
+      if (!currentCid.value) {
+        const response = await axios.post(`${API_BASE_URL}/sessions/new`, {
+          uid: uid.value,
+          initialMessage: messageContent
+        });
+        currentCid.value = response.data;
+      }
+      showWelcome.value = false; // 发送消息时隐藏欢迎界面
+      const response = await axios.post(`${API_BASE_URL}/send`, {
+        cid: parseInt(currentCid.value),
+        uid: parseInt(uid.value),
+        content: messageContent,
+        shouldSave: currentTry === 0 // 只在第一次尝试时设置为保存
       });
-      currentCid.value = response.data;
-    }
 
-    const response = await axios.post(`${API_BASE_URL}/send`, {
-      cid: parseInt(currentCid.value),
-      uid: parseInt(uid.value),
-      content: messageContent
-    });
+      if (response.data && response.data.content) {
+        // AI回复成功，删除临时消息标记
+        userMessage.tempId = null;
 
-    if (response.data && response.data.content) {
-      messages.value.push({
-        content: response.data.content,
-        role: 'ai',
-        htime: new Date()
-      });
-    } else {
-      throw new Error('无效的响应数据');
+        messages.value.push({
+          content: response.data.content,
+          role: 'ai',
+          htime: new Date()
+        });
+        success = true;
+      } else {
+        throw new Error('无效的响应数据');
+      }
+    } catch (error) {
+      console.error(`第 ${currentTry + 1} 次尝试失败:`, error);
+      currentTry++;
+
+      if (currentTry === maxRetries) {
+        // 所有重试都失败，添加错误消息，保留用户消息但不存数据库
+        messages.value.push({
+          content: "沙包出了点小问题，后面再试试吧~😀",
+          role: 'ai',
+          htime: new Date(),
+          isError: true // 标记为错误消息
+        });
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 1000 * currentTry));
+      }
     }
-  } catch (error) {
-    console.error('发送消息失败:', error);
-    const errorMessage = error.response?.data?.message || error.message || '服务器错误';
-    messages.value.push({
-      content: `消息发送失败：${errorMessage}`,
-      role: 'system',
-      htime: new Date()
-    });
-  } finally {
-    isLoading.value = false;  // 结束加载
-    await scrollToBottom();
   }
-}
 
+  isLoading.value = false;
+  await scrollToBottom();
+}
 
 
 // 滚动到底部
@@ -356,5 +415,10 @@ watch(messages, async () => {
 
 .animate-bounce {
   animation: bounce 1.4s infinite ease-in-out both;
+}
+
+/* 添加过渡效果 */
+.rotate-90 {
+  transform: rotate(90deg);
 }
 </style>
