@@ -53,7 +53,7 @@ onMounted(() => {
 <style scoped>
 .welcome-container {
   position: absolute;
-  top: 50%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
@@ -80,14 +80,14 @@ onMounted(() => {
 
 .first-line {
   font-family: -apple-system, "SF Pro SC", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
-  font-weight: 500;
+  font-weight: 600;
   color: #1a365d;
   animation-delay: 0.2s;
 }
 
 .second-line {
   font-family: -apple-system, "SF Pro SC", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
-  font-weight: 400;
+  font-weight: 500;
   color: #2c5282;
   animation-delay: 0.4s;
 }

@@ -25,13 +25,25 @@
       <div class="flex-1 overflow-y-auto">
         <!-- 最近对话标题和折叠按钮 -->
         <div
-            class="px-4 py-2 flex items-center justify-between cursor-pointer hover:bg-gray-50"
+            class="px-7 py-2 flex items-center justify-between cursor-pointer hover:bg-gray-50"
             @click="toggleChatList"
         >
+
           <div class="flex items-center">
-            <span class="mr-2">💬</span>
+  <span class="mr-4">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+          d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.8214 2.48697 15.5291 3.33782 17L2.5 21.5L7 20.6622C8.47087 21.513 10.1786 22 12 22Z"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+      />
+    </svg>
+  </span>
             <span class="text-base font-medium text-gray-900">最近对话</span>
           </div>
+
           <svg
               class="w-4 h-4 text-gray-500 transform transition-transform duration-200"
               :class="{'rotate-90': !isChatListCollapsed}"
@@ -57,21 +69,6 @@
       </div>
 
 
-<!--      &lt;!&ndash; 对话列表 &ndash;&gt;-->
-<!--      <div class="flex-1 overflow-y-auto">-->
-<!--        <div class="px-4 py-2 text-base font-medium text-gray-1000">最近对话</div>-->
-<!--        <div class="space-y-1 px-2">-->
-<!--          <button-->
-<!--              v-for="chat in chatSessions"-->
-<!--              :key="chat.cid"-->
-<!--              @click="selectChat(chat.cid)"-->
-<!--              class="w-full px-4 py-3 text-left rounded-lg hover:bg-gray-100 text-base"-->
-<!--              :class="{'bg-blue-50 text-blue-600': currentCid === chat.cid}"-->
-<!--          >-->
-<!--            {{ chat.hName || '新对话' }}-->
-<!--          </button>-->
-<!--        </div>-->
-<!--      </div>-->
 
       <!-- 新建对话按钮固定在底部 -->
       <div class="p-4 border-t border-gray-200">
