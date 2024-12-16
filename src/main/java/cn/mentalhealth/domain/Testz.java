@@ -1,13 +1,12 @@
 package cn.mentalhealth.domain;
 
-import java.time.LocalDateTime;
-
 public class Testz {
     private int Tid;
-    private int Uid;
-    private LocalDateTime Time;
     private String Tag;
-    private String Result;
+    private String title;
+    private String description;
+    private String img;
+    private String url;
 
     public Testz() {
     }
@@ -21,26 +20,7 @@ public class Testz {
         this.Tid = Tid;
     }
 
-    public int getUid() {
-        return Uid;
-    }
-
-    public void setUid(int Uid) {
-        this.Uid = Uid;
-    }
-
-    public LocalDateTime getTime() {
-        return Time;
-    }
-
-    public void setTime(LocalDateTime Time) {
-        this.Time = Time;
-    }
-
     public String getTag() {
-        if (Tag == null) {
-            Tag = "";
-        }
         return Tag;
     }
 
@@ -48,14 +28,35 @@ public class Testz {
         this.Tag = Tag;
     }
 
-    public String getResult() {
-        if (Result == null) {
-            Result = "";
-        }
-        return Result;
+    public String getTitle() {
+        return title;
     }
 
-    public void setResult(String Result) {
-        this.Result = Result;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
