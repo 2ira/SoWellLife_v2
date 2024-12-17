@@ -5,7 +5,7 @@ public class User {
     private String Email;
     private String UName;
     private String AvatarUser;
-
+    private String UserPSW;
     public User() {
     }
 
@@ -40,5 +40,11 @@ public class User {
 
     public void setAvatarUser(String AvatarUser) {
         this.AvatarUser = AvatarUser;
+    }
+    public void setUserPSW(String UserPSW){
+        this.UserPSW=UserPSW;
+    }
+    public String getUserPSW(){
+        return this.UserPSW;
     }
 }

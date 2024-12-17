@@ -28,6 +28,7 @@ public class UserDaoImpl implements UserDao {
                 user.setEmail(resultSet.getString("Email"));
                 user.setUName(resultSet.getString("UName"));
                 user.setAvatarUser(resultSet.getString("AvatarUser"));
+                user.setUserPSW(resultSet.getString("UserPSW"));
                 userList.add(user);
             }
         } catch (SQLException e) {
@@ -49,6 +50,7 @@ public class UserDaoImpl implements UserDao {
                     user.setEmail(resultSet.getString("Email"));
                     user.setUName(resultSet.getString("UName"));
                     user.setAvatarUser(resultSet.getString("AvatarUser"));
+                    user.setUserPSW(resultSet.getString("UserPSW"));
                 }
             }
         } catch (SQLException e) {
@@ -70,6 +72,7 @@ public class UserDaoImpl implements UserDao {
                     user.setEmail(resultSet.getString("Email"));
                     user.setUName(resultSet.getString("UName"));
                     user.setAvatarUser(resultSet.getString("AvatarUser"));
+                    user.setUserPSW(resultSet.getString("UserPSW"));
                 }
             }
         } catch (SQLException e) {
@@ -80,12 +83,13 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void insertUser(User user) {
-        String sql = "INSERT INTO user (Email, UName, AvatarUser) VALUES (?,?,?)";
+        String sql = "INSERT INTO user (Email, UName, AvatarUser,UserPSW) VALUES (?,?,?,?)";
         try (Connection connection = jdbcUtils.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, user.getEmail());
             preparedStatement.setString(2, user.getUName());
             preparedStatement.setString(3, user.getAvatarUser());
+            preparedStatement.setString(4, user.getUserPSW());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -94,12 +98,13 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void updateUser(User user, String condition) {
-        String sql = "UPDATE user SET Email =?, UName =?, AvatarUser =? WHERE " + condition;
+        String sql = "UPDATE user SET Email =?, UName =?, AvatarUser =? ,UserPSW=?WHERE " + condition;
         try (Connection connection = jdbcUtils.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, user.getEmail());
             preparedStatement.setString(2, user.getUName());
             preparedStatement.setString(3, user.getAvatarUser());
+            preparedStatement.setString(4, user.getUserPSW());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

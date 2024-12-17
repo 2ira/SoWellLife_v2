@@ -1,23 +1,30 @@
 <template>
   <div class="home-container">
+    <!-- 错误信息显示 -->
+    <div v-if="isLoading" class="loading-message">加载中...</div>
+    <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
     <div class="caption">
-      <span class="s1">医师介绍</span> <span class="s2">共8名医生</span>
+      <span class="s1">医师介绍</span> <span class="s2">共{{ doctors.length }}名医生</span>
     </div>
     <section class="doctors">
       <div class="doctors-content">
         <div class="doctor-grid">
-          <div class="item" v-for="doctor in doctors" :key="doctor.id">
-            <a :href="`/doctor_detail`" target="_blank">
+          <!-- 渲染医生信息 -->
+          <div class="item" v-for="doctor in doctors" :key="doctor.docId">
+            <!-- 使用 router-link 来实现跳转并传递 doc_id -->
+            <router-link :to="`/doctor_detail?doc_id=${doctor.docId}`">
               <div class="doctor-avatar-wrapper">
-                <img :src="doctor.image" alt="" class="doctor-avatar" />
+                <img :src="require(`@/assets/imgs/${doctor.docImage}`)" alt="医生头像" class="doctor-avatar" />
+
                 <div class="info">
                   <div class="inline">
-                    <div class="h2">{{ doctor.name }}</div>
+                    <div class="h2">{{ doctor.docName }}</div>
                     <div class="p">{{ doctor.title }}</div>
                   </div>
                 </div>
               </div>
-            </a>
+            </router-link>
           </div>
         </div>
       </div>
@@ -25,39 +32,40 @@
   </div>
 </template>
 
+
 <script>
+import axios from 'axios';
+
 export default {
-  name: "DoctorPage",
+  name: 'DoctorPage',
   data() {
     return {
-      doctors: [
-        {
-          id: 1,
-          image: require('@/assets/imgs/doctors/doctor1.jpg'),
-          name: '杜斌',
-          title: '副院长 教授 主任医师 博士研究生导师',
-        },
-        {
-          id: 2,
-          image: require('@/assets/imgs/doctors/doctor2.jpg'),
-          name: '翁利',
-          title: 'MICU主任 主任医师 博士研究生导师 Professor',
-        },
-        {
-          id: 3,
-          image: require('@/assets/imgs/doctors/doctor3.jpg'),
-          name: '胡小芸',
-          title: '副主任医师',
-        },
-        {
-          id: 4,
-          image: require('@/assets/imgs/doctors/doctor4.jpg'),
-          name: '彭劲民',
-          title: '副教授 副主任医师 硕士研究生导师',
-        },
-      ],
+      doctors: [],           // 存储医生数据
+      isLoading: true,       // 加载状态
+      errorMessage: '',      // 错误信息
     };
   },
+  mounted() {
+    this.loadDoctors();     // 组件挂载后加载医生数据
+  },
+  methods: {
+    // 方法：加载医生数据
+    loadDoctors() {
+      axios
+          .get('http://localhost:8080/api/doc_information/all')  // 获取所有医生信息的接口
+          .then((response) => {
+            console.log('API 返回的数据:', response.data);  // 打印返回的数据
+            this.doctors = response.data;    // 更新医生数据
+            console.log('加载的医生数据:', this.doctors);  // 打印医生数据
+            this.isLoading = false;           // 数据加载完成
+          })
+          .catch((error) => {
+            console.error('获取医生数据出错：', error);
+            this.errorMessage = '无法加载医生数据，请稍后重试。'; // 设置错误信息
+            this.isLoading = false;  // 错误时更新加载状态
+          });
+    }
+  }
 };
 </script>
 
@@ -70,19 +78,18 @@ export default {
 }
 
 .caption {
-  font-size: 1.5rem; /* 大标题字体大小 */
-  margin-bottom: 2rem; /* 标题与医生列表之间的间距 */
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .s1 {
-  font-weight: bold; /* 大标题加粗 */
+  font-weight: bold;
 }
 
 .s2 {
-  font-size: 0.9rem; /* 小标题字体缩小 */
-  color: #666; /* 小标题颜色 */
+  font-size: 0.9rem;
+  color: #666;
 }
-
 
 .doctor-grid {
   display: grid;
@@ -93,53 +100,62 @@ export default {
 .item {
   position: relative;
   overflow: hidden;
-  border-radius: 12px;
-  height: 350px; /* 设置高度以适应比例 */
+  /* 去掉这里的 border-radius */
+  height: 350px;
 }
 
 .doctor-avatar-wrapper {
   width: 100%;
-  aspect-ratio: 247 / 347; /* 设定宽高比例 */
-  overflow: hidden; /* 隐藏溢出部分 */
-  position: relative; /* 使 info 可以绝对定位 */
+  aspect-ratio: 247 / 347;
+  overflow: hidden;
+  position: relative;
+  border-radius: 0; /* 确保容器没有圆角 */
 }
 
 .doctor-avatar {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 使图片填满整个框 */
+  object-fit: cover;
+  border-radius: 0; /* 确保头像没有圆角 */
 }
 
+
+
 .info {
-  position: absolute; /* 绝对定位 */
-  bottom: 0; /* 固定在底部 */
+  position: absolute;
+  bottom: 0;
   left: 0;
   right: 0;
-  background-color: rgba(0, 0, 0, 0.6); /* 半透明背景 */
-  color: white; /* 文字颜色 */
-  padding: 10px; /* 增加内边距 */
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 10px;
   display: flex;
-  flex-direction: column; /* 垂直排列 */
-  justify-content: center; /* 居中对齐 */
-  height: 35%; /* 设置固定高度 */
+  flex-direction: column;
+  justify-content: center;  /* 垂直居中 */
+  align-items: center;      /* 水平居中 */
+  height: 30%;
 }
 
 .inline {
-  text-align: center; /* 中心对齐 */
-  flex: 1; /* 占据剩余空间 */
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
 }
+
 
 .h2 {
   font-weight: bold;
-  margin: 0; /* 确保没有额外的 margin */
-  font-size: 1.2rem; /* 调整字体大小 */
-  line-height: 1.3; /* 设置行高 */
+  margin: 5px;
+  font-size: 1.2rem;
+  line-height: 1.5;
 }
 
 .p {
   font-size: 1rem;
-  margin: 5px 0 0; /* 增加上边距，减少下边距 */
-  line-height: 1.5; /* 设置行高 */
+  margin: 5px 0 0;
+  line-height: 1.5;
 }
 
 @media (max-width: 1024px) {

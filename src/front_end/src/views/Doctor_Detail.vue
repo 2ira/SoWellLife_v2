@@ -1,23 +1,31 @@
 <template>
-  <div class="doctor-detail-wrapper">
+  <div class="doctor-detail-wrapper" v-if="doctor">
     <div class="doctor-info">
       <div class="top-section">
         <div class="image-and-text">
-          <img :src="doctor.image" alt="医生照片" class="doctor-photo" />
+          <img :src="require(`@/assets/imgs/${doctor.docImage}`)"  alt="医生照片" class="doctor-photo" />
           <div class="text-details">
             <div class="doctor-info-text">
               <div class="doctor-name-and-title">
                 <div class="name-and-title-wrapper">
-                  <div class="doctor-name">{{ doctor.name }}</div>
-                  <div class="doctor-job-title" style="font-size: 18px; color: #777; margin-left: 10px;">主任医师</div>
+                  <div class="doctor-name">{{ doctor.docName }}</div>
+                  <div class="doctor-job-title" style="font-size: 18px; color: #777; margin-left: 10px;">{{ doctor.title }}</div>
                 </div>
               </div>
               <div class="doctor-details">
-                <div style="margin-top: 20px;"><strong>所在医院：</strong>{{ doctor.hospital }}</div>
-                <div style="margin-top: 20px;"><strong>专业特长：</strong><span class="tag">{{ doctor.title }}</span></div>
-                <div style="margin-top: 20px;"><strong>擅长：</strong>{{ doctor.specialties }}</div>
+                <div style="margin-top: 20px;">
+                  <strong>所在医院：</strong>{{ doctor.docHospital }}
+                </div>
+                <div style="margin-top: 20px;">
+                  <strong>专业特长：</strong><span class="tag">{{ doctor.docSpecialties }}</span>
+                </div>
+                <div style="margin-top: 20px;">
+                  <strong>擅长：</strong>{{ doctor.spec_symptom }}
+                </div>
                 <div style="width: 800px; margin-top: 20px; border-bottom: 2px dashed #006400;"></div>
-                <p>如果你想了解该医生的更多信息（包括学习经历、患者评价），请点击右方链接：<a href="https://www.pumch.cn/detail/4356.html" class="learn-more">了解更多</a></p>
+                <p>如果你想了解该医生的更多信息（包括学习经历、患者评价），请点击右方链接：
+                  <a :href="doctor.hosUrl" class="learn-more" target="_blank">了解更多</a>
+                </p>
               </div>
             </div>
           </div>
@@ -26,7 +34,7 @@
       <div class="bottom-section">
         <div class="introduction-box">
           <div class="introduction-title">个人简介</div>
-          <p>{{ doctor.introduction }}</p>
+          <p>{{ doctor.docProfile }}</p>
         </div>
       </div>
     </div>
@@ -34,21 +42,38 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
-  name: "DoctorPage",
+  name: "Doctor_Detail",
   data() {
     return {
-      doctor: {
-        image: require("@/assets/imgs/doctors/doctor1.jpg"),
-        name: "杜斌",
-        title: "精神科",
-        specialties: "顽固性失眠、抑郁症、焦虑症等精神疾病诊疗",
-        hospital: "北京协和医院",
-        jobTitle: "主任医师",
-        introduction: "杜斌，北京协和医院精神科主任医师。在精神疾病领域有着丰富的临床经验和深厚的专业造诣。",
-      },
+      doctor: null, // 初始为空，数据获取后赋值
     };
   },
+  mounted() {
+    // 从URL获取doctor_id参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const docId = urlParams.get('doc_id');
+
+    if (docId) {
+      this.getDoctorDetail(docId);
+    }
+  },
+  methods: {
+    getDoctorDetail(docId) {
+      // 发送请求获取医生数据
+      axios.get(`/api/doc_information/${docId}`)
+          .then(response => {
+            if (response.data) {
+              this.doctor = response.data; // 将后端返回的数据赋值给 doctor
+            }
+          })
+          .catch(error => {
+            console.error('获取医生信息失败', error);
+          });
+    }
+  }
 };
 </script>
 
@@ -119,7 +144,7 @@ export default {
 }
 
 .bottom-section {
-  margin-top: 20px;
+  margin-top: 100px;
 }
 
 .introduction-box {

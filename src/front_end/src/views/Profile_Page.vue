@@ -1,29 +1,40 @@
 <template>
   <div class="profile-page">
+    <!-- 错误提示区域 -->
+    <div v-if="showError" class="error-message">
+      <p>Identifier 参数丢失，请检查链接或联系管理员。</p>
+    </div>
+
     <!-- 左侧导航栏 -->
-    <div class="sidebar">
+    <div class="sidebar" v-if="!showError">
       <div class="settings-header">
-        <span class="settings-label">设置</span>  <!-- 设置标签，不可点击 -->
+        <span class="settings-label">设置</span>
       </div>
 
       <!-- 设置子选项 -->
       <div class="settings-options">
         <button
             :class="{ active: currentTab === 'profile' }"
-            @click="currentTab = 'profile'">个人设置
+            @click="changeTab('profile')"
+        >
+          个人设置
         </button>
         <button
             :class="{ active: currentTab === 'security' }"
-            @click="currentTab = 'security'">安全设置
+            @click="changeTab('security')"
+        >
+          安全设置
         </button>
       </div>
     </div>
 
     <!-- 右侧内容区 -->
-    <div class="content">
+    <div class="content" v-if="!showError">
       <!-- 根据选项渲染不同的组件 -->
-      <Profile_Info v-if="currentTab === 'profile'" />
-      <Security_Info v-if="currentTab === 'security'" />
+      <Profile_Info
+          v-if="currentTab === 'profile' "
+      />
+      <Security_Info v-if="currentTab === 'security' " />
     </div>
   </div>
 </template>
@@ -40,13 +51,46 @@ export default {
   },
   data() {
     return {
-      currentTab: 'profile',
+      currentTab: 'profile', // 默认显示 "个人设置"
+      identifier: null,      // 用来存储从查询参数中获取的 identifier
+      showError: false,      // 错误提示的状态
     };
+  },
+  //mounted() {
+    // 从路由的查询参数中获取 identifier
+    //this.identifier = this.$route.query.identifier;
+
+    // 打印 identifier 以验证其值
+    //console.log('Identifier in ProfilePage:', this.identifier);
+
+    // 如果没有提供 identifier，可以显示错误提示或者执行其他逻辑
+    //if (!this.identifier) {
+      //console.error('Identifier 参数丢失');
+      // 设置 showError 状态为 true，显示错误提示
+      //this.showError = true;
+    //}
+  ///},
+  methods: {
+    changeTab(tab) {
+      this.currentTab = tab;
+    },
   },
 };
 </script>
 
 <style scoped>
+/* 错误提示样式 */
+.error-message {
+  color: red;
+  text-align: center;
+  font-size: 1.2em;
+  margin-top: 20px;
+  background-color: #f8d7da;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #f5c6cb;
+}
+
 /* 设置整体容器 */
 .profile-page {
   display: flex;

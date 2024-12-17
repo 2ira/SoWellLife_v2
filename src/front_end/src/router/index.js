@@ -55,10 +55,9 @@ const routes = [
     component: AIChat
   },
   {
-    path:'/profile',
-    name: 'Profile_Page',
-    component: Profile_Page
-
+    path: '/profile',
+    name: 'ProfilePage',
+    component: Profile_Page,
   },
   {
     path: '/test',

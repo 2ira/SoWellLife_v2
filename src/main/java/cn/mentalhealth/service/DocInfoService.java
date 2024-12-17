@@ -5,11 +5,13 @@ import cn.mentalhealth.dao.impl.DocInfoDaoImpl;
 import cn.mentalhealth.domain.DocInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-
+@Service
 public class DocInfoService {
 
     private DocInfoDao docInfoDao = new DocInfoDaoImpl();
@@ -54,7 +56,8 @@ public class DocInfoService {
         docInfo.setDocImage(request.getParameter("docImage"));
         docInfo.setDocHospital(request.getParameter("docHospital"));
         docInfo.setHosUrl(request.getParameter("hosUrl"));
-
+        docInfo.setTitle(request.getParameter("title"));
+        docInfo.setSpec_symptom(request.getParameter("spec_symptom"));
         docInfoDao.insertDocInfo(docInfo);
         return "{\"success\": true, \"message\": \"医生信息添加成功\"}";
     }
@@ -72,7 +75,8 @@ public class DocInfoService {
                 originalDocInfo.setDocImage(request.getParameter("docImage"));
                 originalDocInfo.setDocHospital(request.getParameter("docHospital"));
                 originalDocInfo.setHosUrl(request.getParameter("hosUrl"));
-
+                originalDocInfo.setHosUrl(request.getParameter("title"));
+                originalDocInfo.setSpec_symptom(request.getParameter("spec_symptom"));
                 docInfoDao.updateDocInfo(originalDocInfo, "doc_id = " + docId);
                 return "{\"success\": true, \"message\": \"医生信息更新成功\"}";
             } else {
@@ -85,7 +89,7 @@ public class DocInfoService {
     }
 
     // 根据医生ID获取特定医生信息
-    private DocInfo getDocInfoById(int docId) {
+    public DocInfo getDocInfoById(int docId) {
         List<DocInfo> docInfoList = docInfoDao.getDocInfoByCondition("doc_id = " + docId);
         if (!docInfoList.isEmpty()) {
             return docInfoList.get(0);

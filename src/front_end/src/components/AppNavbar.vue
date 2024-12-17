@@ -1,4 +1,3 @@
-<!-- AppNavbar.vue -->
 <template>
   <div class="nav-container">
     <header>
@@ -18,7 +17,6 @@
                @click="isLoggedIn ? goToProfile() : showLoginModal()"
                @mouseover="isLoggedIn && (avatarHover = true, isDropdownVisible = true)"
                @mouseleave="avatarHover = false, isDropdownVisible = false">
-
             <img
                 :src="avatar_url || require('@/assets/imgs/homepage/login.png')"
                 alt="用户头像"
@@ -26,108 +24,73 @@
                 :class="{'avatar-hover': avatarHover}">
 
             <!-- 下拉框 -->
-            <div v-if="isDropdownVisible" class="dropdown-menu" @click.stop>
+            <div v-if="isDropdownVisible && isLoggedIn" class="dropdown-menu" @click.stop>
               <div class="user-info">
-                <div class="username">薛鹿呐</div>
+                <div class="username">{{ username }}</div>
               </div>
               <div class="button-group">
-                <div class="button">
+                <div class="button" @click="goToProfile">
                   <img src="@/assets/imgs/icon/user.png" alt="设置" class="icon">
-                  <span @click="goToProfile()">个人设置</span>
+                  <span>个人设置</span>
                 </div>
-                <div class="button">
+                <div class="button" @click="gotoCollect">
                   <img src="@/assets/imgs/icon/collect.png" alt="收藏" class="icon">
-                  <span @click="gotoCollect()">收藏</span>
+                  <span>收藏</span>
                 </div>
-                <div class="button">
+                <div class="button" @click="logout">
                   <img src="@/assets/imgs/icon/logout.png" alt="退出" class="icon">
-                  <span @click="logout()">退出登录</span>
+                  <span>退出登录</span>
                 </div>
               </div>
             </div>
           </div>
-          <!-- 登录框 -->
-          <div v-if="isLoginModalVisible" class="login-modal">
-            <div class="login-modal-content">
-              <!-- 右上角关闭按钮 -->
-              <span class="close-btn" @click="closeLoginModal">×</span>
 
+          <!-- 登录框 -->
+          <div v-if="show_Login" class="login-modal">
+            <div class="login-modal-content">
+              <span class="close-btn" @click="closeLoginModal">×</span>
               <div class="login-tabs">
-                <!-- 切换标签 -->
-                <span :class="{'active': isPasswordLogin}" @click="setLoginMethod('password')">
-                  密码登录
-                </span>
+                <span :class="{'active': isPasswordLogin}" @click="setLoginMethod('password')">密码登录</span>
                 |
-                <span :class="{'active': !isPasswordLogin && !isRegistering}" @click="setLoginMethod('captcha')">
-                  邮箱验证
-                </span>
+                <span :class="{'active': !isPasswordLogin && !isRegistering}" @click="setLoginMethod('captcha')">邮箱验证</span>
               </div>
 
-              <!-- 密码登录 -->
               <div v-if="isPasswordLogin && !isRegistering" class="login-form">
                 <div class="form-group">
-                  <label for="username" class="input-label">用户名</label>
-                  <input id="username" type="text" v-model="username" placeholder="请输入用户名" class="input-field" />
+                  <label for="username" class="input-label">账号</label>
+                  <input id="username" type="text" v-model="identifier" placeholder="请输入用户id或者邮箱" class="input-field" />
                 </div>
-
                 <div class="form-group">
                   <label for="password" class="input-label">密码</label>
                   <input id="password" type="password" v-model="password" placeholder="请输入密码" class="input-field" />
                 </div>
-
-                <!-- 按钮 -->
                 <div class="button-group">
-                  <button @click="login" class="btn">登录</button>
+                  <button @click="login_verify" class="btn">登录</button>
                   <button @click="startRegister" class="btn">注册</button>
                 </div>
               </div>
 
-              <!-- 验证码登录 -->
               <div v-if="!isPasswordLogin && !isRegistering" class="login-form">
                 <div class="form-group">
                   <label for="email" class="input-label">邮箱</label>
                   <input id="email" type="text" v-model="email" placeholder="请输入邮箱" class="input-field" />
                 </div>
-
-                <!-- 验证码输入区域 -->
                 <div class="captcha-group">
-                  <!-- 验证码输入框 -->
                   <label for="captcha" class="captcha-input-label">验证码</label>
-                  <input
-                      type="tel"
-                      v-model="captcha"
-                      class="captcha-input"
-                      placeholder="请输入验证码"
-                      maxlength="6"
-                      @input="validateCaptcha"
-                      inputmode="numeric"
-                  />
-                  <!-- 发送验证码按钮 -->
-                  <button
-                      class="captcha-btn"
-                      :disabled="isSending || !isEmailValid"
-                      @click="startCountdown">
-                    {{ countdownText }}
-                  </button>
+                  <input type="tel" v-model="captcha" class="captcha-input" placeholder="请输入验证码" maxlength="6" @input="validateCaptcha" inputmode="numeric" />
+                  <button class="captcha-btn" :disabled="isSending || !isEmailValid" @click="startCountdown">{{ countdownText }}</button>
                 </div>
-                <!-- 登录/注册按钮 -->
                 <div class="button-group">
-                  <button
-                      @click="handleLoginOrRegister"
-                      class="btn"
-                  >
-                    登录/注册
-                  </button>
+                  <button @click="handleLoginOrRegister" class="btn">登录/注册</button>
                 </div>
               </div>
-              <!-- 下面的用户协议说明 -->
+
               <div class="agreement-text">
                 如果你没注册过 SoWellLife，我们将自动帮你注册账号，登录或完成注册代表你同意
                 <a href="/user-agreement" target="_blank">用户协议</a> 和
                 <a href="/privacy-policy" target="_blank">隐私政策</a>。
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -152,45 +115,61 @@
   </div>
 </template>
 
+
+
 <script>
+import { mapState, mapActions } from 'vuex';
+import axios from 'axios';
+
 export default {
   name: "AppNavbar",
   data() {
     return {
-      showDropdown: false,
-      isLoggedIn: true, // 判断是否登录
-      isLoginModalVisible: false,  // 控制登录框显示与否
-      isPasswordLogin: true,      // 控制密码登录与邮箱验证切换
-      isRegistering: false,       // 控制是否显示注册界面
+      isPasswordLogin: true,
+      isRegistering: false,
+      identifier: '',
       username: '',
       password: '',
       email: '',
       captcha: '',
-      isSending: false,     // 是否正在发送验证码
-      countdown: 60,        // 倒计时初始值
-      countdownText: '获取验证码',  // 按钮显示的文本
-      isEmailValid: true,    // 邮箱是否合法
-      emailExists: false,     // 邮箱是否已注册
-      avatar_url: null,       // 用户头像URL
-      isDropdownVisible: false, // 控制下拉框显示
-      avatarHover: false, // 控制头像是否放大
+      isSending: false,
+      countdown: 60,
+      countdownText: '获取验证码',
+      isEmailValid: true,
+      emailExists: false,
+      avatarHover: false,
+      isDropdownVisible: false,
+      show_Login: false,
+      showDropdown:false
     };
   },
+  computed: {
+    ...mapState({
+      isLoggedIn: state => state.isLoggedIn,
+      username: state => state.username,
+      avatar_url: state => state.avatar_url,
+    })
+  },
   methods: {
+    ...mapActions(['login', 'logout']),
+
     goToProfile() {
-      this.$router.push('/profile');
+
+        this.$router.push('/profile');
     },
-    gotoCollect(){
+
+    gotoCollect() {
       this.$router.push('/collection');
     },
+
     showLoginModal() {
-      // 未登录时显示登录框
-      this.isLoginModalVisible = true;
+      this.show_Login = true;
     },
+
     closeLoginModal() {
-      // 关闭登录框
-      this.isLoginModalVisible = false;
+      this.show_Login = false;
     },
+
     setLoginMethod(method) {
       if (method === 'password') {
         this.isPasswordLogin = true;
@@ -201,101 +180,118 @@ export default {
       }
     },
 
-
     startRegister() {
-      // 切换到注册界面，显示邮箱输入
       this.setLoginMethod('captcha');
     },
-    // 验证邮箱合法性
-    validateEmail() {
-      const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-      this.isEmailValid = emailPattern.test(this.email);
-    },
 
-    // 验证验证码合法性
-    validateCaptcha() {
-      this.captcha = this.captcha.replace(/\D/g, ''); // 只允许数字输入
-    },
-
-    // 获取验证码的倒计时功能
-    startCountdown() {
-      if (!this.isEmailValid || !this.emailExists) return; // 如果邮箱不合法或邮箱未注册，不能发送验证码
-      this.isSending = true;
-      this.countdownText = `${this.countdown}秒`;
-
-      const interval = setInterval(() => {
-        this.countdown--;
-        this.countdownText = `${this.countdown}秒`;
-
-        if (this.countdown <= 0) {
-          clearInterval(interval);
-          this.countdownText = '重新发送';
-          this.countdown = 60; // 重置倒计时
-          this.isSending = false;
-        }
-      }, 1000);
-    },
-
-    // 处理登录或注册
-    async handleLoginOrRegister() {
-      if (this.isEmailValid && this.captcha.length === 6) {
-        // 模拟后端邮箱验证逻辑
-        const isRegistered = await this.checkEmailExistence(); // 判断邮箱是否存在
-        if (isRegistered && this.isCaptchaValid()) {
-          this.login(); // 执行登录操作
-        } else if (!isRegistered && this.isCaptchaValid()) {
-          this.register(); // 邮箱不存在，跳转到注册界面
-        }
-      }
-    },
-
-    // 登录操作
-    login() {
-      console.log('执行登录操作...');
-      // 在这里模拟登录成功
-      alert('登录成功');
-    },
-    logout() {
-      // 执行登出逻辑
-      alert('已退出登录');
-      this.isLoggedIn = false; // 设为未登录状态
-    },
-    // 注册操作
-    register() {
-      console.log('执行注册操作...');
-      // 在这里模拟跳转到注册界面
-      alert('邮箱未注册，跳转到注册页面...');
-    },
-
-    // 模拟检查邮箱是否已注册
-    async checkEmailExistence() {
-      // 这里模拟的逻辑：如果邮箱是 "existing@example.com"，则认为该邮箱已注册
-      if (this.email === 'existing@example.com') {
-        this.emailExists = true;  // 模拟邮箱已注册
-        return true;
+    handleLoginOrRegister() {
+      if (this.isPasswordLogin) {
+        this.loginWithPassword();
       } else {
-        this.emailExists = false; // 模拟邮箱未注册
-        return false;
+        this.loginWithCaptcha();
       }
     },
 
-    // 验证验证码是否有效（此处根据需要你可以改为实际的验证码校验）
-    isCaptchaValid() {
-      // 这里只是一个简单的模拟验证码校验，实际应根据后端的验证码逻辑来验证
-      return this.captcha === '123456';  // 假设验证码是 "123456"
+    async login_verify() {
+      try {
+        console.log("开始发起登录请求...");
+
+        // 第一步：验证密码
+        const response = await axios.post('http://localhost:8080/api/login/verify-password', null, {
+          params: {
+            identifier: this.identifier,
+            password: this.password
+          },
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        console.log("返回的数据：", response.data);  // 打印返回的完整数据
+
+        if (response.data.success) {
+          console.log("登录成功，开始获取用户详细信息...");
+
+          // 第二步：根据 identifier 获取用户详细信息
+          const userInfoResponse = await axios.post('http://localhost:8080/api/login/profile', null, {
+            params: { identifier: this.identifier }
+          });
+
+          console.log("获取用户详细信息的返回数据：", userInfoResponse.data);
+
+          // 触发 Vuex 的 login action，将用户信息存入 Vuex
+          this.$store.dispatch('login', {
+            username: userInfoResponse.data.username,
+            avatar_url: userInfoResponse.data.avatar_url,
+            uid: userInfoResponse.data.uid
+          });
+
+          console.log("Vuex 状态更新后，用户信息已存储：", {
+            username: userInfoResponse.data.username,
+            avatar_url: userInfoResponse.data.avatar_url,
+            uid: userInfoResponse.data.uid
+          });
+
+          // 登录成功后，执行其他操作
+          this.$emit('login-success', { identifier: this.identifier });
+          console.log("触发了 'login-success' 事件");
+
+          this.closeLoginModal();
+          console.log("关闭登录模态框");
+
+          this.isDropdownVisible = true;
+          console.log("显示下拉菜单");
+
+          this.isLoggedIn = true;
+          console.log("更新组件内部状态 isLoggedIn 为 true");
+
+        } else {
+          console.log("登录失败，错误信息：", response.data.message);
+          alert('登录失败，请检查用户名或密码');
+        }
+      } catch (error) {
+        console.error('登录请求失败', error);
+        alert('登录失败，请稍后重试');
+      }
+    },
+
+
+
+    loginWithCaptcha() {
+      // 实现验证码登录的逻辑
+    },
+
+    logout() {
+      // 调用 Vuex 的 logout 方法
+      this.$store.dispatch('logout');
+
+      // 更新组件内部状态
+      this.isDropdownVisible = false; // 隐藏下拉菜单
+
+      // 跳转到首页或登录页（根据你的需求调整）
+      this.$router.push('/');
+    },
+
+
+    validateCaptcha() {
+      // 验证验证码输入
+    },
+
+    startCountdown() {
+      // 发送验证码并开始倒计时
     },
 
     goToResources(type) {
-      // 根据传入的类型进行路由跳转逻辑
-      if (type === 'video') {
-        this.$router.push('/resources/video');
-      } else if (type === 'article') {
-        this.$router.push('/resources/article');
-      }
+      this.$router.push(`/resources/${type}`);
     }
-  },
+  }
 };
 </script>
+
+
+
+
+
+
+
 
 
 <style scoped>
@@ -500,7 +496,7 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 13;
+  z-index: 10000;
 }
 
 .login-modal-content {

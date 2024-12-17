@@ -8,10 +8,12 @@ public class DocInfo {
     private String docImage;
     private String docHospital;
     private String hosUrl;
+    private String title;
+    private String spec_symptom;
 
     public DocInfo() {
     }
-    public DocInfo(int docId, String docName, String docSpecialties, String docProfile, String docImage, String docHospital, String hosUrl) {
+    public DocInfo(int docId, String docName, String docSpecialties, String docProfile, String docImage, String docHospital, String hosUrl,String title,String spec_symptom) {
         this.docId = docId;
         this.docName = docName;
         this.docSpecialties = docSpecialties;
@@ -19,6 +21,8 @@ public class DocInfo {
         this.docImage = docImage;
         this.docHospital = docHospital;
         this.hosUrl = hosUrl;
+        this.title=title;
+        this.spec_symptom=spec_symptom;
     }
     // 以下是各个属性的getter和setter方法
     public int getDocId() {
@@ -48,7 +52,9 @@ public class DocInfo {
     public String getDocProfile() {
         return docProfile;
     }
-
+    public String getTitle() {
+        return title;
+    }
     public void setDocProfile(String docProfile) {
         this.docProfile = docProfile;
     }
@@ -76,7 +82,11 @@ public class DocInfo {
     public void setHosUrl(String hosUrl) {
         this.hosUrl = hosUrl;
     }
-
+    public void setSpec_symptom(String spec_symptom){this.spec_symptom=spec_symptom;}
+    public String getspec_symptom(){return this.spec_symptom;}
+    public void setTitle(String title) {
+        this.title = title;
+    }
     @Override
     public String toString() {
         return "DocInfo{" +
@@ -87,6 +97,8 @@ public class DocInfo {
                 ", docImage=" + docImage +
                 ", docHospital=" + docHospital +
                 ", hosUrl=" + hosUrl +
+                ",title="+title+
+                ",spec_symptom="+spec_symptom+
                 '}';
     }
 

@@ -1,21 +1,50 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : data
+ Source Server         : root
  Source Server Type    : MySQL
  Source Server Version : 80018
  Source Host           : localhost:3306
- Source Schema         : practice
+ Source Schema         : mentalhealth
 
  Target Server Type    : MySQL
  Target Server Version : 80018
  File Encoding         : 65001
 
- Date: 05/12/2024 21:10:01
+ Date: 18/12/2024 00:03:12
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for doc_information
+-- ----------------------------
+DROP TABLE IF EXISTS `doc_information`;
+CREATE TABLE `doc_information`  (
+  `doc_id` int(11) NOT NULL AUTO_INCREMENT,
+  `doc_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `doc_specialties` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `doc_profile` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
+  `doc_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `doc_hospital` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `hos_url` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `spec_symptom` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`doc_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of doc_information
+-- ----------------------------
+INSERT INTO `doc_information` VALUES (1, '段艳平', '心理医学科', '心理医学科主治医师。', 'doctors/doctor1.jpg', '北京协和医院', 'https://www.pumch.cn/department_ims/doctor/detail/14143.html', '主治医师', '综合医院常见精神心理障碍的诊治，包括：抑郁障碍、广泛性焦虑障碍和惊恐障碍的诊断，以及相关药物治疗、团体治疗和短程整合心理治疗。擅长围产期心理健康的识别和产后抑郁的诊疗。');
+INSERT INTO `doc_information` VALUES (2, '洪霞', '心理医学科', '洪霞，女，主任医师，教授，研究生导师，临床流行病学教研室主任。1993年从医，擅长综合医院各类精神心理问题的诊治，对老年期各类精神心理障碍、内分泌疾病合并的各类精神心理障碍有丰富的临床经验。系统学习和实践短程整合心理治疗，具有系统开展个体和团体心理治疗的经验。', 'doctors/doctor2.jpg', '北京协和医院', 'https://www.pumch.cn/department_ims/doctor/detail/4517.html', '临床流行病学教研室主任 主任医师 ', '综合医院各类精神心理问题的诊治，对老年期各类精神心理障碍、内分泌疾病合并的各类精神心理障碍有丰富的临床经验。系统学习和实践短程整合心理治疗，具有系统开展个体和团体心理治疗的经验。 ');
+INSERT INTO `doc_information` VALUES (3, '史丽丽', '心理医学科', '史丽丽，女，2000年毕业于北京协和医学院，获得医学博士学位，从事心理医学专业。长期与消化科合作提供心身医学服务，研究功能性胃肠病和精神心理问题共病。系统学习和实践短程整合心理治疗，具有系统开展个体和团体心理治疗的经验。现为副主任医师。', 'doctors/doctor3.jpg', '北京协和医院', 'https://www.pumch.cn/department_ims/doctor/detail/4516.html', '副主任医师 ', '综合医院常见精神心理障碍及问题，如：抑郁、焦虑、功能性胃肠病的心理生理问题。协和星原计划带状疱疹多学科全病程管理团队成员。');
+INSERT INTO `doc_information` VALUES (4, '李涛', '心理医学科', '医学博士，2007年毕业于北京协和医学院。北京医学会心身医学分会青年委员。', 'doctors/doctor4.jpg', '北京协和医院', 'https://www.pumch.cn/department_ims/doctor/detail/4511.html', '心理医学科主任助理 副主任医师', '功能性躯体症状、焦虑障碍、抑郁等综合医院常见精神心理障碍的药物及心理治疗。');
+INSERT INTO `doc_information` VALUES (5, '姜忆南', '心理医学科', '男，北京协和医学院临床医学专业，医学博士，副主任医师', 'doctors/doctor5.jpg', '北京协和医院', 'https://www.pumch.cn/department_ims/doctor/detail/4510.html', '副主任医师', '对常见精神、心理问题，包括各种类型的焦虑障碍、抑郁障碍和难以解释的躯体症状的生物治疗和心理治疗。尤其针对合并躯体疾病的精神心理问题。');
+INSERT INTO `doc_information` VALUES (6, '曹锦亚', '心理医学科', '常见精神心理障碍的生物医学和心理治疗的整合治疗。尤其针对：焦虑谱系障碍，包括惊恐障碍，广泛性焦虑障碍，特殊恐惧障碍，疑病障碍，躯体形式障碍等；躯体疾病合并的精神心理相关问题。', 'doctors/doctor6.jpg', '北京协和医院', 'https://www.pumch.cn/department_ims/doctor/detail/14141.html', '心理医学科副主任 副主任医师', '常见精神心理障碍的生物医学和心理治疗的整合治疗。尤其针对：焦虑谱系障碍，包括惊恐障碍，广泛性焦虑障碍，特殊恐惧障碍，疑病障碍，躯体形式障碍等；躯体疾病合并的精神心理相关问题。');
+INSERT INTO `doc_information` VALUES (7, '高晶', '神经科', '从事神经病学临床工作三十余年，具有丰富临床经验。', 'doctors/doctor7.jpg', '北京协和医院', 'https://www.pumch.cn/department_ims/doctor/detail/4504.html', '主任医师', ' 白质脑病、认知障碍、痴呆、非肿瘤脑神经病理以及脑血管病');
+INSERT INTO `doc_information` VALUES (8, '徐蔚海', '神经科', '徐蔚海，男，教授 ，主任医师，博士生导师', 'doctors/doctor8.jpg', '北京协和医院', 'https://www.pumch.cn/department_ims/doctor/detail/4488.html', '主任医师', '脑血管病，颅内动脉粥样硬化，疑难中枢神经系统（脑和脊髓）疾病，青年卒中，不明原因卒中 ');
 
 -- ----------------------------
 -- Table structure for favorite
@@ -24,10 +53,9 @@ DROP TABLE IF EXISTS `favorite`;
 CREATE TABLE `favorite`  (
   `Uid` int(10) UNSIGNED ZEROFILL NOT NULL COMMENT '用户id，外键',
   `Rid` int(11) NOT NULL COMMENT '资源id，外键',
-  `isFavorite` int(11) NULL DEFAULT NULL COMMENT '是否被收藏（1收藏 0未被收藏）',
+  `flag` int(11) NULL DEFAULT NULL COMMENT '是否被收藏（1收藏 0未被收藏）',
   PRIMARY KEY (`Uid`, `Rid`) USING BTREE,
   INDEX `fk_rid_favorite`(`Rid` ASC) USING BTREE,
-  CONSTRAINT `fk_rid_favorite` FOREIGN KEY (`Rid`) REFERENCES `resource` (`Rid`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_uid_favorite` FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
@@ -50,7 +78,7 @@ CREATE TABLE `history`  (
   PRIMARY KEY (`Hid`) USING BTREE,
   INDEX `fk_uid`(`Uid` ASC) USING BTREE,
   CONSTRAINT `fk_uid` FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of history
@@ -68,7 +96,7 @@ CREATE TABLE `introduction`  (
   `Treatment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '治疗措施',
   `Picture` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '症状对应的图片，为相对路径，放在resources文件夹下',
   PRIMARY KEY (`Iid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of introduction
@@ -210,7 +238,7 @@ CREATE TABLE `test`  (
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `img` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   PRIMARY KEY (`Tid`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of test
@@ -236,11 +264,13 @@ CREATE TABLE `user`  (
   `Email` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户邮箱，不为空',
   `UName` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'HelloWorld' COMMENT '用户名，不为空，默认值：HelloWorld',
   `AvatarUser` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户自定义头像，图片相对路径',
+  `UserPSW` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户密码',
   PRIMARY KEY (`Uid`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
+INSERT INTO `user` VALUES (0000000001, 'example@example.com', 'HelloWorld', 'homepage/default-avatar.jpg', '123456');
 
 SET FOREIGN_KEY_CHECKS = 1;

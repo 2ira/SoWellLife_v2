@@ -33,6 +33,8 @@ public class DocInfoDaoImpl implements DocInfoDao {
                 docInfo.setDocImage(resultSet.getString("doc_image"));
                 docInfo.setDocHospital(resultSet.getString("doc_hospital"));
                 docInfo.setHosUrl(resultSet.getString("hos_url"));
+                docInfo.setTitle(resultSet.getString("title"));
+                docInfo.setSpec_symptom(resultSet.getString("spec_symptom"));
                 docInfoList.add(docInfo);
             }
         } catch (SQLException e) {
@@ -62,6 +64,8 @@ public class DocInfoDaoImpl implements DocInfoDao {
                 docInfo.setDocHospital(resultSet.getString("doc_hospital"));
                 docInfo.setHosUrl(resultSet.getString("hos_url"));
                 docInfoList.add(docInfo);
+                docInfo.setTitle(resultSet.getString("title"));
+                docInfo.setSpec_symptom(resultSet.getString("spec_symptom"));
             }
         } catch (SQLException e) {
             e.printStackTrace();

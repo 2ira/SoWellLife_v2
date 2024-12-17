@@ -26,30 +26,84 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: 'Security_Info',
   data() {
     return {
       security: {
+        originPassword:'',
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
-        emailVerification: '',
+        identifier:''
       },
     };
   },
   methods: {
-    // 发送邮箱验证码
-    sendVerificationCode() {
-      console.log('发送验证码到邮箱...');
-      alert('验证码已发送，请查收您的邮箱');
+    // 获取用户信息
+    async getOrignalPassword() {
+      // 从 Vuex 获取当前用户的 UID
+      const uid = this.$store.getters.uid;
+
+      // 检查 UID 是否存在，如果不存在，显示错误信息
+      if (!uid) {
+        console.error('password: uid 未定义');
+        this.errorMessage = '无法获取用户标识符。';
+        return;
+      }
+
+      const url = 'http://localhost:8080/api/login/profile';
+
+      this.isLoading = true;
+      this.errorMessage = '';
+
+      try {
+        // 请求时传递 UID
+        const response = await axios.get(url, {
+          params: { identifier: uid },  // 使用 Vuex 中的 uid 作为请求参数
+        });
+
+        console.log('Response from API:', response.data); // 输出后端返回的原始数据
+
+        if (response.status === 200 && response.data) {
+          // 映射响应数据
+          this.security.originPassword = response.data.userPSW;
+          console.log('User data after mapping:', this.security.originPassword);
+        } else {
+          console.error('获取用户信息失败，响应状态码非200或无有效返回数据');
+          this.errorMessage = '获取用户信息失败，请稍后重试。';
+        }
+      } catch (error) {
+        // 错误处理
+        if (error.response) {
+          console.error('请求失败，服务器返回错误：', error.response.data);
+          console.error('状态码：', error.response.status);
+          this.errorMessage =
+              error.response.data.message || '服务器错误，无法获取用户信息。';
+        } else if (error.request) {
+          console.error('请求失败，未收到服务器响应');
+          this.errorMessage = '网络错误，无法获取用户信息。';
+        } else {
+          console.error('请求失败，配置错误：', error.message);
+          this.errorMessage = '请求配置错误，请联系开发者。';
+        }
+      } finally {
+        // 请求结束，设置加载状态
+        this.isLoading = false;
+      }
     },
 
     // 修改密码操作
     changePassword() {
-      const { currentPassword, newPassword, confirmPassword, emailVerification } = this.security;
+      const { originPassword,currentPassword, newPassword, confirmPassword } = this.security;
+      if(originPassword!=currentPassword){
+        alert('原密码不正确！');
+        return;
+      }
 
-      if (!currentPassword || !newPassword || !confirmPassword || !emailVerification) {
+      if (!currentPassword || !newPassword || !confirmPassword ) {
         alert('请填写所有字段');
         return;
       }
@@ -68,6 +122,9 @@ export default {
       alert('密码修改成功');
     },
   },
+  mounted() {
+    this.getOrignalPassword();
+  }
 };
 </script>
 

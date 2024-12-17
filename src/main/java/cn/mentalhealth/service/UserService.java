@@ -5,11 +5,13 @@ import cn.mentalhealth.dao.impl.UserDaoImpl;
 import cn.mentalhealth.domain.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-
+@Service
 public class UserService {
 
     private UserDao userDao = new UserDaoImpl();
