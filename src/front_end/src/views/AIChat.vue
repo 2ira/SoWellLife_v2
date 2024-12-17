@@ -54,18 +54,111 @@
           </svg>
         </div>
 
-        <!-- 对话列表 -->
+        <!-- 在聊天列表部分修改 -->
         <div v-show="!isChatListCollapsed" class="space-y-1 px-2">
-          <button
+          <div
               v-for="chat in chatSessions"
               :key="chat.cid"
-              @click="selectChat(chat.cid)"
-              class="w-full px-4 py-3 text-left rounded-lg hover:bg-gray-100 text-base"
-              :class="{'bg-blue-50 text-blue-600': currentCid === chat.cid}"
+              class="flex items-center justify-between w-full px-4 py-3 rounded-lg hover:bg-gray-100"
+              :class="{'bg-blue-50': currentCid === chat.cid}"
           >
-            {{ chat.hName || '新对话' }}
-          </button>
+            <!-- 聊天名称部分，点击选择对话 -->
+            <button
+                @click="selectChat(chat.cid)"
+                class="flex-grow text-left truncate"
+                :class="{'text-blue-600': currentCid === chat.cid}"
+            >
+              {{ chat.hname || '新对话' }}
+            </button>
+
+            <!-- 三点菜单 -->
+            <div class="relative ml-2">
+              <button
+                  @click.stop="openMenu(chat)"
+                  class="p-1 rounded-full hover:bg-gray-200"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="5" cy="12" r="1"></circle>
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="19" cy="12" r="1"></circle>
+                </svg>
+              </button>
+
+              <!-- 下拉菜单 -->
+              <div
+                  v-if="activeMenu === chat.cid"
+                  class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
+              >
+                <div class="py-1">
+                  <button
+                      @click.stop="openRenameDialog(chat)"
+                      class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    重命名
+                  </button>
+                  <button
+                      @click.stop="confirmDelete(chat)"
+                      class="block w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                  >
+                    删除
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <!-- 重命名对话框 -->
+        <div v-if="showRenameDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div class="bg-white rounded-lg p-6 w-96">
+            <h3 class="text-lg font-medium mb-4">重命名对话</h3>
+            <input
+                v-model="newChatName"
+                type="text"
+                class="w-full px-3 py-2 border rounded-md mb-4"
+                placeholder="输入新的对话名称"
+            >
+            <div class="flex justify-end gap-2">
+              <button
+                  @click="cancelRename"
+                  class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md"
+              >
+                取消
+              </button>
+              <button
+                  @click="confirmRename"
+                  class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+              >
+                确认
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 删除确认对话框 -->
+        <div v-if="showDeleteDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div class="bg-white rounded-lg p-6 w-96">
+            <h3 class="text-lg font-medium mb-4">确认删除</h3>
+            <p class="mb-4">确定要删除这个对话吗？此操作不可撤销。</p>
+            <div class="flex justify-end gap-2">
+              <button
+                  @click="cancelDelete"
+                  class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md"
+              >
+                取消
+              </button>
+              <button
+                  @click="executeDelete"
+                  class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+              >
+                删除
+              </button>
+            </div>
+          </div>
+        </div>
+
+
+
       </div>
 
 
@@ -187,10 +280,14 @@ import WelcomeAnimation from '@/components/WelcomeAnimation.vue' // 导入欢迎
 // 状态定义
 
 const showWelcome = ref(true)  // 新增：控制是否显示欢迎界面
-
 const isLoading = ref(false)  // 新增加载状态
-const inputMessage = ref('')
+const activeMenu = ref(null);
+const showRenameDialog = ref(false);
+const showDeleteDialog = ref(false);
+const newChatName = ref('');
+const selectedChat = ref(null);
 
+const inputMessage = ref('')
 const messages = ref([])
 const chatSessions = ref([])
 const currentCid = ref(null)
@@ -206,8 +303,100 @@ const API_BASE_URL = '/api/chathistories'
 
 // 初始化加载
 onMounted(async () => {
-  await loadChatSessions()
-})
+  await loadChatSessions();
+  showWelcome.value = true; // 确保始终显示欢迎界面
+});
+
+// 菜单相关方法
+const openMenu = (chat) => {
+  activeMenu.value = activeMenu.value === chat.cid ? null : chat.cid;
+};
+
+// 点击其他地方关闭菜单
+onMounted(() => {
+  document.addEventListener('click', () => {
+    activeMenu.value = null;
+  });
+});
+
+// 重命名相关方法
+const openRenameDialog = (chat) => {
+  selectedChat.value = chat;
+  newChatName.value = chat.hname || '新对话';
+  showRenameDialog.value = true;
+  activeMenu.value = null;
+};
+
+const cancelRename = () => {
+  showRenameDialog.value = false;
+  newChatName.value = '';
+  selectedChat.value = null;
+};
+
+const confirmRename = async () => {
+  if (!selectedChat.value || !newChatName.value.trim()) return;
+
+  try {
+    await axios.put(`${API_BASE_URL}/sessions/${selectedChat.value.cid}/rename`, {
+      newName: newChatName.value.trim()
+    });
+
+    // 更新本地状态
+    const chat = chatSessions.value.find(c => c.cid === selectedChat.value.cid);
+    if (chat) {
+      chat.hname = newChatName.value.trim();
+    }
+
+    // 如果是当前选中的对话，也更新消息列表中的名称
+    if (currentCid.value === selectedChat.value.cid) {
+      messages.value.forEach(msg => {
+        msg.hname = newChatName.value.trim();
+      });
+    }
+
+    cancelRename();
+  } catch (error) {
+    console.error('Failed to rename chat:', error);
+    // 可以添加错误提示
+  }
+};
+
+// 删除相关方法
+const confirmDelete = (chat) => {
+  selectedChat.value = chat;
+  showDeleteDialog.value = true;
+  activeMenu.value = null;
+};
+
+const cancelDelete = () => {
+  showDeleteDialog.value = false;
+  selectedChat.value = null;
+};
+
+const executeDelete = async () => {
+  if (!selectedChat.value) return;
+
+  try {
+    await axios.delete(`${API_BASE_URL}/sessions/${selectedChat.value.cid}`);
+
+    // 更新本地状态
+    chatSessions.value = chatSessions.value.filter(
+        chat => chat.cid !== selectedChat.value.cid
+    );
+
+    // 如果删除的是当前选中的对话，显示欢迎界面
+    if (currentCid.value === selectedChat.value.cid) {
+      currentCid.value = null;
+      messages.value = [];
+      showWelcome.value = true;
+    }
+
+    cancelDelete();
+  } catch (error) {
+    console.error('Failed to delete chat:', error);
+    // 可以添加错误提示
+  }
+};
 
 // 切换折叠状态的函数
 const toggleChatList = () => {
@@ -238,18 +427,25 @@ axios.interceptors.response.use(
     }
 );
 
+// 加载聊天会话
 async function loadChatSessions() {
   try {
-    const response = await axios.get(`${API_BASE_URL}/sessions/${uid.value}`)
-    chatSessions.value = response.data
-    if (chatSessions.value.length > 0 && !currentCid.value) {
-      await selectChat(chatSessions.value[0].cid)
-    }
+    const response = await axios.get(`${API_BASE_URL}/sessions/${uid.value}`);
+    console.log('Chat sessions response:', response.data);
+    console.log('Raw response data:', response.data); // 打印原始数据
+
+    chatSessions.value = response.data.map(session => {
+      console.log('Single session data:', session); // 打印单个会话数据
+      return {
+        ...session,
+        // 使用正确的字段名 hname
+        hname: session.hname
+      };
+    });
   } catch (error) {
-    console.error('Failed to load chat sessions:', error)
+    console.error('Failed to load chat sessions:', error);
   }
 }
-
 // 创建新会话
 async function createNewChat() {
   try {
@@ -264,7 +460,7 @@ async function createNewChat() {
     // 使用测试数据
     const newChat = {
       cid: Date.now(),
-      hName: '新对话'
+      hname: '新对话'
     }
     chatSessions.value.unshift(newChat)
     await selectChat(newChat.cid)
@@ -296,11 +492,27 @@ async function selectChat(cid) {
 
 // 发送消息
 async function sendMessage() {
-  if (!inputMessage.value.trim() || !currentCid.value || isLoading.value) return;
+  if (!inputMessage.value.trim() || isLoading.value) return;
 
   const messageContent = inputMessage.value;
   inputMessage.value = '';
   isLoading.value = true;
+
+  // 如果当前是欢迎界面或没有当前会话，先创建新会话
+  if (showWelcome.value || !currentCid.value) {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/sessions/new`, {
+        uid: uid.value
+      });
+      currentCid.value = response.data;
+      showWelcome.value = false;  // 隐藏欢迎界面
+    } catch (error) {
+      console.error('Failed to create new chat session:', error);
+      const newCid = Date.now();
+      currentCid.value = newCid;
+      showWelcome.value = false;
+    }
+  }
 
   // 先在界面上显示用户消息，但不保存到数据库
   const userMessage = {
@@ -310,6 +522,7 @@ async function sendMessage() {
     tempId: Date.now() // 添加临时ID用于标识
   };
   messages.value.push(userMessage);
+  await scrollToBottom();
 
   // 重试相关变量
   const maxRetries = 5;
@@ -318,15 +531,6 @@ async function sendMessage() {
 
   while (currentTry < maxRetries && !success) {
     try {
-      // 如果没有当前会话ID，先创建新会话
-      if (!currentCid.value) {
-        const response = await axios.post(`${API_BASE_URL}/sessions/new`, {
-          uid: uid.value,
-          initialMessage: messageContent
-        });
-        currentCid.value = response.data;
-      }
-      showWelcome.value = false; // 发送消息时隐藏欢迎界面
       const response = await axios.post(`${API_BASE_URL}/send`, {
         cid: parseInt(currentCid.value),
         uid: parseInt(uid.value),
@@ -360,6 +564,7 @@ async function sendMessage() {
           isError: true // 标记为错误消息
         });
       } else {
+        // 在重试之前等待一段时间，时间随重试次数增加
         await new Promise(resolve => setTimeout(resolve, 1000 * currentTry));
       }
     }

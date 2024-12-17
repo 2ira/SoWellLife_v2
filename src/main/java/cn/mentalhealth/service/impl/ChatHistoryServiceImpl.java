@@ -1,14 +1,17 @@
 package cn.mentalhealth.service.impl;
 
+import cn.mentalhealth.controller.ResourceVideoController;
 import cn.mentalhealth.dao.ChatHistoryDao;
 import cn.mentalhealth.dao.impl.ChatHistoryDaoImpl;
 import cn.mentalhealth.domain.ChatHistory;
 import cn.mentalhealth.service.AIService;
 import cn.mentalhealth.service.ChatHistoryService;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.logging.Logger;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,14 +23,23 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
     @Autowired
     private AIService aiService;
 
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ResourceVideoController.class);
+
     @Override
     public List<ChatHistory> getUserChatSessions(Integer uid) {
+
         List<ChatHistory> allUserChats = chatHistoryDao.getChatHistoryByUid(uid);
+        logger.info("Retrieved chat sessions for user {}: {}", uid, allUserChats);
         return allUserChats.stream()
                 .collect(Collectors.groupingBy(ChatHistory::getCid))
                 .values()
                 .stream()
-                .map(chatList -> chatList.get(0))
+                .map(chatList -> {
+                    // 获取最新的消息而不是第一条消息
+                    return chatList.stream()
+                            .max(Comparator.comparing(ChatHistory::getHtime))
+                            .orElse(chatList.get(0));
+                })
                 .collect(Collectors.toList());
     }
 

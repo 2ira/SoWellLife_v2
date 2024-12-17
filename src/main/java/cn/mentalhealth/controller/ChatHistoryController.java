@@ -41,28 +41,6 @@ public class ChatHistoryController {
         return chatHistoryService.getChatHistoryByCid(cid);
     }
 
-//    @PostMapping("/send")
-//    public ResponseEntity<?> sendMessage(@RequestBody Map<String, Object> request) {
-//        try {
-//            logger.info("收到发送消息请求");
-//            Integer cid = ((Number) request.get("cid")).intValue();
-//            Integer uid = ((Number) request.get("uid")).intValue();
-//            String content = (String) request.get("content");
-//
-//            logger.debug("Message params - cid: {}, uid: {}, content: {}", cid, uid, content);
-//
-//            ChatHistory response = chatHistoryService.sendMessage(cid, uid, content);
-//            return ResponseEntity.ok(response);
-//
-//        } catch (Exception e) {
-//            logger.error("处理消息时发生错误", e);
-//            Map<String, String> errorResponse = new HashMap<>();
-//            errorResponse.put("error", e.getMessage());
-//            errorResponse.put("details", e.getCause() != null ? e.getCause().getMessage() : "未知错误");
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body(errorResponse);
-//        }
-//    }
 
 @PostMapping("/send")
 public ResponseEntity<?> sendMessage(@RequestBody Map<String, Object> request) {
@@ -88,6 +66,38 @@ public ResponseEntity<?> sendMessage(@RequestBody Map<String, Object> request) {
                 .body(errorResponse);
     }
 }
+
+
+    // 在 ChatHistoryController 类中添加新的端点
+    @DeleteMapping("/sessions/{cid}")
+    public ResponseEntity<?> deleteChatSession(@PathVariable Integer cid) {
+        try {
+            chatHistoryService.deleteChatSession(cid);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            logger.error("Error deleting chat session", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to delete chat session");
+        }
+    }
+
+    @PutMapping("/sessions/{cid}/rename")
+    public ResponseEntity<?> renameChatSession(
+            @PathVariable Integer cid,
+            @RequestBody Map<String, String> request) {
+        try {
+            String newName = request.get("newName");
+            if (newName == null || newName.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("New name cannot be empty");
+            }
+            chatHistoryService.updateChatSessionName(cid, newName.trim());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            logger.error("Error renaming chat session", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to rename chat session");
+        }
+    }
 
 
 }

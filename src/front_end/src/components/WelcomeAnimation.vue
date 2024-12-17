@@ -1,3 +1,5 @@
+<!--src/components/WelcomeAnimation.vue-->
+
 <template>
   <div class="welcome-container">
     <!-- 文字动画部分，分成两行显示 -->
