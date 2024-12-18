@@ -1,10 +1,13 @@
 package cn.mentalhealth.service;
 
+import cn.mentalhealth.controller.ResourceController;
 import cn.mentalhealth.dao.ResourceDao;
 import cn.mentalhealth.dao.impl.ResourceDaoImpl;
 import cn.mentalhealth.domain.Resource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -17,6 +20,7 @@ public class ResourceService {
 
     private ResourceDao resourceDao = new ResourceDaoImpl();
     private ObjectMapper objectMapper = new ObjectMapper();
+    private static final Logger logger = LoggerFactory.getLogger(ResourceController.class);
 
     // 初始化ObjectMapper，设置序列化时的一些特性，比如日期格式等（可根据实际需求调整）
     public ResourceService() {
@@ -66,8 +70,8 @@ public class ResourceService {
     // 根据标签获取相关资源，并以JSON报文格式返回
     public String getResourcesByTagAsJson(HttpServletRequest request) {
         try {
-            String rtag = request.getParameter("rtag");
-
+            String rtag = request.getParameter("name");
+            logger.info("传入的标签: {}", rtag);
             List<Resource> resources = resourceDao.getResourcesByTag(rtag);
             return objectMapper.writeValueAsString(resources);
         } catch (NumberFormatException | IOException e) {

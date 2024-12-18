@@ -11,7 +11,11 @@
  Target Server Version : 80018
  File Encoding         : 65001
 
+<<<<<<< HEAD
  Date: 18/12/2024 00:03:12
+=======
+ Date: 16/12/2024 16:58:42
+>>>>>>> f9801f1c7c2de048a27841f2b983130be5b0f027
 */
 
 SET NAMES utf8mb4;
@@ -33,6 +37,7 @@ CREATE TABLE `doc_information`  (
   `spec_symptom` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   PRIMARY KEY (`doc_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+
 
 -- ----------------------------
 -- Records of doc_information
@@ -74,7 +79,7 @@ CREATE TABLE `history`  (
   `Htime` datetime NOT NULL COMMENT '对话时间',
   `Content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '对话内容',
   `HName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '会话名称，默认是问题的前6个字符，用户可修改',
-  `Role` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '角色，ai或者用户',
+  `Role` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '角色，ai或者用户或者System',
   PRIMARY KEY (`Hid`) USING BTREE,
   INDEX `fk_uid`(`Uid` ASC) USING BTREE,
   CONSTRAINT `fk_uid` FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`) ON DELETE RESTRICT ON UPDATE RESTRICT
@@ -267,6 +272,7 @@ CREATE TABLE `user`  (
   `UserPSW` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户密码',
   PRIMARY KEY (`Uid`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+
 
 -- ----------------------------
 -- Records of user

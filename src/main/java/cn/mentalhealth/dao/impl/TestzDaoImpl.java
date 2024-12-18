@@ -3,7 +3,6 @@ package cn.mentalhealth.dao.impl;
 import cn.mentalhealth.dao.TestzDao;
 import cn.mentalhealth.domain.Testz;
 import cn.mentalhealth.utils.JDBCUtils;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,7 +17,7 @@ public class TestzDaoImpl implements TestzDao {
     @Override
     public List<Testz> getAllTests() {
         List<Testz> testList = new ArrayList<>();
-        String sql = "SELECT * FROM test";
+        String sql = "SELECT Tid, Tag, title, description, img, url FROM test";
         try (Connection connection = jdbcUtils.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -26,10 +25,11 @@ public class TestzDaoImpl implements TestzDao {
             while (resultSet.next()) {
                 Testz test = new Testz();
                 test.setTid(resultSet.getInt("Tid"));
-                test.setUid(resultSet.getInt("Uid"));
-                test.setTime(resultSet.getTimestamp("Time").toLocalDateTime());
                 test.setTag(resultSet.getString("Tag"));
-                test.setResult(resultSet.getString("Result"));
+                test.setTitle(resultSet.getString("title"));
+                test.setDescription(resultSet.getString("description"));
+                test.setImg(resultSet.getString("img"));
+                test.setUrl(resultSet.getString("url"));
                 testList.add(test);
             }
         } catch (SQLException e) {
@@ -39,19 +39,20 @@ public class TestzDaoImpl implements TestzDao {
     }
 
     @Override
-    public Testz getTestById(int tid) {
+    public Testz getTestById(int Tid) {
         Testz test = new Testz();
-        String sql = "SELECT * FROM test WHERE Tid =?";
+        String sql = "SELECT Tid, Tag, title, description, img, url FROM test WHERE Tid =?";
         try (Connection connection = jdbcUtils.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, tid);
+            preparedStatement.setInt(1, Tid);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     test.setTid(resultSet.getInt("Tid"));
-                    test.setUid(resultSet.getInt("Uid"));
-                    test.setTime(resultSet.getTimestamp("Time").toLocalDateTime());
                     test.setTag(resultSet.getString("Tag"));
-                    test.setResult(resultSet.getString("Result"));
+                    test.setTitle(resultSet.getString("title"));
+                    test.setDescription(resultSet.getString("description"));
+                    test.setImg(resultSet.getString("img"));
+                    test.setUrl(resultSet.getString("url"));
                 }
             }
         } catch (SQLException e) {
@@ -61,20 +62,21 @@ public class TestzDaoImpl implements TestzDao {
     }
 
     @Override
-    public List<Testz> getTestsByUid(int uid) {
+    public List<Testz> getTestsByUid(int Uid) {
         List<Testz> testList = new ArrayList<>();
-        String sql = "SELECT * FROM test WHERE Uid =?";
+        String sql = "SELECT Tid, Tag, title, description, img, url FROM test WHERE Uid =?";
         try (Connection connection = jdbcUtils.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, uid);
+            preparedStatement.setInt(1, Uid);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     Testz test = new Testz();
                     test.setTid(resultSet.getInt("Tid"));
-                    test.setUid(resultSet.getInt("Uid"));
-                    test.setTime(resultSet.getTimestamp("Time").toLocalDateTime());
                     test.setTag(resultSet.getString("Tag"));
-                    test.setResult(resultSet.getString("Result"));
+                    test.setTitle(resultSet.getString("title"));
+                    test.setDescription(resultSet.getString("description"));
+                    test.setImg(resultSet.getString("img"));
+                    test.setUrl(resultSet.getString("url"));
                     testList.add(test);
                 }
             }
@@ -85,20 +87,21 @@ public class TestzDaoImpl implements TestzDao {
     }
 
     @Override
-    public List<Testz> getTestsByTag(String tag) {
+    public List<Testz> getTestsByTag(String Tag) {
         List<Testz> testList = new ArrayList<>();
-        String sql = "SELECT * FROM test WHERE Tag LIKE '%' +? + '%'";
+        String sql = "SELECT Tid, Tag, title, description, img, url FROM test WHERE Tag LIKE?";
         try (Connection connection = jdbcUtils.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, tag);
+            preparedStatement.setString(1, "%" + Tag + "%");
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     Testz test = new Testz();
                     test.setTid(resultSet.getInt("Tid"));
-                    test.setUid(resultSet.getInt("Uid"));
-                    test.setTime(resultSet.getTimestamp("Time").toLocalDateTime());
                     test.setTag(resultSet.getString("Tag"));
-                    test.setResult(resultSet.getString("Result"));
+                    test.setTitle(resultSet.getString("title"));
+                    test.setDescription(resultSet.getString("description"));
+                    test.setImg(resultSet.getString("img"));
+                    test.setUrl(resultSet.getString("url"));
                     testList.add(test);
                 }
             }
@@ -110,13 +113,15 @@ public class TestzDaoImpl implements TestzDao {
 
     @Override
     public void insertTest(Testz test) {
-        String sql = "INSERT INTO test (Uid, Time, Tag, Result) VALUES (?,?,?,?)";
+        String sql = "INSERT INTO test (Tid, Tag, title, description, img, url) VALUES (?,?,?,?,?,?)";
         try (Connection connection = jdbcUtils.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, test.getUid());
-            preparedStatement.setObject(2, test.getTime());
-            preparedStatement.setString(3, test.getTag());
-            preparedStatement.setString(4, test.getResult());
+            preparedStatement.setInt(1, test.getTid());
+            preparedStatement.setString(2, test.getTag());
+            preparedStatement.setString(3, test.getTitle());
+            preparedStatement.setString(4, test.getDescription());
+            preparedStatement.setString(5, test.getImg());
+            preparedStatement.setString(6, test.getUrl());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -125,13 +130,17 @@ public class TestzDaoImpl implements TestzDao {
 
     @Override
     public void updateTest(Testz test, String condition) {
-        String sql = "UPDATE test SET Uid =?, Time =?, Tag =?, Result =? WHERE " + condition;
+        String sql = "UPDATE test SET " +
+                "Tid =?, Tag =?, title =?, description =?, img =?, url =? " +
+                " WHERE " + condition;
         try (Connection connection = jdbcUtils.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, test.getUid());
-            preparedStatement.setObject(2, test.getTime());
-            preparedStatement.setString(3, test.getTag());
-            preparedStatement.setString(4, test.getResult());
+            preparedStatement.setInt(1, test.getTid());
+            preparedStatement.setString(2, test.getTag());
+            preparedStatement.setString(3, test.getTitle());
+            preparedStatement.setString(4, test.getDescription());
+            preparedStatement.setString(5, test.getImg());
+            preparedStatement.setString(6, test.getUrl());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

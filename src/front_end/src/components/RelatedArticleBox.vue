@@ -1,22 +1,32 @@
 <!-- src/components/RelatedArticleBox.vue -->
 <template>
     <div class="related-article-box" @click="handleClick">
-      <img :src="image" alt="Related Article Image" class="related-article-image" />
-      <p class="related-article-title">{{ title }}</p>
+      <img :src="require(`@/${rimg}`)" alt="Related Article Image" class="related-article-image" @error="onImageError"/>
+      <p class="related-article-title">{{ rname }}</p>
     </div>
   </template>
   
   <script>
+
   export default {
     name: "RelatedArticleBox",
     props: {
-      image: String,
-      title: String,
-      id: Number
+      rimg: String,
+      rname: String,
+      rid: Number,
+      rurl: String
     },
     methods: {
       handleClick() {
-        this.$emit('article-click', this.id);
+        // 当点击时，跳转到对应的文章详情页面
+        if (this.rurl) {
+          window.open(this.rurl, "_blank");  // 打开新窗口跳转
+        } else {
+          console.log("无链接的文章: ", this.rname);
+        }
+      },
+      onImageError() {
+        console.error('图片加载失败');
       }
     }
   };
@@ -24,27 +34,24 @@
   
   <style scoped>
   .related-article-box {
-    width: 22%;
-    background-color: #f9f9f9;
-    border-radius: 10px;
+    position: relative;
+    background: #fff;
+    border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    text-align: center;
     overflow: hidden;
-    width: 100%; /* 保证方框自适应 */
-    transition: transform 0.2s;
+    transition: transform 0.2s ease;
   }
   .related-article-box:hover {
-    transform: scale(1.05);
+    transform: translateY(-5px);
   }
   .related-article-image {
     width: 100%;
-    height: 150px;
+    height: 210px;
     object-fit: cover;
   }
   .related-article-title {
     font-size: 16px;
-    color: #333;
+    color: #000000;
     padding: 10px;
     font-weight: bold;
   }
