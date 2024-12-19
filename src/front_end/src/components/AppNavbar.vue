@@ -18,10 +18,11 @@
                @mouseover="isLoggedIn && (avatarHover = true, isDropdownVisible = true)"
                @mouseleave="avatarHover = false, isDropdownVisible = false">
             <img
-                :src="avatar_url || require('@/assets/imgs/homepage/login.png')"
+                :src="avatar_url ? require(`@/assets/imgs/${avatar_url}`) : require('@/assets/imgs/homepage/login.png')"
                 alt="用户头像"
                 class="user-avatar-img"
                 :class="{'avatar-hover': avatarHover}">
+
 
             <!-- 下拉框 -->
             <div v-if="isDropdownVisible && isLoggedIn" class="dropdown-menu" @click.stop>
@@ -55,6 +56,7 @@
                 <span :class="{'active': !isPasswordLogin && !isRegistering}" @click="setLoginMethod('captcha')">邮箱验证</span>
               </div>
 
+              <!-- 密码登录 -->
               <div v-if="isPasswordLogin && !isRegistering" class="login-form">
                 <div class="form-group">
                   <label for="username" class="input-label">账号</label>
@@ -70,6 +72,7 @@
                 </div>
               </div>
 
+              <!-- 邮箱验证码登录 -->
               <div v-if="!isPasswordLogin && !isRegistering" class="login-form">
                 <div class="form-group">
                   <label for="email" class="input-label">邮箱</label>
@@ -81,7 +84,7 @@
                   <button class="captcha-btn" :disabled="isSending || !isEmailValid" @click="startCountdown">{{ countdownText }}</button>
                 </div>
                 <div class="button-group">
-                  <button @click="handleLoginOrRegister" class="btn">登录/注册</button>
+                  <button @click="register_verify" class="btn">登录/注册</button>
                 </div>
               </div>
 
@@ -115,8 +118,6 @@
   </div>
 </template>
 
-
-
 <script>
 import { mapState, mapActions } from 'vuex';
 import axios from 'axios';
@@ -136,11 +137,10 @@ export default {
       countdown: 60,
       countdownText: '获取验证码',
       isEmailValid: true,
-      emailExists: false,
       avatarHover: false,
       isDropdownVisible: false,
       show_Login: false,
-      showDropdown:false
+      showDropdown: false
     };
   },
   computed: {
@@ -154,8 +154,7 @@ export default {
     ...mapActions(['login', 'logout']),
 
     goToProfile() {
-
-        this.$router.push('/profile');
+      this.$router.push('/profile');
     },
 
     gotoCollect() {
@@ -184,19 +183,57 @@ export default {
       this.setLoginMethod('captcha');
     },
 
-    handleLoginOrRegister() {
-      if (this.isPasswordLogin) {
-        this.loginWithPassword();
-      } else {
-        this.loginWithCaptcha();
+    // 注册功能
+    async register_verify() {
+      try {
+        console.log("开始发起验证码登录请求...");
+
+        // 发送验证码验证请求
+        const response = await axios.post('http://localhost:8080/api/login/login-by-code', null, {
+          params: {
+            email: this.email,
+            code: this.captcha
+          },
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        console.log("验证码登录返回的数据：", response.data);
+
+        if (response.data.success) {
+          // 登录成功后，保存用户信息
+          const userInfo = response.data.user;  // 获取返回的用户信息
+
+          // 确保有 uid 和 username
+          if (userInfo && userInfo.uid) {
+            this.$store.dispatch('login', {
+              username: userInfo.username,
+              avatar_url: userInfo.avatar_url || '',  // 如果没有头像，则默认为空字符串
+              uid: userInfo.uid  // 保存用户的 uid
+            });
+
+            this.isLoggedIn = true;  // 登录状态更新
+            this.closeLoginModal();  // 关闭登录模态框
+            alert('登录成功');
+          } else {
+            alert('登录失败，用户信息缺失');
+          }
+
+        } else {
+          alert(response.data.message);  // 显示错误消息
+        }
+      } catch (error) {
+        console.error('验证码登录请求失败', error);
+        alert('登录失败，请稍后重试');
       }
     },
 
+
+    // 登录功能
     async login_verify() {
       try {
         console.log("开始发起登录请求...");
 
-        // 第一步：验证密码
+        // 发起密码验证请求
         const response = await axios.post('http://localhost:8080/api/login/verify-password', null, {
           params: {
             identifier: this.identifier,
@@ -205,46 +242,29 @@ export default {
           headers: { 'Content-Type': 'application/json' }
         });
 
-        console.log("返回的数据：", response.data);  // 打印返回的完整数据
-
         if (response.data.success) {
-          console.log("登录成功，开始获取用户详细信息...");
-
-          // 第二步：根据 identifier 获取用户详细信息
+          // 获取用户信息
           const userInfoResponse = await axios.post('http://localhost:8080/api/login/profile', null, {
             params: { identifier: this.identifier }
           });
 
-          console.log("获取用户详细信息的返回数据：", userInfoResponse.data);
+          // 打印用户信息，包括头像信息
+          console.log("用户信息：", userInfoResponse.data);
+          console.log("用户名：", userInfoResponse.data.uname);
+          console.log("头像 URL：", userInfoResponse.data.avatarUser);
+          console.log("用户 ID：", userInfoResponse.data.uid);
 
-          // 触发 Vuex 的 login action，将用户信息存入 Vuex
+          // 存储用户信息到 Vuex
           this.$store.dispatch('login', {
-            username: userInfoResponse.data.username,
-            avatar_url: userInfoResponse.data.avatar_url,
+            username: userInfoResponse.data.uname,
+            avatar_url: userInfoResponse.data.avatarUser,
             uid: userInfoResponse.data.uid
           });
 
-          console.log("Vuex 状态更新后，用户信息已存储：", {
-            username: userInfoResponse.data.username,
-            avatar_url: userInfoResponse.data.avatar_url,
-            uid: userInfoResponse.data.uid
-          });
-
-          // 登录成功后，执行其他操作
-          this.$emit('login-success', { identifier: this.identifier });
-          console.log("触发了 'login-success' 事件");
-
-          this.closeLoginModal();
-          console.log("关闭登录模态框");
-
-          this.isDropdownVisible = true;
-          console.log("显示下拉菜单");
-
+          // 登录成功的状态更新
           this.isLoggedIn = true;
-          console.log("更新组件内部状态 isLoggedIn 为 true");
-
+          this.closeLoginModal();
         } else {
-          console.log("登录失败，错误信息：", response.data.message);
           alert('登录失败，请检查用户名或密码');
         }
       } catch (error) {
@@ -253,38 +273,81 @@ export default {
       }
     },
 
-
-
-    loginWithCaptcha() {
-      // 实现验证码登录的逻辑
-    },
-
     logout() {
-      // 调用 Vuex 的 logout 方法
       this.$store.dispatch('logout');
-
-      // 更新组件内部状态
-      this.isDropdownVisible = false; // 隐藏下拉菜单
-
-      // 跳转到首页或登录页（根据你的需求调整）
+      this.isDropdownVisible = false;
       this.$router.push('/');
-    },
-
-
-    validateCaptcha() {
-      // 验证验证码输入
-    },
-
-    startCountdown() {
-      // 发送验证码并开始倒计时
     },
 
     goToResources(type) {
       this.$router.push(`/resources/${type}`);
+    },
+
+    // 发送验证码
+    startCountdown() {
+      // 如果邮箱无效，提示并返回
+      if (!this.isEmailValid) {
+        alert('请先输入有效的邮箱地址');
+        return;
+      }
+
+      // 如果正在发送验证码，不允许再次点击
+      if (this.isSending) {
+        return;
+      }
+
+      // 设置正在发送验证码
+      this.isSending = true;
+      this.countdown = 60;  // 重置倒计时为60秒
+      this.countdownText = `${this.countdown}秒`;
+
+      // 发送验证码请求
+      axios.post('http://localhost:8080/api/login/register', null, {
+        params: { email: this.email }
+      })
+          .then(response => {
+            // 验证码发送成功
+            console.log("验证码发送成功：", response.data);
+
+            // 启动倒计时
+            this.startTimer();
+          })
+          .catch(error => {
+            // 验证码发送失败
+            console.error("验证码发送失败：", error);
+            alert('验证码发送失败，请稍后重试');
+
+            // 发送失败时取消倒计时
+            this.isSending = false;
+            this.countdownText = '获取验证码';  // 重置按钮文字
+          });
+    },
+
+    startTimer() {
+      // 启动倒计时
+      this.countdownInterval = setInterval(() => {
+        if (this.countdown > 0) {
+          this.countdown--;
+          this.countdownText = `${this.countdown}秒`;
+        } else {
+          clearInterval(this.countdownInterval);  // 倒计时结束时清除定时器
+          this.isSending = false;
+          this.countdownText = '获取验证码';
+        }
+      }, 1000);
+    },
+
+
+    // 校验邮箱和验证码
+    validateCaptcha() {
+      this.isEmailValid = this.email && this.email.length > 0;
     }
   }
 };
 </script>
+
+
+
 
 
 

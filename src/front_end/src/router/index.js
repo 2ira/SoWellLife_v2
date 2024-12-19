@@ -11,6 +11,7 @@ import Profile_Page from '@/views/Profile_Page.vue';
 import TestPage from "@/views/test.vue";
 import MyCollection from '@/views/MyCollection.vue';
 import axios from "axios";
+import store from "@/store";
 
 const routes = [
   {
@@ -83,6 +84,20 @@ const router = createRouter({
 
 // Add a beforeEach guard to prevent Vue Router from handling /api requests
 router.beforeEach((to, from, next) => {
+  // 判断用户是否已经登录
+  const isLoggedIn = store.state.isLoggedIn;
+
+  // 需要登录的页面（例如 /profile 和 /collection）
+  const requiresAuth = ['/profile', '/collection'].includes(to.path);
+
+  // 如果用户未登录并且访问需要登录的页面
+  if (requiresAuth && !isLoggedIn) {
+    // 重定向到主页
+    next('/');
+  } else {
+    // 允许访问
+    next();
+  }
   if (to.path.startsWith('/api')) {
     // 处理跨域请求，这里假设后端允许所有来源的跨域请求（实际情况中需要根据后端配置来设置正确的跨域策略）
     axios.defaults.withCredentials = true;

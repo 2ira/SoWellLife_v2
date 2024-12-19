@@ -56,20 +56,7 @@ export default {
       showError: false,      // 错误提示的状态
     };
   },
-  //mounted() {
-    // 从路由的查询参数中获取 identifier
-    //this.identifier = this.$route.query.identifier;
 
-    // 打印 identifier 以验证其值
-    //console.log('Identifier in ProfilePage:', this.identifier);
-
-    // 如果没有提供 identifier，可以显示错误提示或者执行其他逻辑
-    //if (!this.identifier) {
-      //console.error('Identifier 参数丢失');
-      // 设置 showError 状态为 true，显示错误提示
-      //this.showError = true;
-    //}
-  ///},
   methods: {
     changeTab(tab) {
       this.currentTab = tab;

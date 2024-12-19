@@ -20,7 +20,6 @@
       <div class="profile-item">
         <button @click="changePassword" class="save-btn">修改密码</button>
       </div>
-
     </div>
   </div>
 </template>
@@ -33,95 +32,110 @@ export default {
   data() {
     return {
       security: {
-        originPassword:'',
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
-        identifier:''
+        currentPassword: '',  // 当前密码
+        newPassword: '',      // 新密码
+        confirmPassword: '',  // 确认密码
+        uid: ''        // 用户标识符（UID）
       },
+      isLoading: false,  // 加载状态
+      errorMessage: ''   // 错误信息
     };
   },
   methods: {
-    // 获取用户信息
+    // 获取当前用户的UID，并初始化相关数据
     async getOrignalPassword() {
-      // 从 Vuex 获取当前用户的 UID
-      const uid = this.$store.getters.uid;
+      this.security.uid = this.$store.getters.uid;
 
-      // 检查 UID 是否存在，如果不存在，显示错误信息
-      if (!uid) {
+      // 检查 UID 是否存在
+      if (!this.security.uid) {
         console.error('password: uid 未定义');
         this.errorMessage = '无法获取用户标识符。';
         return;
       }
 
+      // 发送请求获取用户原始密码等信息
       const url = 'http://localhost:8080/api/login/profile';
 
-      this.isLoading = true;
-      this.errorMessage = '';
-
       try {
-        // 请求时传递 UID
         const response = await axios.get(url, {
-          params: { identifier: uid },  // 使用 Vuex 中的 uid 作为请求参数
+          params: { identifier: this.security.uid }
         });
-
-        console.log('Response from API:', response.data); // 输出后端返回的原始数据
 
         if (response.status === 200 && response.data) {
           // 映射响应数据
           this.security.originPassword = response.data.userPSW;
-          console.log('User data after mapping:', this.security.originPassword);
         } else {
-          console.error('获取用户信息失败，响应状态码非200或无有效返回数据');
+          console.error('获取用户信息失败');
           this.errorMessage = '获取用户信息失败，请稍后重试。';
         }
       } catch (error) {
-        // 错误处理
-        if (error.response) {
-          console.error('请求失败，服务器返回错误：', error.response.data);
-          console.error('状态码：', error.response.status);
-          this.errorMessage =
-              error.response.data.message || '服务器错误，无法获取用户信息。';
-        } else if (error.request) {
-          console.error('请求失败，未收到服务器响应');
-          this.errorMessage = '网络错误，无法获取用户信息。';
-        } else {
-          console.error('请求失败，配置错误：', error.message);
-          this.errorMessage = '请求配置错误，请联系开发者。';
-        }
-      } finally {
-        // 请求结束，设置加载状态
-        this.isLoading = false;
+        console.error('请求失败', error);
+        this.errorMessage = '无法获取用户信息，请稍后再试。';
       }
     },
 
     // 修改密码操作
-    changePassword() {
-      const { originPassword,currentPassword, newPassword, confirmPassword } = this.security;
-      if(originPassword!=currentPassword){
-        alert('原密码不正确！');
-        return;
-      }
+    async changePassword() {
+      const { currentPassword, newPassword, confirmPassword, uid } = this.security;
 
-      if (!currentPassword || !newPassword || !confirmPassword ) {
+      console.log('User identifier:', uid);
+      console.log('Request data:', {
+        uid: uid,
+        oldPassword: currentPassword,
+        newPassword: newPassword
+      });
+
+      // 校验基本输入
+      if (!currentPassword || !newPassword || !confirmPassword) {
         alert('请填写所有字段');
         return;
       }
 
+      // 校验新密码和确认密码是否一致
       if (newPassword !== confirmPassword) {
         alert('新密码和确认密码不匹配');
         return;
       }
 
-      if (newPassword.length < 8) {
-        alert('新密码长度至少为8个字符');
+      // 确保 identifier 不为空
+      if (!uid) {
+        alert('用户ID不能为空');
         return;
       }
 
-      console.log('修改密码:', currentPassword, newPassword);
-      alert('密码修改成功');
-    },
+      // 向后端发送请求修改密码
+      this.isLoading = true;
+      const url = 'http://localhost:8080/api/login/change-password';
+
+      // 使用 URLSearchParams 发送表单数据
+      const formData = new URLSearchParams();
+      formData.append('uid', uid);
+      formData.append('oldPassword', currentPassword);
+      formData.append('newPassword', newPassword);
+
+      try {
+        const response = await axios.post(url, formData, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        });
+
+        console.log('Response:', response.data);
+
+        if (response.data.success) {
+          alert('密码修改成功');
+        } else {
+          alert('密码修改失败: ' + (response.data.message || '请稍后重试'));
+        }
+      } catch (error) {
+        console.error('请求失败', error);
+        alert('密码修改失败，请稍后再试');
+      } finally {
+        this.isLoading = false;
+      }
+    }
   },
+
   mounted() {
     this.getOrignalPassword();
   }
@@ -129,27 +143,18 @@ export default {
 </script>
 
 <style scoped>
-/* 设置容器的最大宽度、居中显示，并调整上下内边距 */
+/* 样式保持不变 */
 .section {
   max-width: 600px;
   margin: 0 auto;
-  padding: 50px 20px;  /* 增加上下内边距，避免内容贴近顶部 */
+  padding: 50px 20px;
   background-color: transparent;
   border: none;
   box-shadow: none;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* 内容自上而下排列 */
-  min-height: 80vh; /* 最小高度控制为60% */
-}
-
-/* 统一字体 */
-h2 {
-  text-align: left;
-  font-size: 1.8em;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 30px;
+  justify-content: flex-start;
+  min-height: 80vh;
 }
 
 .profile-item {
@@ -173,7 +178,7 @@ h2 {
   border-radius: 8px;
   font-size: 1em;
   width: 100%;
-  max-width: 300px;  /* 限制最大宽度 */
+  max-width: 300px;
   transition: border-color 0.3s;
 }
 
@@ -194,7 +199,7 @@ h2 {
   transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
   display: block;
   width: 100%;
-  max-width: 200px;  /* 限制最大宽度 */
+  max-width: 200px;
   margin-left: 178px;
 }
 

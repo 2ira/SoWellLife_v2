@@ -26,6 +26,12 @@ export default createStore({
             state.avatar_url = '';
             state.uid = null;
         },
+        // 更新用户名和头像
+        UPDATE_USER_INFO(state, { username, avatar_url }) {
+            state.username = username;
+            state.avatar_url = avatar_url;
+        },
+
     },
     actions: {
         // 登录操作
@@ -63,4 +69,5 @@ export default createStore({
         // 获取用户 UID
         uid: state => state.uid,
     },
+
 });

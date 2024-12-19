@@ -22,8 +22,8 @@
                 <div style="margin-top: 20px;">
                   <strong>擅长：</strong>{{ doctor.spec_symptom }}
                 </div>
-                <div style="width: 800px; margin-top: 20px; border-bottom: 2px dashed #006400;"></div>
-                <p>如果你想了解该医生的更多信息（包括学习经历、患者评价），请点击右方链接：
+                <div style="width: 800px; margin-top: 25px; border-bottom: 2px dashed #006400;"></div>
+                <p style="margin-top: 20px;">如果你想了解该医生的更多信息（包括学习经历、患者评价），请点击右方链接：
                   <a :href="doctor.hosUrl" class="learn-more" target="_blank">了解更多</a>
                 </p>
               </div>
@@ -83,7 +83,7 @@ export default {
   padding: 60px 30px;
   margin-top: 120px;
   border-radius: 10px;
-  margin-left: 250px;
+  margin-left: 400px;
   max-width: 1150px;
 }
 
@@ -99,16 +99,20 @@ export default {
 }
 
 .doctor-photo {
-  flex: 0 0 130px;
+  flex: 0 0 300px; /* 固定宽度为 130px */
+  height: 380px;   /* 固定高度为 130px，保证宽高一致 */
   margin-right: 40px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  object-fit: cover; /* 保证图片填充整个容器 */
 }
+
 
 .text-details {
   flex: 1;
   display: flex;
   flex-direction: column;
   height: 130px;
+  margin-left: 50px;
 }
 
 .doctor-info-text {
@@ -151,6 +155,7 @@ export default {
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 15px;
+  width: 1200px;
 }
 
 .introduction-title {
@@ -160,11 +165,13 @@ export default {
 }
 
 .introduction-box p {
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 20px;
+  line-height: 2;
+
 }
 
 .learn-more {
   text-decoration: underline;
+  margin-bottom: 10px;
 }
 </style>
