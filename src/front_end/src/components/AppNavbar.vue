@@ -18,7 +18,7 @@
                @mouseover="isLoggedIn && (avatarHover = true, isDropdownVisible = true)"
                @mouseleave="avatarHover = false, isDropdownVisible = false">
             <img
-                :src="avatar_url ? require(`@/assets/imgs/${avatar_url}`) : require('@/assets/imgs/homepage/login.png')"
+                :src="avatar_url || require('@/assets/imgs/avatar/login.png')"
                 alt="用户头像"
                 class="user-avatar-img"
                 :class="{'avatar-hover': avatarHover}">
@@ -64,7 +64,8 @@
                 </div>
                 <div class="form-group">
                   <label for="password" class="input-label">密码</label>
-                  <input id="password" type="password" v-model="password" placeholder="请输入密码" class="input-field" />
+                  <el-input id="password" type="password" v-model="password" placeholder="请输入密码" class="input-field" style="width: 80%;height:100%;color: #888;z-index:1000;"
+                            show-password />
                 </div>
                 <div class="button-group">
                   <button @click="login_verify" class="btn">登录</button>
@@ -154,6 +155,7 @@ export default {
     ...mapActions(['login', 'logout']),
 
     goToProfile() {
+
       this.$router.push('/profile');
     },
 
@@ -183,49 +185,7 @@ export default {
       this.setLoginMethod('captcha');
     },
 
-    // 注册功能
-    async register_verify() {
-      try {
-        console.log("开始发起验证码登录请求...");
 
-        // 发送验证码验证请求
-        const response = await axios.post('http://localhost:8080/api/login/login-by-code', null, {
-          params: {
-            email: this.email,
-            code: this.captcha
-          },
-          headers: { 'Content-Type': 'application/json' }
-        });
-
-        console.log("验证码登录返回的数据：", response.data);
-
-        if (response.data.success) {
-          // 登录成功后，保存用户信息
-          const userInfo = response.data.user;  // 获取返回的用户信息
-
-          // 确保有 uid 和 username
-          if (userInfo && userInfo.uid) {
-            this.$store.dispatch('login', {
-              username: userInfo.username,
-              avatar_url: userInfo.avatar_url || '',  // 如果没有头像，则默认为空字符串
-              uid: userInfo.uid  // 保存用户的 uid
-            });
-
-            this.isLoggedIn = true;  // 登录状态更新
-            this.closeLoginModal();  // 关闭登录模态框
-            alert('登录成功');
-          } else {
-            alert('登录失败，用户信息缺失');
-          }
-
-        } else {
-          alert(response.data.message);  // 显示错误消息
-        }
-      } catch (error) {
-        console.error('验证码登录请求失败', error);
-        alert('登录失败，请稍后重试');
-      }
-    },
 
 
     // 登录功能
@@ -282,7 +242,49 @@ export default {
     goToResources(type) {
       this.$router.push(`/resources/${type}`);
     },
+    // 注册功能
+    async register_verify() {
+      try {
+        console.log("开始发起验证码登录请求...");
 
+        // 发送验证码验证请求
+        const response = await axios.post('http://localhost:8080/api/login/login-by-code', null, {
+          params: {
+            email: this.email,
+            code: this.captcha
+          },
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        console.log("验证码登录返回的数据：", response.data);
+
+        if (response.data.success) {
+          // 登录成功后，保存用户信息
+          const userInfo = response.data.user;  // 获取返回的用户信息
+
+          // 确保有 uid 和 username
+          if (userInfo && userInfo.uid) {
+            this.$store.dispatch('login', {
+              username: userInfo.username,
+              avatar_url: userInfo.avatar_url,  // 如果没有头像，则默认为空字符串
+              uid: userInfo.uid  // 保存用户的 uid
+            });
+
+            this.isLoggedIn = true;  // 登录状态更新
+            this.closeLoginModal();  // 关闭登录模态框
+            alert('登录成功');
+          } else {
+            alert('登录失败，用户信息缺失');
+          }
+
+        } else {
+          alert(response.data.message);  // 显示错误消息
+        }
+      } catch (error) {
+        console.error('验证码登录请求失败', error);
+        alert('登录失败，请稍后重试');
+      }
+    },
     // 发送验证码
     startCountdown() {
       // 如果邮箱无效，提示并返回

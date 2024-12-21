@@ -1,4 +1,5 @@
 import { createStore } from 'vuex';
+import createPersistedState from 'vuex-persistedstate';  // 引入插件
 
 export default createStore({
     state: {
@@ -31,14 +32,12 @@ export default createStore({
             state.username = username;
             state.avatar_url = avatar_url;
         },
-
     },
     actions: {
         // 登录操作
         async login({ commit }, user) {
             try {
                 commit('SET_USER', user);  // 在验证成功后设置用户信息
-                localStorage.setItem('user', JSON.stringify(user));
                 console.log("登陆成功");
             } catch (error) {
                 console.error('登录失败:', error);
@@ -51,13 +50,6 @@ export default createStore({
             // 清除 localStorage 中的用户信息
             localStorage.removeItem('user');
         },
-        // 从本地存储恢复登录状态（页面刷新后恢复）
-        restoreUser({ commit }) {
-            const user = JSON.parse(localStorage.getItem('user'));
-            if (user) {
-                commit('SET_USER', user);
-            }
-        },
     },
     getters: {
         // 获取用户登录状态
@@ -69,5 +61,18 @@ export default createStore({
         // 获取用户 UID
         uid: state => state.uid,
     },
-
+    plugins: [
+        createPersistedState({
+            storage: window.localStorage, // 使用 localStorage 来保存状态
+            reducer(val) {
+                // 只持久化部分状态
+                return {
+                    isLoggedIn: val.isLoggedIn,
+                    username: val.username,
+                    avatar_url: val.avatar_url,
+                    uid: val.uid,
+                };
+            },
+        }),
+    ],
 });

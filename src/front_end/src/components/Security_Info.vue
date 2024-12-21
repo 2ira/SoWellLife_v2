@@ -1,24 +1,72 @@
 <template>
   <div class="section">
     <div class="security-container">
+      <!-- 当前密码 -->
       <div class="profile-item">
         <label for="current-password">当前密码:</label>
-        <input id="current-password" type="password" v-model="security.currentPassword" placeholder="请输入当前密码" />
+        <el-input
+
+            id="current-password"
+            type="password"
+            v-model="security.currentPassword"
+            placeholder="请输入当前密码"
+            show-password
+            style="width: 300px;height:40px;"
+        />
+        <div v-if="currentPasswordError" class="error-message">
+          {{ currentPasswordError }}
+        </div>
       </div>
 
+      <!-- 新密码 -->
       <div class="profile-item">
         <label for="new-password">新密码:</label>
-        <input id="new-password" type="password" v-model="security.newPassword" placeholder="请输入新密码" />
+        <el-input
+            id="new-password"
+            type="password"
+            v-model="security.newPassword"
+            placeholder="请输入新密码"
+            show-password
+            style="width: 300px;height:40px;"
+        />
+      </div>
+      <!-- 新密码的错误提示 -->
+      <div v-if="newPasswordError" class="error-message">
+        {{ newPasswordError }}
       </div>
 
+      <!-- 新密码的格式提示 -->
+      <div v-if="security.newPassword && !isPasswordValid" class="hint-message">
+        密码至少6个字符，包含字母、数字和特殊字符。
+      </div>
+
+      <!-- 确认密码 -->
       <div class="profile-item">
         <label for="confirm-password">确认密码:</label>
-        <input id="confirm-password" type="password" v-model="security.confirmPassword" placeholder="请确认新密码" />
+        <el-input
+            id="confirm-password"
+            type="password"
+            v-model="security.confirmPassword"
+            placeholder="请确认新密码"
+            style="width: 300px;height:40px;"
+            show-password
+        />
+
+      </div>
+      <!-- 确认密码的错误提示 -->
+      <div v-if="security.newPassword && confirmPasswordError" class="error-message">
+        {{ confirmPasswordError }}
       </div>
 
       <!-- 修改密码按钮 -->
       <div class="profile-item">
-        <button @click="changePassword" class="save-btn">修改密码</button>
+        <button
+            @click="changePassword"
+            class="save-btn"
+            :disabled="isLoading || !isFormValid"
+        >
+          修改密码
+        </button>
       </div>
     </div>
   </div>
@@ -35,12 +83,39 @@ export default {
         currentPassword: '',  // 当前密码
         newPassword: '',      // 新密码
         confirmPassword: '',  // 确认密码
-        uid: ''        // 用户标识符（UID）
+        uid: '',              // 用户标识符（UID）
+        originPassword: ''    // 存储原密码
       },
-      isLoading: false,  // 加载状态
-      errorMessage: ''   // 错误信息
+      isLoading: false,       // 加载状态
+      currentPasswordError: '',  // 当前密码错误信息
+      newPasswordError: '',      // 新密码错误信息
+      confirmPasswordError: '',  // 确认密码错误信息
     };
   },
+
+  computed: {
+    isFormValid() {
+      // 校验表单是否有效
+      return (
+          this.security.currentPassword &&
+          this.security.newPassword &&
+          this.security.confirmPassword &&
+          this.security.newPassword === this.security.confirmPassword
+      );
+    },
+
+    // 新密码的校验规则
+    isPasswordValid() {
+      const password = this.security.newPassword;
+      return (
+          password.length >= 6 &&
+          /[a-zA-Z]/.test(password) &&
+          /\d/.test(password) &&
+          /[!@#$%^&*(),.?":{}|<>]/.test(password)
+      );
+    }
+  },
+
   methods: {
     // 获取当前用户的UID，并初始化相关数据
     async getOrignalPassword() {
@@ -76,7 +151,7 @@ export default {
 
     // 修改密码操作
     async changePassword() {
-      const { currentPassword, newPassword, confirmPassword, uid } = this.security;
+      const { currentPassword, newPassword, confirmPassword, uid, originPassword } = this.security;
 
       console.log('User identifier:', uid);
       console.log('Request data:', {
@@ -85,21 +160,36 @@ export default {
         newPassword: newPassword
       });
 
+      // 重置错误信息
+      this.currentPasswordError = '';
+      this.newPasswordError = '';
+      this.confirmPasswordError = '';
+
       // 校验基本输入
       if (!currentPassword || !newPassword || !confirmPassword) {
-        alert('请填写所有字段');
+        this.errorMessage = '请填写所有字段';
         return;
       }
 
+      // 校验原密码是否正确
+      if (currentPassword !== originPassword) {
+        alert('当前密码不正确，请重新输入。');
+        return;
+      }
+      // 校验新密码和当前密码是否相同
+      if (newPassword === currentPassword) {
+        alert( '新密码不能与当前密码相同，请重新输入。');
+        return;
+      }
       // 校验新密码和确认密码是否一致
       if (newPassword !== confirmPassword) {
-        alert('新密码和确认密码不匹配');
+        alert( '新密码和确认密码不匹配，请重新输入。');
         return;
       }
 
       // 确保 identifier 不为空
       if (!uid) {
-        alert('用户ID不能为空');
+        this.errorMessage = '用户ID不能为空';
         return;
       }
 
@@ -124,6 +214,12 @@ export default {
 
         if (response.data.success) {
           alert('密码修改成功');
+          // 在组件中调用 LOGOUT action
+          this.$store.dispatch('logout');
+          this.$router.push('/');
+
+
+
         } else {
           alert('密码修改失败: ' + (response.data.message || '请稍后重试'));
         }
@@ -132,6 +228,33 @@ export default {
         alert('密码修改失败，请稍后再试');
       } finally {
         this.isLoading = false;
+      }
+    }
+  },
+
+  // 监听 newPassword 和 confirmPassword 的变化
+  watch: {
+    // 监听 newPassword 和 confirmPassword 的变化，确保只有当 newPassword 存在时才进行验证
+    'security.newPassword': function() {
+      if (this.security.newPassword && this.security.confirmPassword) {
+        if (this.security.newPassword !== this.security.confirmPassword) {
+          this.confirmPasswordError = '新密码和确认密码不匹配，请重新输入。';
+        } else {
+          this.confirmPasswordError = '';
+        }
+      } else {
+        this.confirmPasswordError = ''; // 清除错误信息
+      }
+    },
+    'security.confirmPassword': function() {
+      if (this.security.newPassword && this.security.confirmPassword) {
+        if (this.security.newPassword !== this.security.confirmPassword) {
+          this.confirmPasswordError = '新密码和确认密码不匹配，请重新输入。';
+        } else {
+          this.confirmPasswordError = '';
+        }
+      } else {
+        this.confirmPasswordError = ''; // 清除错误信息
       }
     }
   },
@@ -168,8 +291,7 @@ export default {
   font-size: 1em;
   font-weight: bold;
   color: #555;
-  width: 120px;
-  margin-right: 10px;
+  width: 120px;  /* 设置标签宽度，确保与输入框对齐 */
 }
 
 .profile-item input {
@@ -210,5 +332,21 @@ export default {
 
 .save-btn:active {
   transform: scale(0.98);
+}
+
+.error-message {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 5px;
+  margin-left: 140px; /* 错误信息与输入框对齐 */
+  margin-bottom: 20px;
+}
+
+.hint-message {
+  color: red;
+  font-size: 0.85em;
+  margin-top: 5px;
+  margin-left: 140px; /* 提示信息与输入框对齐 */
+  margin-bottom: 20px;
 }
 </style>

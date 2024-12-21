@@ -48,6 +48,26 @@ public class UserService {
             return "{\"error\": \"根据ID获取用户记录时出错\", \"details\": \"" + e.getMessage() + "\"}";
         }
     }
+    //获取头像
+    public String getAvatarPathByUserId(int uid) {
+        User user = getUserById(uid);  // 获取用户对象
+        if (user != null) {
+            // 获取用户的头像路径
+            String avatarUrl = user.getAvatarUser(); // 获取用户的头像 URL（假设 avatarUrl 是 User 类中的字段）
+
+            if (avatarUrl != null && !avatarUrl.isEmpty()) {
+                // 返回头像路径
+                return avatarUrl;
+            } else {
+                // 如果头像路径为空，返回提示信息
+                return "用户 " + uid + " 未设置头像，请上传头像";
+            }
+        } else {
+            // 用户不存在的情况
+            return "未找到ID为 " + uid + " 的用户，请检查输入的用户ID是否正确";
+        }
+    }
+
 
     // 根据用户邮箱获取特定用户记录，并以JSON报文格式返回
     public String getUserByEmailAsJson(String email) {
@@ -119,8 +139,11 @@ public class UserService {
     // 从HttpServletRequest中获取用户ID并更新用户邮箱，返回操作结果的JSON报文
     public String updateUserEmail(HttpServletRequest request) {
         try {
+            String Uid=request.getParameter("uid");
+            log("用户 " + Uid,request);
             int uid = Integer.parseInt(request.getParameter("uid"));
-            String newEmail = request.getParameter("newEmail");
+
+            String newEmail = request.getParameter("newemail");
 
             User user = getUserById(uid);
             if (user!= null) {
@@ -164,4 +187,125 @@ public class UserService {
     private void log(String message, HttpServletRequest request) {
         System.out.println("操作日志: " + message + "，来源IP: " + request.getRemoteAddr());
     }
+   public String updateUserPassword(HttpServletRequest request) {
+        try {
+            // 打印所有请求参数
+            System.out.println("请求参数: " + request.getParameterMap());
+
+            // 获取用户ID和新旧密码
+            String uidParam = request.getParameter("uid");
+            String oldPassword = request.getParameter("oldPassword");
+            String newPassword = request.getParameter("newPassword");
+
+            // 打印获取到的具体参数
+            System.out.println("用户ID: " + uidParam);
+            System.out.println("旧密码: " + oldPassword);
+            System.out.println("新密码: " + newPassword);
+
+            // 校验参数是否为空
+            if (uidParam == null || uidParam.isEmpty()) {
+                return "{\"success\": false, \"error\": \"用户ID不能为空\", \"details\": \"请提供有效的用户ID\"}";
+            }
+
+            if (oldPassword == null || oldPassword.isEmpty()) {
+                return "{\"success\": false, \"error\": \"旧密码不能为空\", \"details\": \"请提供旧密码\"}";
+            }
+
+            if (newPassword == null || newPassword.isEmpty()) {
+                return "{\"success\": false, \"error\": \"新密码不能为空\", \"details\": \"请提供新密码\"}";
+            }
+
+            // 将用户ID从字符串转换为整数
+            int uid = Integer.parseInt(uidParam);
+
+            // 获取用户对象
+            User user = getUserById(uid);
+            if (user != null) {
+                // 校验旧密码是否正确
+                if (user.getUserPSW().equals(oldPassword)) {
+                    // 更新密码
+                    user.setUserPSW(newPassword);
+                    // 记录操作日志
+                    log("用户 " + uid + " 更新了密码", request);
+                    updateUser(user, "Uid = " + uid);
+
+                    return "{\"success\": true, \"message\": \"用户密码更新成功\"}";
+                } else {
+                    return "{\"success\": false, \"error\": \"旧密码不正确\", \"details\": \"请检查输入的旧密码\"}";
+                }
+            } else {
+                return "{\"success\": false, \"error\": \"未找到ID为 " + uid + " 的用户，无法更新密码\", \"details\": \"请检查输入的用户ID是否正确\"}";
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return "{\"success\": false, \"error\": \"用户ID格式错误，无法解析为数字\", \"details\": \"" + e.getMessage() + "\"}";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "{\"success\": false, \"error\": \"更新用户密码时出错\", \"details\": \"" + e.getMessage() + "\"}";
+        }
+    }
+
+    private String updateEmail(HttpServletRequest request) {
+        try {
+            // 打印所有请求参数
+            System.out.println("请求参数: " + request.getParameterMap());
+
+            // 获取用户ID和新旧邮箱
+            String uidParam = request.getParameter("uid");
+            String oldEmail = request.getParameter("oldEmail");
+            String newEmail = request.getParameter("newEmail");
+
+            // 打印获取到的具体参数
+            System.out.println("用户ID: " + uidParam);
+            System.out.println("旧邮箱: " + oldEmail);
+            System.out.println("新邮箱: " + newEmail);
+
+            // 校验参数是否为空
+            if (uidParam == null || uidParam.isEmpty()) {
+                return "{\"success\": false, \"error\": \"用户ID不能为空\", \"details\": \"请提供有效的用户ID\"}";
+            }
+
+            if (oldEmail == null || oldEmail.isEmpty()) {
+                return "{\"success\": false, \"error\": \"旧邮箱不能为空\", \"details\": \"请提供旧邮箱\"}";
+            }
+
+            if (newEmail == null || newEmail.isEmpty()) {
+                return "{\"success\": false, \"error\": \"新邮箱不能为空\", \"details\": \"请提供新邮箱\"}";
+            }
+
+            // 将用户ID从字符串转换为整数
+            int uid = Integer.parseInt(uidParam);
+
+            // 获取用户对象
+            User user = getUserById(uid);
+            if (user != null) {
+                // 校验旧邮箱是否正确
+                if (user.getEmail().equals(oldEmail)) {
+                    // 更新邮箱
+                    user.setEmail(newEmail);
+                    // 记录操作日志
+                    log("用户 " + uid + " 更新了邮箱", request);
+                    updateUser(user, "Uid = " + uid);
+
+                    return "{\"success\": true, \"message\": \"用户邮箱更新成功\"}";
+                } else {
+                    return "{\"success\": false, \"error\": \"旧邮箱不正确\", \"details\": \"请检查输入的旧邮箱\"}";
+                }
+            } else {
+                return "{\"success\": false, \"error\": \"未找到ID为 " + uid + " 的用户，无法更新邮箱\", \"details\": \"请检查输入的用户ID是否正确\"}";
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return "{\"success\": false, \"error\": \"用户ID格式错误，无法解析为数字\", \"details\": \"" + e.getMessage() + "\"}";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "{\"success\": false, \"error\": \"更新用户邮箱时出错\", \"details\": \"" + e.getMessage() + "\"}";
+        }
+    }
+
+
+
+
+
+
 }
