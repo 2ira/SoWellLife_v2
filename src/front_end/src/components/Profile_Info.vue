@@ -1,9 +1,5 @@
 <template>
   <div class="profile-container">
-    <!-- 错误信息显示 -->
-    <div v-if="errorMessage" class="error-message">
-      {{ errorMessage }}
-    </div>
 
     <!-- 加载覆盖层 -->
     <div v-if="isLoading" class="loading-overlay">
@@ -17,36 +13,30 @@
           @mouseover="isHover = true"
           @mouseleave="isHover = false"
       >
-        <!-- 头像框 -->
         <div class="avatar-frame">
           <img
-              :src="avatar_url ? require(`@/assets/imgs/${avatar_url}`) : require('@/assets/imgs/homepage/login.png')"
+              :src="avatar_url"
               alt="头像"
               class="avatar"
           />
         </div>
 
-        <!-- 头像选择按钮 -->
         <div v-if="isHover" class="avatar-mask"></div>
         <button
             v-if="isHover"
-            @click="toggleAvatarSelector"
+            @click="triggerFileInput"
             class="change-avatar-btn"
         >
           更换头像
         </button>
 
-        <!-- 头像选择列表 -->
-        <div v-if="showAvatarSelector" class="avatar-selector" @mouseleave="hideAvatarSelector">
-          <div
-              v-for="(avatar, index) in avatarList"
-              :key="index"
-              class="avatar-option"
-              @click="selectAvatar(avatar)"
-          >
-            <img :src="require(`@/assets/imgs/${avatar}`)" alt="头像选项" class="avatar-option-img" />
-          </div>
-        </div>
+        <input
+            type="file"
+            ref="fileInput"
+            style="display: none;"
+            @change="onFileChange"
+            accept="image/*"
+        />
       </div>
     </div>
 
@@ -58,7 +48,7 @@
 
     <div class="profile-item">
       <label for="user-email">邮箱:</label>
-      <input id="user-email" v-model="email" disabled />
+      <input id="user-email" v-model="email" />
     </div>
 
     <div class="profile-item">
@@ -71,35 +61,88 @@
       />
     </div>
 
-    <!-- 修改密码按钮 -->
     <div class="save-item">
       <button @click="savechange" class="save-btn">保存</button>
       <button @click="cancelchange" class="cancel-btn">取消</button>
     </div>
 
-    <!-- 隐藏的文件输入框，用于更换头像 -->
-    <input
-        type="file"
-        ref="fileInput"
-        style="display: none;"
-        @change="onFileChange"
-        accept="image/*"
-    />
+    <!-- 邮箱验证模态窗口 -->
+    <div v-if="showEmailVerification" class="email-verification-modal">
+      <div class="modal-content">
+        <span class="close" @click="cancelEmailVerification">&times;</span>
+        <h2>邮箱验证</h2>
+
+        <!-- 原邮箱信息 -->
+        <div class="form-group d-flex align-items-center">
+          <label for="original-email" class="mr-2">原邮箱:</label>
+          <input
+              id="original-email"
+              v-model="originalEmail"
+              type="email"
+              class="form-control flex-grow-1 mr-2"
+              placeholder="请输入原邮箱"
+              :disabled="isOriginalEmailVerified"
+          />
+        </div>
+
+        <!-- 原邮箱验证码 -->
+        <div v-if="!isOriginalEmailVerified" class="form-group d-flex align-items-center">
+          <label for="verification-code" class="mr-2">验证码:</label>
+          <input id="verification-code" v-model="verificationCode" type="text" class="form-control flex-grow-1" placeholder="请输入验证码" />
+          <button
+              @click="sendVerificationCode('original')"
+              :class="{
+        'btn': true,
+        'btn-primary': !isCodeSent && countdown <= 0, // 按钮未发送验证码时使用蓝色
+        'btn-secondary': isCodeSent || countdown > 0 // 按钮发送验证码后使用灰色
+      }"
+              :disabled="isCodeSent || countdown > 0">
+            {{ countdown > 0 ? countdown + '秒后重试' : (isCodeSent ? '验证码已发送' : '发送验证码') }}
+          </button>
+        </div>
+
+
+        <!-- 新邮箱信息 -->
+        <div v-if="isOriginalEmailVerified" class="form-group d-flex align-items-center">
+          <label for="new-email" class="mr-2">新邮箱:</label>
+          <input id="new-email" v-model="email" type="email" class="form-control flex-grow-1 mr-2" placeholder="请输入新邮箱" />
+        </div>
+
+        <!-- 新邮箱验证码 -->
+        <div v-if="isOriginalEmailVerified" class="form-group d-flex align-items-center">
+          <label for="new-verification-code" class="mr-2">验证码:</label>
+          <input id="new-verification-code" v-model="newVerificationCode" type="text" class="form-control flex-grow-1" placeholder="请输入验证码" />
+          <button
+              @click="sendVerificationCode('new')"
+              :class="{
+        'btn': true,
+         'btn-primary': !isCodeSent && countdown <= 0, // 按钮未发送验证码时使用灰色
+        'btn-secondary': isCodeSent || countdown > 0 // 按钮发送验证码后使用灰色
+      }"
+              :disabled="isCodeSent || countdown > 0">
+            {{ countdown > 0 ? countdown + '秒后重试' : (isCodeSent ? '验证码已发送' : '发送验证码') }}
+          </button>
+        </div>
+
+
+
+        <div class="save-item">
+          <button @click="verifyCode" class="save-btn">保存</button>
+          <button @click="cancelEmailVerification" class="cancel-btn">取消</button>
+        </div>
+      </div>
+      <div class="modal-background"></div>
+    </div>
   </div>
 </template>
 
+
 <script>
 import axios from 'axios';
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions } from 'vuex';
 
 export default {
-  name: "Profile_Info",
-  props: {
-    identifier: {
-      type: String,
-      required: true
-    }
-  },
+  name: 'Profile_Info',
   data() {
     return {
       isUsernameLocked: false,
@@ -107,156 +150,317 @@ export default {
       id: '',
       email: '',
       username: '',
-      avatar: '',
-      avatar_url: '',
-      showAvatarSelector: false, // 控制头像选择器的显示与隐藏
-      avatarList: [
-        "homepage/default-avatar.jpg",
-        "homepage/image_1.jpeg", // 这里是你指定的头像列表
-        "homepage/image_2.jpeg",
-        "homepage/image_3.jpeg",
-        "homepage/image_4.jpeg"
-      ],
+      avatar_url: '', // 存储用户头像 URL
       isLoading: false,
       errorMessage: '',
-      originalData: {}
+      avatarFile: null, // 保存上传的头像文件
+      showEmailVerification: false,
+      originalEmail: '',
+      verificationCode: '',
+      newVerificationCode: '',  // 新邮箱验证码字段
+      isCodeSent:false,
+      isOriginalEmailVerified: false, // 记录原邮箱验证码是否通过验证
+      countdown: 0,
+      timer: null,
+      orgin_username:'',
+      orgin_avatar_url:''
+
     };
   },
   computed: {
     ...mapState({
-      isLoggedIn: state => state.isLoggedIn,
-      username: state => state.username,
-      avatar_url: state => state.avatar_url,
-    })
+      isLoggedIn: (state) => state.isLoggedIn,
+      username: (state) => state.username,
+    }),
   },
   methods: {
     ...mapActions({
-      updateUserInfo: 'updateUserInfo' // 映射 Vuex 的 action
+      updateUserInfo: 'updateUserInfo',
     }),
 
     // 获取用户信息
     async getUserInfo() {
       const uid = this.$store.getters.uid;
       if (!uid) {
-        console.error('uid 未定义');
         this.errorMessage = '无法获取用户信息，uid 未定义。';
         return;
       }
 
       const url = 'http://localhost:8080/api/login/profile';
-
       this.isLoading = true;
-      this.errorMessage = '';
 
       try {
-        const response = await axios.get(url, {
-          params: { identifier: uid },
-        });
-
+        const response = await axios.get(url, { params: { identifier: uid } });
+        console.log("response.data:",response.data);
         if (response.status === 200 && response.data) {
           this.id = response.data.uid;
-          this.email = response.data.email;
+          this.originalEmail = response.data.email;
+          this.email=this.originalEmail;
           this.username = response.data.uname;
-          this.avatar_url = response.data.avatarUser;
-          this.avatar = response.data.avatarUser;
-
-          // 备份原始数据
-          this.originalData = {
-            username: this.username,
-            avatar_url: this.avatar_url
-          };
-        } else {
-          console.error('获取用户信息失败，响应状态码非200或无有效返回数据');
-          this.errorMessage = '获取用户信息失败，请稍后重试。';
+          this.orgin_username=this.username;
+          this.avatar_url = response.data.avatarUser; // 获取头像 URL
+          this.orgin_avatar_url=this.avatar_url;
         }
+        console.log("this.id ",this.id );
+        console.log("this.originalEmail ",this.originalEmail);
       } catch (error) {
-        if (error.response) {
-          this.errorMessage = error.response.data.message || '服务器错误，无法获取用户信息。';
-        } else if (error.request) {
-          this.errorMessage = '网络错误，无法获取用户信息。';
-        } else {
-          this.errorMessage = '请求配置错误，请联系开发者。';
-        }
+        this.errorMessage = error.response?.data?.message || '网络错误，无法获取用户信息。';
       } finally {
         this.isLoading = false;
+      }
+    },
+
+    // 文件选择后的处理
+    onFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.avatarFile = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.avatar_url = e.target.result;
+        };
+        reader.readAsDataURL(file);
       }
     },
 
     // 保存修改
-    async savechange() {
-      if (this.isLoading) return;
-
-      this.isLoading = true;
-      this.errorMessage = '';
-
-
-
-      // 使用 FormData 来发送表单数据
-      const formData = new FormData();
-      formData.append("uid", this.id);
-      formData.append("newUserName", this.username);
-      formData.append("newAvatarUrl", this.avatar_url);
-
-      try {
-        const response = await axios.post('http://localhost:8080/api/login/update', formData);
-
-        if (response.status === 200) {
-          const data = response.data;
-
-          if (data.nameUpdated || data.avatarUpdated) {
-            alert('用户信息更新成功');
-            this.$store.commit('UPDATE_USER_INFO', {
-              username: this.username,
-              avatar_url: this.avatar_url
+    savechange() {
+      // 防止重复提交
+      if (!this.isOriginalEmailVerified && this.email !== this.originalEmail) {
+        // 检查邮箱是否已注册
+        axios.post('http://localhost:8080/api/login/verify-email', null, {params: {newemail: this.email}})
+            .then(response => {
+              if (!response.data.success) {
+                alert('邮箱已经注册过！');
+                return;
+              }
+              this.showEmailVerification = true; // 显示邮箱验证提示框
+            })
+            .catch(error => {
+              console.error('邮箱验证请求失败', error);
             });
-          } else {
-            this.errorMessage = '没有任何信息更新。';
-          }
-        } else {
-          this.errorMessage = '保存失败，请稍后再试。';
-        }
-      } catch (error) {
-        console.error('保存失败:', error);
-        this.errorMessage = '保存失败，请稍后再试。';
-      } finally {
-        this.isLoading = false;
+        return;
+      }
+      this.savechangeothers();
+    },
+
+
+
+    savechangeothers() {
+      // 进行用户信息更新操作
+      this.isLoading = true;
+      const formData = new FormData();
+      formData.append('uid', this.id);
+      formData.append('newUserName', this.username);
+
+      console.log("this.avatarFile:", this.avatarFile);
+
+      // 如果上传了头像文件，先上传头像
+      if (this.avatarFile) {
+        // 上传头像到服务器
+        const avatarFormData = new FormData();
+        avatarFormData.append('uid', this.id);
+        avatarFormData.append('avatarFile', this.avatarFile);
+
+        axios.post('http://localhost:8080/api/login/upload-avatar', avatarFormData)
+            .then(avatarResponse => {
+              if (avatarResponse.status === 200 && avatarResponse.data.fileUrl) {
+                console.log("avatarResponse:", avatarResponse.data.fileUrl);
+                formData.append('newAvatarUrl', avatarResponse.data.fileUrl); // 设置新的头像 URL
+
+                // 上传头像成功后，执行更新用户信息
+                this.updateUserInfo(formData);
+              } else {
+                this.errorMessage = '头像上传失败，请稍后再试。';
+                this.isLoading = false;
+              }
+            })
+            .catch(error => {
+              console.error('头像上传失败:', error);
+              this.errorMessage = '头像上传失败，请稍后再试。';
+              this.isLoading = false;
+            });
+      } else {
+        // 如果没有头像文件，直接提交更新用户信息
+        this.updateUserInfo(formData);
       }
     },
 
-    // 取消修改，恢复原始数据
+    updateUserInfo(formData) {
+      // 更新用户信息
+      axios.post('http://localhost:8080/api/login/update', formData)
+          .then(updateResponse => {
+            if (updateResponse.status === 200) {
+              alert('用户信息更新成功');
+              const data = updateResponse.data;
+              console.log("updateResponse:", updateResponse.data);
+              if (data.avatarUrl) {
+                this.avatar_url = data.avatarUrl;
+              }
+
+              // 更新 Vuex 状态
+              this.$store.commit('UPDATE_USER_INFO', {
+                uid: this.id,
+                username: this.username,
+                avatar_url: this.avatar_url,
+              });
+            } else {
+              this.errorMessage = '用户信息更新失败，请稍后再试。';
+            }
+          })
+          .catch(error => {
+            console.error('用户信息更新失败:', error);
+            this.errorMessage = '用户信息更新失败，请稍后再试。';
+          })
+          .finally(() => {
+            this.isLoading = false; // 无论成功或失败，最终都要重置 loading 状态
+            this.isOriginalEmailVerified = false;
+          });
+    },
+
+
+
+
+    // 取消修改
     cancelchange() {
-      this.username = this.originalData.username;
-      this.avatar_url = this.originalData.avatar_url;
+      this.username = this.orgin_username;
+      this.avatar_url = this.orgin_avatar_url;
       this.$refs.fileInput.value = '';
     },
 
-    // 选择头像
-    selectAvatar(avatar) {
-      this.avatar_url = avatar;  // 更新头像URL
-      this.showAvatarSelector = false; // 关闭选择框
-      this.isHover = false; // 更新完头像后隐藏悬浮按钮
+    // 发送验证码
+    async sendVerificationCode(type) {
+      if (this.isCodeSent) return; // 防止重复发送验证码
+      this.isCodeSent = true; // 标记验证码已发送
+      this.startTimer(); // 启动倒计时
+
+      if (this.isOriginalEmailVerified) {
+        try {
+          const response = await axios.post('http://localhost:8080/api/login/verify-email', null, { params: { newemail: this.email } });
+          if (!response.data.success) {
+            alert('邮箱已经注册过！');
+            this.resetCodeSendingState();
+            return;
+          }
+        } catch (error) {
+          console.error('邮箱验证请求失败', error);
+          alert('邮箱验证请求失败，请稍后重试');
+          this.resetCodeSendingState();
+          return;
+        }
+      }
+
+      const targetEmail = type === 'original' ? this.originalEmail : this.email;
+      try {
+        await axios.post('http://localhost:8080/api/login/register', null, { params: { email: targetEmail } });
+        console.log('验证码发送成功');
+      } catch (error) {
+        console.error('验证码发送失败:', error);
+        alert('验证码发送失败，请稍后重试');
+        this.resetCodeSendingState(); // 发送失败时重置状态
+      }
+    }
+    ,
+
+    // 启动倒计时
+    startTimer() {
+      this.countdown = 60;  // 初始倒计时 60 秒
+      this.countdownText = `${this.countdown}秒后重试`;
+      this.timer = setInterval(() => {
+        if (this.countdown > 0) {
+          this.countdown--;
+          this.countdownText = `${this.countdown}秒后重试`;
+        } else {
+          this.resetCodeSendingState(); // 倒计时结束，重置状态
+        }
+      }, 1000);
     },
 
-    // 切换头像选择器的显示与隐藏
-    toggleAvatarSelector() {
-      this.showAvatarSelector = !this.showAvatarSelector;
+    // 重置验证码发送状态
+    resetCodeSendingState() {
+      clearInterval(this.timer); // 清除定时器
+      this.isCodeSent = false;  // 允许重新发送验证码
+      this.countdownText = '获取验证码';  // 恢复按钮文本
+      this.countdown = 0;
     },
 
-    // 隐藏头像选择器
-    hideAvatarSelector() {
-      this.showAvatarSelector = false;
+
+    // 验证验证码
+    // 验证验证码
+    async verifyCode() {
+      const emailToVerify = this.isOriginalEmailVerified ? this.email : this.originalEmail;
+      const codeToVerify = this.isOriginalEmailVerified ? this.newVerificationCode : this.verificationCode;
+
+      try {
+        const response = await axios.post('http://localhost:8080/api/login/verify-code', null, {
+          params: { email: emailToVerify, code: codeToVerify },
+        });
+
+        if (response.data.success) {
+          this.resetCodeSendingState();
+          alert('验证成功');
+          if (this.isOriginalEmailVerified) {
+            this.showEmailVerification = false;
+            // 邮箱修改后，更新信息并进行保存
+            const url = 'http://localhost:8080/api/login/change-email';
+            this.$store.dispatch('login', {
+              email: response.data.email,
+              uid: this.id,
+              avatar_url: this.avatar_url,
+              isLoggedIn: true
+            });
+
+            const formData = new URLSearchParams();
+            formData.append('uid', this.id);
+            formData.append('newemail', this.email);
+
+            try {
+              const emailResponse = await axios.post(url, formData, {
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                }
+              });
+              if (emailResponse.data.success) {
+                alert('邮箱修改成功');
+              } else {
+                alert('邮箱修改失败: ' + (emailResponse.data.message || '请稍后重试'));
+              }
+            } catch (error) {
+              console.error('邮箱修改请求失败', error);
+              alert('邮箱修改失败，请稍后再试');
+            }
+          }
+          if(this.isOriginalEmailVerified)
+            this.savechangeothers();  // 在邮箱验证成功后，保存其他用户信息
+          this.isOriginalEmailVerified = true;
+        } else {
+          alert(response.data.message);  // 显示错误消息
+        }
+      } catch (error) {
+        console.error('验证码请求失败', error);
+        alert('验证失败，请稍后重试');
+      }
+    },
+
+
+    // 取消邮箱验证
+    cancelEmailVerification() {
+      this.showEmailVerification = false;
+      this.email=this.originalEmail;
+    },
+
+
+
+    triggerFileInput() {
+      this.$refs.fileInput.click();
     },
   },
   mounted() {
     this.getUserInfo();
+
   },
 };
 </script>
-
-
-
-
-
 
 <style scoped>
 /* 头像框样式 */
@@ -274,35 +478,6 @@ export default {
   height: 100%;
   object-fit: cover;
 }
-
-.avatar-selector {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  position: absolute;
-  top: 130%;
-  background: white;
-  border: 1px solid #ccc;
-  padding: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  z-index: 20;
-}
-
-.avatar-option {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.avatar-option-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* 样式部分保持不变或调整，以适应前端界面的需求 */
 
 /* 加载覆盖层样式 */
 .loading-overlay {
@@ -341,14 +516,6 @@ export default {
 
 .avatar-wrapper {
   position: relative;
-}
-
-.avatar {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 3px solid #ddd;
 }
 
 /* 更换头像按钮样式 */
@@ -427,7 +594,8 @@ export default {
   gap: 10px;               /* 按钮之间的间距 */
 }
 
-.save-btn, .cancel-btn {
+.save-btn,
+.cancel-btn {
   padding: 12px 20px;
   background-color: #218838;
   color: white;
@@ -439,16 +607,135 @@ export default {
   transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
   max-width: 200px; /* 限制最大宽度 */
   flex: 1;           /* 让每个按钮占据相等的空间 */
-  text-align: center;/* 确保文本居中 */
+  text-align: center; /* 确保文本居中 */
 }
 
-.save-btn:hover, .cancel-btn:hover {
+.save-btn:hover,
+.cancel-btn:hover {
   background-color: rgba(33, 136, 56, 0.9);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.save-btn:active, .cancel-btn:active {
+.save-btn:active,
+.cancel-btn:active {
   transform: scale(0.98);
 }
 
+.email-verification-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  position: relative;
+  width: 500px; /* 调整为更大的宽度 */
+  max-width: 90%; /* 确保在小屏幕上也能适配 */
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  align-items: center; /* 垂直居中 */
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group p {
+  margin-bottom: 10px;
+}
+
+.form-group .btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-group .btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.form-group .btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.form-group .btn-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.form-group .btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.form-group .btn:hover {
+  opacity: 0.9;
+}
+
+.form-control {
+  width: 40%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  margin-right: 20px;
+}
+
+.form-group.d-flex {
+  display: flex;
+  align-items: center;
+}
+
+.form-group .mr-2 {
+  margin-right: 8px; /* 调整间距 */
+}
+
+.form-group .flex-grow-1 {
+  flex-grow: 1;
+}
+
+.modal-content h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
 </style>
