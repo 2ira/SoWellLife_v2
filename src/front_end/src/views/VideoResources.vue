@@ -1,62 +1,20 @@
-<script>
-import axios from 'axios';
-
-export default {
-  name: 'VideoResources',
-  data() {
-    return {
-      videos: [],              // 存储视频数据
-      isLoading: true,         // 加载状态
-      errorMessage: '',        // 错误信息
-    };
-  },
-  mounted() {
-    this.loadVideos();       // 组件挂载后加载视频
-  },
-  methods: {
-    // 方法：加载视频数据
-    loadVideos() {
-      axios
-          .get('http://localhost:8080/api/resourceVideos/all')  // 请求视频数据
-          .then((response) => {
-            console.log('API 返回的视频数据:', response.data);  // 打印返回的视频数据
-            this.videos = response.data;    // 更新响应式数据
-            this.isLoading = false;            // 数据加载完成
-          })
-          .catch((error) => {
-            console.error('获取视频资源数据出错：', error);
-            this.errorMessage = '无法加载视频资源，请稍后重试。'; // 设置错误信息
-            this.isLoading = false;  // 错误时也需要更新加载状态
-          });
-    },
-
-    // 切换收藏状态
-    toggleFavorite(video) {
-      video.isFavorited = !video.isFavorited;
-    }
-  }
-};
-</script>
-
 <template>
   <div>
     <!-- 加载中显示 -->
     <div v-if="isLoading" class="loading-message">加载中...</div>
-
     <!-- 错误信息显示 -->
     <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
-
     <!-- 视频资源列表 -->
     <div class="video-resources-container">
       <div
           class="video-resource-card"
           v-for="video in videos"
-          :key="video.Rid"
+          :key="video.rid"
       >
         <a :href="video.rurl" target="_blank">
           <img
               :src="require(`@/${video.rimg}`)"
-              :alt="video.Rname"
+              :alt="video.rname"
               class="video-resource-image"
           />
           <div class="video-resource-info">
@@ -64,7 +22,6 @@ export default {
             <p class="video-resource-title">{{ video.rname }}</p>
           </div>
         </a>
-
         <!-- 收藏按钮 -->
         <img
             @click.prevent="toggleFavorite(video)"
@@ -78,6 +35,119 @@ export default {
     </div>
   </div>
 </template>
+
+<script>
+import axios from "axios";
+
+export default {
+  name: "VideoResources",
+  data() {
+    return {
+      videos: [], // 存储视频数据
+      isLoading: true, // 加载状态
+      errorMessage: "", // 错误信息
+      userUid: null, // 当前用户ID
+    };
+  },
+  mounted() {
+    this.loadVideos(); // 组件挂载后加载视频
+    this.userUid = this.$store.getters.uid; // 从 Vuex 获取用户ID
+
+  },
+
+  methods: {
+    loadVideos() {
+      axios
+          .get("http://localhost:8081/api/resourceVideos/all")
+          .then((response) => {
+            console.log("API 返回的视频数据:", response.data);
+            this.videos = response.data.map((video) => ({
+              ...video,
+              isFavorited: !!this.userUid, // 如果未登录，默认未收藏
+            }));
+            if (this.userUid) {
+              this.videos.forEach((video) => {
+                axios
+                    .get("http://localhost:8081/api/favorites/check", {
+                      params: {
+                        Uid: this.userUid,
+                        Rid: video.rid,
+                        flag: 1, // 视频资源标识
+                      },
+                    })
+                    .then((favResponse) => {
+                      video.isFavorited = favResponse.data.isFavorited;
+                    })
+                    .catch((error) => {
+                      console.error("获取视频收藏状态出错：", error);
+                    });
+              });
+            }
+            this.isLoading = false;
+          })
+          .catch((error) => {
+            console.error("获取视频资源数据出错：", error);
+            this.errorMessage = "无法加载视频资源，请稍后重试。";
+            this.isLoading = false;
+          });
+    },
+
+    toggleFavorite(video) {
+      if (!this.userUid) {
+        alert("当前用户没有登陆，请登陆后再进行操作");
+        return;
+      }
+
+      const rid = video.rid;
+      if (!video.isFavorited) {
+        axios
+            .post("http://localhost:8081/api/favorites/add", null, {
+              params: {
+                Uid: this.userUid,
+                Rid: rid,
+                flag: 1, // 视频资源标识
+              },
+            })
+            .then((response) => {
+              console.log("收藏状态已更改为 收藏");
+              if (response.data && response.data.success) {
+                video.isFavorited = true;
+              } else {
+                console.error("添加收藏失败:", response.data.message);
+                alert("添加收藏失败，请稍后再试");
+              }
+            })
+            .catch((error) => {
+              console.error("添加收藏失败:", error);
+              alert("添加收藏失败，请稍后再试");
+            });
+      } else {
+        axios
+            .post("http://localhost:8081/api/favorites/remove", null, {
+              params: {
+                Uid: this.userUid,
+                Rid: rid,
+                flag: 1, // 视频资源标识
+              },
+            })
+            .then((response) => {
+              console.log("收藏状态已更改为 未收藏");
+              if (response.data && response.data.success) {
+                video.isFavorited = false;
+              } else {
+                console.error("取消收藏失败:", response.data.message);
+                alert("取消收藏失败，请稍后再试");
+              }
+            })
+            .catch((error) => {
+              console.error("取消收藏失败:", error);
+              alert("取消收藏失败，请稍后再试");
+            });
+      }
+    },
+  },
+};
+</script>
 
 <style scoped>
 .video-resources-container {

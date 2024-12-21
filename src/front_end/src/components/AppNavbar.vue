@@ -119,11 +119,20 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import {mapState, mapActions, useStore} from 'vuex';
 import axios from 'axios';
+import {onMounted} from "vue";
 
 export default {
   name: "AppNavbar",
+
+  setup() {
+    const store = useStore();
+    onMounted(() => {
+      store.dispatch('restoreUser');
+    });
+  },
+
   data() {
     return {
       isPasswordLogin: true,
@@ -264,6 +273,7 @@ export default {
           // 登录成功的状态更新
           this.isLoggedIn = true;
           this.closeLoginModal();
+
         } else {
           alert('登录失败，请检查用户名或密码');
         }
@@ -345,17 +355,6 @@ export default {
   }
 };
 </script>
-
-
-
-
-
-
-
-
-
-
-
 
 <style scoped>
 .nav-container {

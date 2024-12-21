@@ -18,8 +18,11 @@ public class ResourceController {
 
     @Autowired
     private ResourceService resourceService;
-
     private static final Logger logger = LoggerFactory.getLogger(ResourceController.class);
+
+    public ResourceController(ResourceService resourceService){
+        this.resourceService = resourceService;
+    }
 
     // 获取所有资源数据
     @GetMapping("/all")

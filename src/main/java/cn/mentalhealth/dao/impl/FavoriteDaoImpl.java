@@ -1,110 +1,49 @@
+
 package cn.mentalhealth.dao.impl;
 
 import cn.mentalhealth.dao.FavoriteDao;
 import cn.mentalhealth.domain.Favorite;
 import cn.mentalhealth.utils.JDBCUtils;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
+@Repository
 public class FavoriteDaoImpl implements FavoriteDao {
+
     private JDBCUtils jdbcUtils = new JDBCUtils();
 
     @Override
-    public List<Favorite> getAllFavorites() {
-        List<Favorite> favoriteList = new ArrayList<>();
-        String sql = "SELECT * FROM favorite";
-        try (Connection connection = jdbcUtils.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-
-            while (resultSet.next()) {
-                Favorite favorite = new Favorite();
-                favorite.setUid(resultSet.getInt("Uid"));
-                favorite.setRid(resultSet.getInt("Rid"));
-
-                favoriteList.add(favorite);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return favoriteList;
-    }
-
-    @Override
-    public List<Favorite> getFavoritesByUid(int uid) {
-        List<Favorite> favoriteList = new ArrayList<>();
-        String sql = "SELECT * FROM favorite WHERE Uid =?";
-        try (Connection connection = jdbcUtils.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, uid);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    Favorite favorite = new Favorite();
-                    favorite.setUid(resultSet.getInt("Uid"));
-                    favorite.setRid(resultSet.getInt("Rid"));
-                    favoriteList.add(favorite);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return favoriteList;
-    }
-
-    @Override
-    public List<Favorite> getFavoritesByRid(int rid) {
-        List<Favorite> favoriteList = new ArrayList<>();
-        String sql = "SELECT * FROM favorite WHERE Rid =?";
-        try (Connection connection = jdbcUtils.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, rid);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    Favorite favorite = new Favorite();
-                    favorite.setUid(resultSet.getInt("Uid"));
-                    favorite.setRid(resultSet.getInt("Rid"));
-                    favoriteList.add(favorite);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return favoriteList;
-    }
-
-    @Override
-    public boolean isFavoriteByUidAndRid(int uid, int rid) {
-        boolean isFavorite = false;
-        String sql = "SELECT COUNT(*) AS count FROM favorite WHERE Uid =? AND Rid =?";
-        try (Connection connection = jdbcUtils.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, uid);
-            preparedStatement.setInt(2, rid);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    int count = resultSet.getInt("count");
-                    isFavorite = count > 0;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return isFavorite;
-    }
-
-    @Override
     public void insertFavorite(Favorite favorite) {
-        String sql = "INSERT INTO favorite (Uid, Rid) VALUES (?,?)";
+        String sql = "INSERT INTO favorite (Uid, Rid, flag) VALUES (?,?,?)";
         try (Connection connection = jdbcUtils.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, favorite.getUid());
             preparedStatement.setInt(2, favorite.getRid());
+            preparedStatement.setInt(3, favorite.getFlag());
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("插入收藏记录失败，没有记录被添加");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("添加收藏时发生数据库错误: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void deleteFavorite(int Uid, int Rid, int flag) {
+        String sql = "DELETE FROM favorite WHERE Uid =? AND Rid =? AND flag =?";
+        try (Connection connection = jdbcUtils.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, Uid);
+            preparedStatement.setInt(2, Rid);
+            preparedStatement.setInt(3, flag);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -112,17 +51,28 @@ public class FavoriteDaoImpl implements FavoriteDao {
     }
 
     @Override
-    public void deleteFavorite(int uid, int rid) {
-        String sql = "DELETE FROM favorite WHERE Uid =? AND Rid =?";
+    public List<Favorite> getFavoritesByUidAndFlag(int Uid, int flag) {
+        List<Favorite> favoriteList = new ArrayList<>();
+        String sql = "SELECT * FROM favorite WHERE Uid =? AND flag =?";
         try (Connection connection = jdbcUtils.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, uid);
-            preparedStatement.setInt(2, rid);
-            preparedStatement.executeUpdate();
+            preparedStatement.setInt(1, Uid);
+            preparedStatement.setInt(2, flag);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    Favorite favorite = new Favorite(
+                            resultSet.getInt("Uid"),
+                            resultSet.getInt("Rid"),
+                            resultSet.getInt("flag")
+                    );
+                    favoriteList.add(favorite);
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return favoriteList;
     }
-
-
 }
+
+

@@ -1,20 +1,18 @@
-
 <template>
-  <div class="background" ></div>
+  <div class="background"></div>
   <div class="collection-container">
     <div class="user-info" style="margin-top: 400px;">
       <img :src="avatarUrl || require('@/assets/imgs/tests/1.png')" alt="用户头像" class="avatar-img">
-      <span class="nickname">AAA小唐</span>
+      <span class="nickname">{{ username }}</span>
     </div>
     <div class="collection-content">
-      <!-- 新增的标签容器 -->
       <div class="tab-container">
-        <span class="tab" :class="{ active: articleActive }" @click="showArticle = true;showVideo = false;articleActive = true;videoActive = false;">文章</span>
-        <span class="tab" :class="{ active: videoActive }" @click="showArticle = false; showVideo = true;articleActive = false;videoActive = true;">视频</span>
+        <span class="tab" :class="{ active: articleActive }" @click="toggleTab('article')">文章</span>
+        <span class="tab" :class="{ active: videoActive }" @click="toggleTab('video')">视频</span>
       </div>
-      <!-- 根据条件显示文章或视频 -->
       <div v-if="showArticle" class="article-resources-container active">
-        <!-- 文章展示部分 -->
+        <div v-if="loading">加载中...</div>
+        <div v-else-if="articleCollection.length === 0">暂无收藏的文章</div>
         <div class="article-resource-card" v-for="article in articleCollection" :key="article.id">
           <a :href="article.link" target="_blank">
             <img :src="article.img" :alt="article.title" class="article-resource-image" />
@@ -26,7 +24,8 @@
         </div>
       </div>
       <div v-if="showVideo" class="video-resources-container active">
-        <!-- 视频展示部分 -->
+        <div v-if="loading">加载中...</div>
+        <div v-else-if="videoCollection.length === 0">暂无收藏的视频</div>
         <div class="video-resource-card" v-for="video in videoCollection" :key="video.id">
           <a :href="video.link" target="_blank">
             <img :src="video.img" :alt="video.title" class="video-resource-image" />
@@ -42,77 +41,76 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import {ref, onMounted, computed} from 'vue';
+import axios from 'axios';
+import { useStore } from 'vuex';
+
 const showArticle = ref(true);
 const showVideo = ref(false);
 const articleActive = ref(true);
 const videoActive = ref(false);
+const loading = ref(false);
+const articleCollection = ref([]);
+const videoCollection = ref([]);
 
-// 背景图路径
-const avatarUrl = ref(null);
-const articleCollection = ref([
-  {
-    id: 1,
-    img: require("@/assets/imgs/article/1.jpg"),
-    category: "被害妄想症",
-    title: "偏执型人格障碍指南",
-    link: "https://www.msdmanuals.cn/home/mental-health-disorders/schizophrenia-and-related-disorders/delusional-disorder?query=%E8%A2%AB%E5%AE%B3%E5%A6%84%E6%83%B3%EF%BC%9A"
-  },
-  {
-    id: 2,
-    img: require("@/assets/imgs/article/2.png"),
-    category: "边缘型人格障碍",
-    title: "边缘型人格障碍手册",
-    link: "https://www.nami.org/Your-Journey/Individuals-with-Mental-Illness/Borderline-Personality-Disorder"
-  },
-  {
-    id: 3,
-    img: require("@/assets/imgs/article/3.jpg"),
-    category: "边缘型人格障碍",
-    title: "边缘型人格障碍手册",
-    link: "https://www.nimh.nih.gov/health/topics/borderline-personality-disorder"
-  },
-  {
-    id: 4,
-    img: require("@/assets/imgs/article/4.jpg"),
-    category: "边缘型人格障碍",
-    title: "边缘型人格障碍手册",
-    link: "https://www.nimh.nih.gov/health/topics/borderline-personality-disorder"
-  },
-]);
-const videoCollection = ref([
-  {
-    id: 1,
-    img: require("@/assets/imgs/video/1.png"),
-    category: "被害妄想症",
-    title: "【科普】被害妄想症",
-    link: "https://www.bilibili.com/video/BV1Vi4y1Y76a/?vd_source=14d775208ff520b9e2b9c6265544ea73"
-  },
-  {
-    id: 2,
-    img: require("@/assets/imgs/video/2.png"),
-    category: "边缘型人格障碍",
-    title: "什么是边缘型人格障碍|特征和症状",
-    link: "https://www.bilibili.com/video/BV1Ars2efEod?spm_id_from=333.788.videopod.sections&vd_source=14d775208ff520b9e2b9c6265544ea73"
-  },
-  {
-    id: 3,
-    img: require("@/assets/imgs/video/3.png"),
-    category: "边缘型人格障碍",
-    title: "边缘型人格障碍介于毁灭与清醒之间,常有被害妄想的恐惧焦虑【脑科学】",
-    link: "https://www.bilibili.com/video/BV1wh4y137Sw/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73"
-  },
-  {
-    id: 4,
-    img: require("@/assets/imgs/video/4.png"),
-    category: "成瘾",
-    title: "了解成瘾的神经机制",
-    link: "https://www.bilibili.com/video/BV1Vm4y1x7JF/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73"
-  },
-]);
+const store = useStore();
+const username = computed(() => store.getters.username);
+const avatarUrl = computed(() => store.getters.avatar_url);
+const Uid = store.getters.uid;
 
+onMounted(() => {
+  fetchFavoriteResources();
+});
 
+const toggleTab = (type) => {
+  if (type === 'article') {
+    showArticle.value = true;
+    showVideo.value = false;
+    articleActive.value = true;
+    videoActive.value = false;
+  } else if (type === 'video') {
+    showArticle.value = false;
+    showVideo.value = true;
+    articleActive.value = false;
+    videoActive.value = true;
+  }
+  fetchFavoriteResources();
+};
+
+const fetchFavoriteResources = async () => {
+  loading.value = true;
+  const flag = showArticle.value? 0 : 1;
+  try {
+    const response = await axios.get('/api/favorites/resources', { params: { Uid, flag } });
+    const resources = response.data;
+    console.log("response.data:",response.data)
+    if (flag === 0) {
+      articleCollection.value = resources.map(resource => ({
+        id: resource.resource.rid,
+        img: require(`@/${resource.resource.rimg}`),
+        category: resource.resource.rtag,
+        title: resource.resource.rname,
+        link: resource.resource.rurl
+      }));
+      console.log("articleCollection.value:",articleCollection.value)
+    } else {
+      videoCollection.value = resources.map(resource => ({
+        id: resource.resource.rid,
+        img: require(`@/${resource.resource.rimg}`),
+        category: resource.resource.rtag,
+        title: resource.resource.rname,
+        link: resource.resource.rurl
+      }));
+    }
+  } catch (error) {
+    console.error('获取收藏资源失败:', error);
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
+
+
 
 <style scoped>
 .collection-container {
