@@ -68,10 +68,10 @@ public class ResourceDaoImpl implements ResourceDao {
     @Override
     public List<Resource> getResourcesByName(String rname) {
         List<Resource> resourceList = new ArrayList<>();
-        String sql = "SELECT * FROM resource WHERE Rname LIKE '%' +? + '%'";
+        String sql = "SELECT * FROM resource WHERE Rname LIKE ?";
         try (Connection connection = jdbcUtils.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, rname);
+            preparedStatement.setString(1, "%" + rname + "%");
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     Resource resource = new Resource();

@@ -58,7 +58,7 @@ export default {
   methods: {
     loadVideos() {
       axios
-          .get("http://localhost:8081/api/resourceVideos/all")
+          .get("/api/resourceVideos/all")
           .then((response) => {
             console.log("API 返回的视频数据:", response.data);
             this.videos = response.data.map((video) => ({

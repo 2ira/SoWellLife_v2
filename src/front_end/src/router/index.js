@@ -12,6 +12,8 @@ import TestPage from "@/views/test.vue";
 import MyCollection from '@/views/MyCollection.vue';
 import axios from "axios";
 import store from "@/store";
+import SearchPage from '@/views/SearchPage.vue';
+
 
 const routes = [
   {
@@ -70,11 +72,18 @@ const routes = [
     name: 'MyCollection',
     component: MyCollection
   },
+  {
+    path: '/search',
+    name: 'SearchPage',
+    component: SearchPage,
+    props: (route) => ({ query: route.query.q }), // 将路由参数作为 props 传递
+  },
   // Catch-all route for any other paths that are not APIs
   {
     path: '/:catchAll(.*)',
     redirect: '/404' // Redirect to a 404 page or handle it as needed
-  }
+  },
+
 ];
 
 const router = createRouter({

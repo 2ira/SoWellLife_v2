@@ -58,7 +58,7 @@ public class ResourceService {
     public String getResourcesByNameAsJson(HttpServletRequest request) {
         try {
             String rname = request.getParameter("rname");
-
+            logger.info("传递的输入框内容: {}", rname);
             List<Resource> resources = resourceDao.getResourcesByName(rname);
             return objectMapper.writeValueAsString(resources);
         } catch (NumberFormatException | IOException e) {

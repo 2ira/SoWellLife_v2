@@ -10,8 +10,13 @@
 
         <div class="search-login">
           <div class="search-wrapper">
-            <input type="text" placeholder="搜索..." class="search-bar">
-            <span class="search-icon">🔍</span>
+            <input
+                type="text" placeholder="搜索..."
+                class="search-bar"
+                v-model="searchQuery"
+                @keyup.enter="performSearch"
+            >
+            <span class="search-icon" @click="performSearch">🔍</span>
           </div>
           <div class="user-avatar-container"
                @click="isLoggedIn ? goToProfile() : showLoginModal()"
@@ -150,7 +155,8 @@ export default {
       avatarHover: false,
       isDropdownVisible: false,
       show_Login: false,
-      showDropdown: false
+      showDropdown: false,
+      searchQuery: '' // 搜索框输入内容
     };
   },
   computed: {
@@ -194,8 +200,10 @@ export default {
       this.setLoginMethod('captcha');
     },
 
-
-
+    performSearch() {
+      if (!this.searchQuery.trim()) return;
+      this.$router.push({ path: '/search', query: { q: this.searchQuery.trim() } });
+    },
 
     // 登录功能
     async login_verify() {

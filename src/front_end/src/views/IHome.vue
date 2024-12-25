@@ -42,7 +42,7 @@
     },
     methods:{
         loadArticles(){
-          axios.get('http://localhost:8080/api/introductions/articles',{
+          axios.get('/api/introductions/articles',{
             headers: {
               'Accept': 'application/json' // 只发送必要的请求头
             }
