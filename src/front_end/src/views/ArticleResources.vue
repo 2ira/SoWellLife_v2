@@ -39,6 +39,7 @@
 
 <script>
 import axios from "axios";
+import {API_BASE_URL} from "@/utils/api";
 
 export default {
   name: "ArticleResources",
@@ -51,32 +52,32 @@ export default {
     };
   },
   mounted() {
-    this.loadResources(); // 组件挂载后加载资源
+    this.loadResources();
     this.userUid = this.$store.getters.uid;
-
   },
 
 
   methods: {
     loadResources() {
-      axios
-          .get("/api/resources/all")
+      axios.get(`${API_BASE_URL}/api/resources/all`)
           .then((response) => {
             console.log("API 返回的数据:", response.data);
+            // 移除错误的默认收藏状态设置
             this.resources = response.data.map((resource) => ({
               ...resource,
-              isFavorited: !!this.userUid, // 未登录时默认未收藏
+              isFavorited: false  // 默认设置为未收藏
             }));
+
+            // 只有登录用户才检查收藏状态
             if (this.userUid) {
               this.resources.forEach((resource) => {
-                axios
-                    .get("http://localhost:8081/api/favorites/check", {
-                      params: {
-                        Uid: this.userUid,
-                        Rid: resource.rid,
-                        flag: 0, // 文章资源标识
-                      },
-                    })
+                axios.get(`${API_BASE_URL}/api/favorites/check`, {
+                  params: {
+                    Uid: this.userUid,
+                    Rid: resource.rid,
+                    flag: 0,
+                  },
+                })
                     .then((favResponse) => {
                       resource.isFavorited = favResponse.data.isFavorited;
                     })
@@ -108,7 +109,7 @@ export default {
         params.append("Uid", this.userUid);
 
         axios
-            .post("http://localhost:8081/api/favorites/add", params)
+            .post(`${API_BASE_URL}/api/favorites/add`, params)
             .then((response) => {
               console.log("收藏状态已更改为 收藏");
               if (response.data && response.data.success) {
@@ -129,7 +130,7 @@ export default {
         params.append("Uid", this.userUid);
 
         axios
-            .post("http://localhost:8081/api/favorites/remove", params)
+            .post(`${API_BASE_URL}/api/favorites/remove`, params)
             .then((response) => {
               console.log("收藏状态已更改为 未收藏");
               if (response.data && response.data.success) {

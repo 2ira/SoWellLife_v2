@@ -7,14 +7,14 @@
 
 
 
-  <script>
-  export default {
-    name: "TestCard",
-    props: ["image", "title"]
-  }
-  </script>
-  
-  <style scoped>
+<script>
+export default {
+  name: "TestCard",
+  props: ["image", "title"]
+}
+</script>
+
+<style scoped>
 .test-card {
   background: white;
   border-radius: 12px;
@@ -41,5 +41,5 @@
   text-align: center;
 }
 
-  </style>
+</style>
   

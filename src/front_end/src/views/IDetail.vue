@@ -38,31 +38,32 @@
     </div>
   </div>
 </template>
-  
+
 <script>
 import RelatedArticleBox from '@/components/RelatedArticleBox.vue';
 import axios from "axios";
+import { API_BASE_URL } from '@/utils/api';
 
-  export default {
-    name: "ArticleDetail",
-    components: {
-      RelatedArticleBox
-    },
-    data() {
-      return {
-        article: {},
-        relatedArticles: []
-      };
-    },
-    created() {
-      const articleId = this.$route.params.id;
-      console.log('文章id: ', articleId);
-      this.fetchArticle(articleId);
-    },
-    methods: {
+export default {
+  name: "ArticleDetail",
+  components: {
+    RelatedArticleBox
+  },
+  data() {
+    return {
+      article: {},
+      relatedArticles: []
+    };
+  },
+  created() {
+    const articleId = this.$route.params.id;
+    console.log('文章id: ', articleId);
+    this.fetchArticle(articleId);
+  },
+  methods: {
     async fetchArticle(id) {
       try {
-        const response = await axios.get(`/api/introductions/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/api/introductions/${id}`);
         const articleData = response.data;
         console.log(response.data);
         console.log("===================")
@@ -80,8 +81,8 @@ import axios from "axios";
         this.fetchRelatedArticles(this.article.type);
 
         this.$nextTick(() => {
-        this.article = articleData;
-      });
+          this.article = articleData;
+        });
 
       } catch (error) {
         console.error("Error fetching article:", error);
@@ -93,11 +94,11 @@ import axios from "axios";
         // const response = await axios.get(`/api/articles?relatedTo=${encodeURIComponent(title)}`);
         // 调用后端 API，根据症状名称查询相关资源
         console.log('需要检索的rtag: ', symptomName);
-        const resourcesResponse = await axios.get(`/api/resources/by-tag`, {
+        const resourcesResponse = await axios.get(`\`${API_BASE_URL}/api/resources/by-tag`, {
           params: { name: symptomName } // 将症状名称作为查询参数传递
         });
         // 获取来自视频资源（resourcevideo）的相关文章
-        const videoResponse = await axios.get(`/api/resourceVideos/byTag`, {
+        const videoResponse = await axios.get(`${API_BASE_URL}/api/resourceVideos/byTag`, {
           params: { name: symptomName }
         });
 
@@ -119,9 +120,9 @@ import axios from "axios";
       }
     }
   }
-  };
+};
 </script>
-  
+
 <style scoped>
 
 .article-detail {
@@ -162,23 +163,23 @@ import axios from "axios";
   text-align: justify; /* 文字两端对齐 */
 }
 
-  .related-title {
-    margin-top: 100px; /* 控制“相关推荐”标题上方的空白，40px 代表大约两行间距 */
-    margin-left: 100px;
-  }
+.related-title {
+  margin-top: 100px; /* 控制“相关推荐”标题上方的空白，40px 代表大约两行间距 */
+  margin-left: 100px;
+}
 
-  .related-articles {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 20px;
-    margin-left: 100px;
-  }
+.related-articles {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 20px;
+  margin-left: 100px;
+}
 
-  .related-articles > * {
-    flex: 1 1 calc(25% - 20px); /* 一行三个格子，每个占三分之一的宽度 */
-    max-width: 300px; /* 最大宽度 */
-    box-sizing: border-box;
-  }
+.related-articles > * {
+  flex: 1 1 calc(25% - 20px); /* 一行三个格子，每个占三分之一的宽度 */
+  max-width: 300px; /* 最大宽度 */
+  box-sizing: border-box;
+}
 
 </style>

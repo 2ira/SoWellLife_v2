@@ -35,6 +35,7 @@
 
 <script>
 import axios from 'axios';
+import { API_BASE_URL } from '@/utils/api';
 
 export default {
   name: 'DoctorPage',
@@ -52,7 +53,7 @@ export default {
     // 方法：加载医生数据
     loadDoctors() {
       axios
-          .get('/api/doc_information/all')  // 获取所有医生信息的接口
+          .get(`${API_BASE_URL}/api/doc_information/all`)  // 获取所有医生信息的接口
           .then((response) => {
             console.log('API 返回的数据:', response.data);  // 打印返回的数据
             this.doctors = response.data;    // 更新医生数据

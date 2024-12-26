@@ -3,10 +3,7 @@ import cn.mentalhealth.dao.UserDao;
 import cn.mentalhealth.domain.User;
 import cn.mentalhealth.utils.JDBCUtils;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,12 +82,22 @@ public class UserDaoImpl implements UserDao {
     public void insertUser(User user) {
         String sql = "INSERT INTO user (Email, UName, AvatarUser,UserPSW) VALUES (?,?,?,?)";
         try (Connection connection = jdbcUtils.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             preparedStatement.setString(1, user.getEmail());
             preparedStatement.setString(2, user.getUName());
             preparedStatement.setString(3, user.getAvatarUser());
             preparedStatement.setString(4, user.getUserPSW());
+
             preparedStatement.executeUpdate();
+
+            // 获取生成的主键
+            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    user.setUid(generatedKeys.getInt(1));
+                }
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -110,7 +117,7 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         }
     }
-//    @Override
+    //    @Override
 //    public void deleteUser(String condition) {
 //        String sql = "DELETE FROM user WHERE " + condition;
 //        try (Connection connection = jdbcUtils.getConnection();
@@ -120,36 +127,36 @@ public class UserDaoImpl implements UserDao {
 //            e.printStackTrace();
 //        }
 //    }
-@Override
-public void deleteUser(String condition) {
-    Connection connection = null;
-    try {
-        connection = jdbcUtils.getConnection();
-        connection.setAutoCommit(false);
+    @Override
+    public void deleteUser(String condition) {
+        Connection connection = null;
+        try {
+            connection = jdbcUtils.getConnection();
+            connection.setAutoCommit(false);
 
-        String sql = "DELETE FROM user WHERE " + condition;
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.executeUpdate();
-        }
-
-        connection.commit();
-    } catch (SQLException e) {
-        if (connection!= null) {
-            try {
-                connection.rollback();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
+            String sql = "DELETE FROM user WHERE " + condition;
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.executeUpdate();
             }
-        }
-        e.printStackTrace();
-    } finally {
-        if (connection!= null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+
+            connection.commit();
+        } catch (SQLException e) {
+            if (connection!= null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            e.printStackTrace();
+        } finally {
+            if (connection!= null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
-}
 }

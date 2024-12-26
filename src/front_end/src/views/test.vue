@@ -16,6 +16,7 @@
 <script>
 import ArticleBoxTest from "@/components/ArticleBoxTest.vue";
 import axios from 'axios';
+import { API_BASE_URL } from '@/utils/api';
 
 export default {
   name: "TestPage",
@@ -35,7 +36,7 @@ export default {
   methods: {
     async fetchArticles() {
       try {
-        const response = await axios.get('/api/test/data');
+        const response = await axios.get(`${API_BASE_URL}/api/test/data`);
         this.articles = response.data;
         this.isLoading = false;
       } catch (error) {

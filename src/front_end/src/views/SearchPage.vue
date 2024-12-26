@@ -33,6 +33,7 @@
 
 <script>
 import axios from "axios";
+import { API_BASE_URL } from '@/utils/api';
 
 export default {
   name: "SearchPage",
@@ -83,10 +84,10 @@ export default {
       this.isLoading = true;
 
       // 定义请求的URL
-      const byNameUrl = `/api/resources/by-name?rname=${encodeURIComponent(searchQuery)}`;
-      const byTagUrl = `/api/resources/by-tag?name=${encodeURIComponent(searchQuery)}`;
-      const byVideoNameUrl = `/api/resourceVideos/byName?rname=${encodeURIComponent(searchQuery)}`;
-      const byVideoTagUrl = `/api/resourceVideos/byTag?name=${encodeURIComponent(searchQuery)}`;
+      const byNameUrl = `${API_BASE_URL}//api/resources/by-name?rname=${encodeURIComponent(searchQuery)}`;
+      const byTagUrl = `${API_BASE_URL}//api/resources/by-tag?name=${encodeURIComponent(searchQuery)}`;
+      const byVideoNameUrl = `${API_BASE_URL}//api/resourceVideos/byName?rname=${encodeURIComponent(searchQuery)}`;
+      const byVideoTagUrl = `${API_BASE_URL}//api/resourceVideos/byTag?name=${encodeURIComponent(searchQuery)}`;
 
       // 先发起四个请求
       Promise.all([fetch(byNameUrl), fetch(byTagUrl), fetch(byVideoNameUrl), fetch(byVideoTagUrl)])
@@ -141,7 +142,7 @@ export default {
         params.append("Uid", this.userUid);
 
         axios
-            .post("http://localhost:8081/api/favorites/add", params)
+            .post(`${API_BASE_URL}/api/favorites/add`, params)
             .then((response) => {
               console.log("收藏状态已更改为 收藏");
               if (response.data && response.data.success) {
@@ -162,7 +163,7 @@ export default {
         params.append("Uid", this.userUid);
 
         axios
-            .post("http://localhost:8081/api/favorites/remove", params)
+            .post(`${API_BASE_URL}/api/favorites/remove`, params)
             .then((response) => {
               console.log("收藏状态已更改为 未收藏");
               if (response.data && response.data.success) {

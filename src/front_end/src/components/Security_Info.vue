@@ -74,6 +74,7 @@
 
 <script>
 import axios from "axios";
+import { API_BASE_URL } from '@/utils/api';
 
 export default {
   name: 'Security_Info',
@@ -129,7 +130,7 @@ export default {
       }
 
       // 发送请求获取用户原始密码等信息
-      const url = 'http://localhost:8080/api/login/profile';
+      const url = `${API_BASE_URL}/api/login/profile`;
 
       try {
         const response = await axios.get(url, {
@@ -195,7 +196,7 @@ export default {
 
       // 向后端发送请求修改密码
       this.isLoading = true;
-      const url = 'http://localhost:8080/api/login/change-password';
+      const url = `${API_BASE_URL}/api/login/change-password`;
 
       // 使用 URLSearchParams 发送表单数据
       const formData = new URLSearchParams();

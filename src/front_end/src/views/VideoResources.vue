@@ -38,6 +38,7 @@
 
 <script>
 import axios from "axios";
+import { API_BASE_URL } from '@/utils/api';
 
 export default {
   name: "VideoResources",
@@ -50,31 +51,31 @@ export default {
     };
   },
   mounted() {
-    this.loadVideos(); // 组件挂载后加载视频
-    this.userUid = this.$store.getters.uid; // 从 Vuex 获取用户ID
-
+    this.loadVideos();
+    this.userUid = this.$store.getters.uid;
   },
 
   methods: {
     loadVideos() {
-      axios
-          .get("/api/resourceVideos/all")
+      axios.get(`${API_BASE_URL}/api/resourceVideos/all`)
           .then((response) => {
             console.log("API 返回的视频数据:", response.data);
+            // 移除错误的默认收藏状态设置
             this.videos = response.data.map((video) => ({
               ...video,
-              isFavorited: !!this.userUid, // 如果未登录，默认未收藏
+              isFavorited: false  // 默认设置为未收藏
             }));
+
+            // 只有登录用户才检查收藏状态
             if (this.userUid) {
               this.videos.forEach((video) => {
-                axios
-                    .get("http://localhost:8081/api/favorites/check", {
-                      params: {
-                        Uid: this.userUid,
-                        Rid: video.rid,
-                        flag: 1, // 视频资源标识
-                      },
-                    })
+                axios.get(`${API_BASE_URL}/api/favorites/check`, {
+                  params: {
+                    Uid: this.userUid,
+                    Rid: video.rid,
+                    flag: 1,
+                  },
+                })
                     .then((favResponse) => {
                       video.isFavorited = favResponse.data.isFavorited;
                     })
@@ -101,7 +102,7 @@ export default {
       const rid = video.rid;
       if (!video.isFavorited) {
         axios
-            .post("http://localhost:8081/api/favorites/add", null, {
+            .post(`${API_BASE_URL}/api/favorites/add`, null, {
               params: {
                 Uid: this.userUid,
                 Rid: rid,
@@ -112,6 +113,7 @@ export default {
               console.log("收藏状态已更改为 收藏");
               if (response.data && response.data.success) {
                 video.isFavorited = true;
+                console.log("收藏成功");
               } else {
                 console.error("添加收藏失败:", response.data.message);
                 alert("添加收藏失败，请稍后再试");
@@ -123,7 +125,7 @@ export default {
             });
       } else {
         axios
-            .post("http://localhost:8081/api/favorites/remove", null, {
+            .post(`${API_BASE_URL}/api/favorites/remove`, null, {
               params: {
                 Uid: this.userUid,
                 Rid: rid,

@@ -42,30 +42,30 @@ public class ChatHistoryController {
     }
 
 
-@PostMapping("/send")
-public ResponseEntity<?> sendMessage(@RequestBody Map<String, Object> request) {
-    try {
-        logger.info("收到发送消息请求");
-        Integer cid = ((Number) request.get("cid")).intValue();
-        Integer uid = ((Number) request.get("uid")).intValue();
-        String content = (String) request.get("content");
-        Boolean shouldSave = (Boolean) request.getOrDefault("shouldSave", true);
+    @PostMapping("/send")
+    public ResponseEntity<?> sendMessage(@RequestBody Map<String, Object> request) {
+        try {
+            logger.info("收到发送消息请求");
+            Integer cid = ((Number) request.get("cid")).intValue();
+            Integer uid = ((Number) request.get("uid")).intValue();
+            String content = (String) request.get("content");
+            Boolean shouldSave = (Boolean) request.getOrDefault("shouldSave", true);
 
-        logger.debug("Message params - cid: {}, uid: {}, content: {}, shouldSave: {}",
-                cid, uid, content, shouldSave);
+            logger.debug("Message params - cid: {}, uid: {}, content: {}, shouldSave: {}",
+                    cid, uid, content, shouldSave);
 
-        ChatHistory response = chatHistoryService.sendMessage(cid, uid, content, shouldSave);
-        return ResponseEntity.ok(response);
+            ChatHistory response = chatHistoryService.sendMessage(cid, uid, content, shouldSave);
+            return ResponseEntity.ok(response);
 
-    } catch (Exception e) {
-        logger.error("处理消息时发生错误", e);
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", e.getMessage());
-        errorResponse.put("details", e.getCause() != null ? e.getCause().getMessage() : "未知错误");
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(errorResponse);
+        } catch (Exception e) {
+            logger.error("处理消息时发生错误", e);
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            errorResponse.put("details", e.getCause() != null ? e.getCause().getMessage() : "未知错误");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(errorResponse);
+        }
     }
-}
 
 
     // 在 ChatHistoryController 类中添加新的端点

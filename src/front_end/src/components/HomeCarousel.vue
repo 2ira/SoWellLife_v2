@@ -2,10 +2,10 @@
 <template>
   <div class="carousel">
     <div class="carousel-inner" :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
-      <div 
-        v-for="item in items" 
-        :key="item.id" 
-        class="carousel-item"
+      <div
+          v-for="item in items"
+          :key="item.id"
+          class="carousel-item"
       >
         <div class="carousel-content">
           <img :src="item.image" :alt="item.title">
@@ -17,16 +17,16 @@
         </div>
       </div>
     </div>
-    
+
     <button class="carousel-control prev" @click="prevSlide">&lt;</button>
     <button class="carousel-control next" @click="nextSlide">&gt;</button>
-    
+
     <div class="carousel-indicators">
       <button
-        v-for="(_, index) in items"
-        :key="index"
-        :class="{ active: currentSlide === index }"
-        @click="goToSlide(index)"
+          v-for="(_, index) in items"
+          :key="index"
+          :class="{ active: currentSlide === index }"
+          @click="goToSlide(index)"
       ></button>
     </div>
   </div>

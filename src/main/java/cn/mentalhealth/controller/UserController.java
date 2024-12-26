@@ -8,6 +8,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -30,6 +31,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+
 @CrossOrigin(origins = "http://localhost:8081")  // 前端地址
 @RestController
 @RequestMapping("/api/login")
@@ -50,7 +52,7 @@ public class UserController {
     private static final java.util.Map<String, String> emailVerificationCache = new java.util.HashMap<>();
 
 
-     //处理用户邮箱验证发送验证码的请求
+    //处理用户邮箱验证发送验证码的请求
     @PostMapping("/register")
     public String sendVerificationCode(@RequestParam("email") String email) {
         // 验证邮箱格式
@@ -140,10 +142,12 @@ public class UserController {
             newUser.setUserPSW("123456"); // 设置默认密码为 123456
 
             // 添加新用户
-            userService.addUser(newUser);
+//            userService.addUser(newUser);
+
+            User savedUser = userService.addUser(newUser);
 
             // 返回注册成功的消息
-            return "{\"success\": true, \"message\": \"验证码验证成功，用户不存在，已自动注册\", \"user\": {\"uid\": " + newUser.getUid() + ", \"username\": \"" + newUser.getUName() + "\", \"email\": \"" + newUser.getEmail() + "\"}}";
+            return "{\"success\": true, \"message\": \"验证码验证成功，用户不存在，已自动注册\", \"user\": {\"uid\": " + savedUser.getUid() + ", \"username\": \"" + savedUser.getUName() + "\", \"email\": \"" + savedUser.getEmail() + "\"}}";
         }
 
         // 5. 如果用户存在，返回成功并包含用户信息
@@ -330,6 +334,9 @@ public class UserController {
         }
     }
 
+    @Value("${api.base-url}")  // 从配置文件读取
+    private String apiBaseUrl;
+
     @PostMapping("/upload-avatar")
     public ResponseEntity<?> uploadAvatar(@RequestParam("avatarFile") MultipartFile file,
                                           @RequestParam("uid") int uid) {
@@ -382,7 +389,7 @@ public class UserController {
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
             // 返回文件的 URL
-            String fileUrl = "http://localhost:8080/uploads/" + fileName;
+            String fileUrl = apiBaseUrl+"/uploads/" + fileName;
 
             // 使用 HashMap 来存储返回的数据
             Map<String, String> response = new HashMap<>();
@@ -421,8 +428,8 @@ public class UserController {
     // 更新用户名称和头像
     @PostMapping("/change-email")
     public String changeEmail(@RequestParam(value = "uid") String uid,
-                                 @RequestParam(value = "newemail", required = false) String newemail,
-                                 HttpServletRequest request) {
+                              @RequestParam(value = "newemail", required = false) String newemail,
+                              HttpServletRequest request) {
         try {
 
             // 调用 userService 中的 updateUserPassword 方法进行密码更新

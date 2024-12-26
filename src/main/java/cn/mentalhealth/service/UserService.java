@@ -100,8 +100,9 @@ public class UserService {
     }
 
     // 添加新的用户记录
-    public void addUser(User user) {
+    public User addUser(User user) {
         userDao.insertUser(user);
+        return user;  // 现在 user 对象已经包含了数据库生成的 uid
     }
 
     // 更新用户记录
@@ -187,7 +188,7 @@ public class UserService {
     private void log(String message, HttpServletRequest request) {
         System.out.println("操作日志: " + message + "，来源IP: " + request.getRemoteAddr());
     }
-   public String updateUserPassword(HttpServletRequest request) {
+    public String updateUserPassword(HttpServletRequest request) {
         try {
             // 打印所有请求参数
             System.out.println("请求参数: " + request.getParameterMap());

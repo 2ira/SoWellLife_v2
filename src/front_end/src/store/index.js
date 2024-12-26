@@ -1,3 +1,4 @@
+// front_end/src/store/index.js
 import { createStore } from 'vuex';
 import createPersistedState from 'vuex-persistedstate';  // 引入插件
 

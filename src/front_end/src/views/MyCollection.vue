@@ -44,6 +44,7 @@
 import {ref, onMounted, computed} from 'vue';
 import axios from 'axios';
 import { useStore } from 'vuex';
+import { API_BASE_URL } from '@/utils/api';
 
 const showArticle = ref(true);
 const showVideo = ref(false);
@@ -81,7 +82,7 @@ const fetchFavoriteResources = async () => {
   loading.value = true;
   const flag = showArticle.value? 0 : 1;
   try {
-    const response = await axios.get('/api/favorites/resources', { params: { Uid, flag } });
+    const response = await axios.get(`${API_BASE_URL}/api/favorites/resources`, { params: { Uid, flag } });
     const resources = response.data;
     console.log("response.data:",response.data)
     if (flag === 0) {

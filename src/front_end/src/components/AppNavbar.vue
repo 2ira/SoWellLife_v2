@@ -23,7 +23,7 @@
                @mouseover="isLoggedIn && (avatarHover = true, isDropdownVisible = true)"
                @mouseleave="avatarHover = false, isDropdownVisible = false">
             <img
-                :src="avatar_url || require('@/assets/imgs/avatar/login.png')"
+                :src="isLoggedIn ? (avatar_url || 'https://tse3-mm.cn.bing.net/th/id/OIP-C.yp-D-KHI3e2nN4eMBJcEVAAAAA?rs=1&pid=ImgDetMain') : require('@/assets/imgs/avatar/login.png')"
                 alt="用户头像"
                 class="user-avatar-img"
                 :class="{'avatar-hover': avatarHover}">
@@ -128,6 +128,7 @@
 import {mapState, mapActions, useStore} from 'vuex';
 import axios from 'axios';
 import {onMounted} from "vue";
+import { API_BASE_URL } from '@/utils/api';
 
 export default {
   name: "AppNavbar",
@@ -205,13 +206,14 @@ export default {
       this.$router.push({ path: '/search', query: { q: this.searchQuery.trim() } });
     },
 
+
     // 登录功能
     async login_verify() {
       try {
         console.log("开始发起登录请求...");
 
         // 发起密码验证请求
-        const response = await axios.post('http://localhost:8080/api/login/verify-password', null, {
+        const response = await axios.post(`${API_BASE_URL}/api/login/verify-password`, null, {
           params: {
             identifier: this.identifier,
             password: this.password
@@ -221,7 +223,7 @@ export default {
 
         if (response.data.success) {
           // 获取用户信息
-          const userInfoResponse = await axios.post('http://localhost:8080/api/login/profile', null, {
+          const userInfoResponse = await axios.post(`${API_BASE_URL}/api/login/profile`, null, {
             params: { identifier: this.identifier }
           });
 
@@ -251,6 +253,7 @@ export default {
       }
     },
 
+
     logout() {
       this.$store.dispatch('logout');
       this.isDropdownVisible = false;
@@ -266,7 +269,7 @@ export default {
         console.log("开始发起验证码登录请求...");
 
         // 发送验证码验证请求
-        const response = await axios.post('http://localhost:8080/api/login/login-by-code', null, {
+        const response = await axios.post(`${API_BASE_URL}/api/login/login-by-code`, null, {
           params: {
             email: this.email,
             code: this.captcha
@@ -277,24 +280,37 @@ export default {
         console.log("验证码登录返回的数据：", response.data);
 
         if (response.data.success) {
-          // 登录成功后，保存用户信息
+          // 登录成功后，获取完整的用户信息
           const userInfo = response.data.user;  // 获取返回的用户信息
 
-          // 确保有 uid 和 username
           if (userInfo && userInfo.uid) {
-            this.$store.dispatch('login', {
-              username: userInfo.username,
-              avatar_url: userInfo.avatar_url,  // 如果没有头像，则默认为空字符串
-              uid: userInfo.uid  // 保存用户的 uid
-            });
+            // 获取用户的完整信息
+            try {
+              const userInfoResponse = await axios.get(`${API_BASE_URL}/api/login/profile`, {
+                params: { identifier: userInfo.uid }
+              });
 
-            this.isLoggedIn = true;  // 登录状态更新
-            this.closeLoginModal();  // 关闭登录模态框
-            alert('登录成功');
+              const fullUserInfo = userInfoResponse.data;
+
+              // 使用默认头像如果没有设置头像
+              const defaultAvatarUrl = "https://tse3-mm.cn.bing.net/th/id/OIP-C.yp-D-KHI3e2nN4eMBJcEVAAAAA?rs=1&pid=ImgDetMain";
+
+              this.$store.dispatch('login', {
+                username: fullUserInfo.uname,
+                avatar_url: fullUserInfo.avatarUser || defaultAvatarUrl,
+                uid: fullUserInfo.uid
+              });
+
+              this.isLoggedIn = true;
+              this.closeLoginModal();
+              alert('登录成功');
+            } catch (error) {
+              console.error('获取用户完整信息失败:', error);
+              alert('登录失败，无法获取用户信息');
+            }
           } else {
-            alert('登录失败，用户信息缺失');
+            alert('登录失败，用户信息不完整');
           }
-
         } else {
           alert(response.data.message);  // 显示错误消息
         }
@@ -303,6 +319,8 @@ export default {
         alert('登录失败，请稍后重试');
       }
     },
+
+
     // 发送验证码
     startCountdown() {
       // 如果邮箱无效，提示并返回
@@ -322,7 +340,7 @@ export default {
       this.countdownText = `${this.countdown}秒`;
 
       // 发送验证码请求
-      axios.post('http://localhost:8080/api/login/register', null, {
+      axios.post(`${API_BASE_URL}/api/login/register`, null, {
         params: { email: this.email }
       })
           .then(response => {
@@ -356,6 +374,7 @@ export default {
         }
       }, 1000);
     },
+
 
 
     // 校验邮箱和验证码

@@ -181,11 +181,11 @@
       <!-- 聊天消息区域 -->
       <div class="flex-1 overflow-y-auto p-4 pb-24 relative" ref="messageContainer">
         <div class="max-w-3xl mx-auto space-y-4">
-<!--          <template v-if="messages.length === 0">-->
-<!--            <div class="absolute inset-0 flex items-center justify-center"> &lt;!&ndash; 使用 flex 和高度充满来居中 &ndash;&gt;-->
-<!--              <p class="text-2xl text-gray-500 font-medium">开始新的对话吧！</p> &lt;!&ndash; 调整字体大小和粗细 &ndash;&gt;-->
-<!--            </div>-->
-<!--          </template>-->
+          <!--          <template v-if="messages.length === 0">-->
+          <!--            <div class="absolute inset-0 flex items-center justify-center"> &lt;!&ndash; 使用 flex 和高度充满来居中 &ndash;&gt;-->
+          <!--              <p class="text-2xl text-gray-500 font-medium">开始新的对话吧！</p> &lt;!&ndash; 调整字体大小和粗细 &ndash;&gt;-->
+          <!--            </div>-->
+          <!--          </template>-->
           <template v-if="showWelcome">
             <!-- 使用 React 组件作为欢迎界面 -->
             <WelcomeAnimation />
@@ -202,8 +202,8 @@
                 <div class="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden">
                   <img
                       :src="message.role === 'user'
-          ? require('@/assets/imgs/icon/default-avatar.jpg')
-          : require('@/assets/imgs/icon/ai-avatar.svg')"
+        ? (store.state.avatar_url || require('@/assets/imgs/icon/default-avatar.jpg'))
+        : require('@/assets/imgs/icon/ai-avatar.svg')"
                       :alt="message.role === 'user' ? '用户头像' : 'AI头像'"
                       class="w-full h-full object-cover"
                   >
@@ -211,15 +211,32 @@
 
                 <!-- 消息内容部分 -->
                 <div class="flex flex-col max-w-[65%]">
-                  <div class="px-3 py-3 rounded-lg"
-                       :class="[
-           message.role === 'user'
-             ? 'bg-blue-500 text-white rounded-tr-none ml-auto'
-             : 'bg-white text-gray-800 rounded-tl-none mr-auto'
-         ]"
-                  >
-                    {{ message.content }}
-                  </div>
+
+
+
+                  <template v-if="message.role === 'user'">
+                    <div class="px-3 py-3 rounded-lg bg-blue-500 text-white rounded-tr-none ml-auto">
+                      {{ message.content }}
+                    </div>
+                  </template>
+                  <template v-else>
+                    <TypingMessage
+                        v-if="message.isTyping"
+                        :content="message.content"
+                        @complete="onTypingComplete(message)"
+                        @character-typed="scrollToBottom"
+                        :parseMarkdown="parseMarkdown"
+                    />
+                    <div
+                        v-else
+                        class="px-3 py-3 rounded-lg bg-white text-gray-800 rounded-tl-none mr-auto message-content"
+                        v-html="parseMarkdown(message.content)"
+                    >
+                    </div>
+                  </template>
+
+
+
                 </div>
               </div>
 
@@ -257,11 +274,12 @@
               placeholder="输入消息..."
               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               @keyup.enter="sendMessage"
+              :disabled="isLoading || isTyping"
           >
           <button
               @click="sendMessage"
               class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-              :disabled="!inputMessage.trim()"
+              :disabled="!inputMessage.trim() || isLoading || isTyping"
           >
             发送
           </button>
@@ -276,11 +294,20 @@
 import { ref, onMounted, nextTick, watch } from 'vue'
 import axios from 'axios'
 import WelcomeAnimation from '@/components/WelcomeAnimation.vue' // 导入欢迎动画组件
+import { API_BASE_URL } from '@/utils/api';
+import { useRouter } from 'vue-router'  // 添加这行
+import { useStore } from 'vuex'
+import TypingMessage from '@/components/TypingMessage.vue';  // 引入组件
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
+
 
 // 状态定义
-
+const router = useRouter()
+const store = useStore()
 const showWelcome = ref(true)  // 新增：控制是否显示欢迎界面
 const isLoading = ref(false)  // 新增加载状态
+const isTyping = ref(false);  // 新增状态
 const activeMenu = ref(null);
 const showRenameDialog = ref(false);
 const showDeleteDialog = ref(false);
@@ -296,15 +323,20 @@ const messageContainer = ref(null)
 const isChatListCollapsed = ref(false)
 
 // 从本地存储获取用户ID，实际应用中应该从用户认证系统获取
-const uid = ref(parseInt(localStorage.getItem('userId')) || 1)
+const uid = ref(store.state.isLoggedIn ? parseInt(store.getters.uid) : null)
 
 // API 基础URL
-const API_BASE_URL = '/api/chathistories'
+const API_BASE_URL0 = '/api/chathistories'
+
 
 // 初始化加载
 onMounted(async () => {
+  if (!store.state.isLoggedIn) {
+    alert("请先登录后再使用聊天功能");
+    router.push('/');
+    return;
+  }
   await loadChatSessions();
-  showWelcome.value = true; // 确保始终显示欢迎界面
 });
 
 // 菜单相关方法
@@ -312,12 +344,15 @@ const openMenu = (chat) => {
   activeMenu.value = activeMenu.value === chat.cid ? null : chat.cid;
 };
 
+
 // 点击其他地方关闭菜单
 onMounted(() => {
   document.addEventListener('click', () => {
     activeMenu.value = null;
   });
 });
+
+
 
 // 重命名相关方法
 const openRenameDialog = (chat) => {
@@ -333,11 +368,16 @@ const cancelRename = () => {
   selectedChat.value = null;
 };
 
+const parseMarkdown = (content) => {
+  const rawHtml = marked(content);
+  return DOMPurify.sanitize(rawHtml);
+};
+
 const confirmRename = async () => {
   if (!selectedChat.value || !newChatName.value.trim()) return;
 
   try {
-    await axios.put(`${API_BASE_URL}/sessions/${selectedChat.value.cid}/rename`, {
+    await axios.put(`${API_BASE_URL0}/sessions/${selectedChat.value.cid}/rename`, {
       newName: newChatName.value.trim()
     });
 
@@ -377,7 +417,7 @@ const executeDelete = async () => {
   if (!selectedChat.value) return;
 
   try {
-    await axios.delete(`${API_BASE_URL}/sessions/${selectedChat.value.cid}`);
+    await axios.delete(`${API_BASE_URL0}/sessions/${selectedChat.value.cid}`);
 
     // 更新本地状态
     chatSessions.value = chatSessions.value.filter(
@@ -404,7 +444,7 @@ const toggleChatList = () => {
 }
 
 // 在 <script setup> 的顶部添加
-axios.defaults.baseURL = 'http://localhost:8080'; // 替换为你的后端服务地址
+axios.defaults.baseURL = `${API_BASE_URL}`; // 替换为你的后端服务地址
 axios.defaults.timeout = 10000; // 10秒超时
 axios.interceptors.request.use(config => {
   console.log('发送请求:', config);
@@ -430,7 +470,7 @@ axios.interceptors.response.use(
 // 加载聊天会话
 async function loadChatSessions() {
   try {
-    const response = await axios.get(`${API_BASE_URL}/sessions/${uid.value}`);
+    const response = await axios.get(`${API_BASE_URL0}/sessions/${uid.value}`);
     console.log('Chat sessions response:', response.data);
     console.log('Raw response data:', response.data); // 打印原始数据
 
@@ -449,7 +489,7 @@ async function loadChatSessions() {
 // 创建新会话
 async function createNewChat() {
   try {
-    const response = await axios.post(`${API_BASE_URL}/sessions/new`, {
+    const response = await axios.post(`${API_BASE_URL0}/sessions/new`, {
       uid: uid.value,
     })
     const newCid = response.data
@@ -473,18 +513,18 @@ async function selectChat(cid) {
   showWelcome.value = false;
   currentCid.value = cid;
   try {
-    const response = await axios.get(`${API_BASE_URL}/messages/${cid}`);
+    const response = await axios.get(`${API_BASE_URL0}/messages/${cid}`);
     // 过滤掉系统指令消息
     messages.value = response.data
         .filter(msg => msg.role !== 'system')
         .map(msg => ({
           ...msg,
-          role: msg.role || 'ai'
+          role: msg.role || 'assistant'
         }));
   } catch (error) {
     console.error('Failed to load chat messages:', error);
     messages.value = [
-      { content: '你好！我是AI心理助手"沙包"，很高兴和你一起聊天😊', role: 'ai', htime: new Date() }
+      { content: '你好！我是AI心理助手"沙包"，很高兴和你一起聊天😊', role: 'assistant', htime: new Date() }
     ];
   }
   await scrollToBottom();
@@ -492,6 +532,10 @@ async function selectChat(cid) {
 
 // 发送消息
 async function sendMessage() {
+  if (!store.state.isLoggedIn) {
+    alert("请先登录后再发送消息");
+    return;
+  }
   if (!inputMessage.value.trim() || isLoading.value) return;
 
   const messageContent = inputMessage.value;
@@ -501,7 +545,7 @@ async function sendMessage() {
   // 如果当前是欢迎界面或没有当前会话，先创建新会话
   if (showWelcome.value || !currentCid.value) {
     try {
-      const response = await axios.post(`${API_BASE_URL}/sessions/new`, {
+      const response = await axios.post(`${API_BASE_URL0}/sessions/new`, {
         uid: uid.value
       });
       currentCid.value = response.data;
@@ -531,7 +575,7 @@ async function sendMessage() {
 
   while (currentTry < maxRetries && !success) {
     try {
-      const response = await axios.post(`${API_BASE_URL}/send`, {
+      const response = await axios.post(`${API_BASE_URL0}/send`, {
         cid: parseInt(currentCid.value),
         uid: parseInt(uid.value),
         content: messageContent,
@@ -542,11 +586,15 @@ async function sendMessage() {
         // AI回复成功，删除临时消息标记
         userMessage.tempId = null;
 
-        messages.value.push({
+        const aiMessage = {
           content: response.data.content,
-          role: 'ai',
-          htime: new Date()
-        });
+          role: 'assistant',
+          htime: new Date(),
+          isTyping: true  // 新增标记
+        };
+        messages.value.push(aiMessage);
+        isTyping.value = true;
+
         success = true;
       } else {
         throw new Error('无效的响应数据');
@@ -559,7 +607,7 @@ async function sendMessage() {
         // 所有重试都失败，添加错误消息，保留用户消息但不存数据库
         messages.value.push({
           content: "沙包出了点小问题，后面再试试吧~😀",
-          role: 'ai',
+          role: 'assistant',
           htime: new Date(),
           isError: true // 标记为错误消息
         });
@@ -579,9 +627,25 @@ async function sendMessage() {
 async function scrollToBottom() {
   await nextTick()
   if (messageContainer.value) {
-    messageContainer.value.scrollTop = messageContainer.value.scrollHeight
+    const container = messageContainer.value;
+    const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+
+    // 如果用户已经接近底部或者正在打字，则自动滚动
+    if (isNearBottom || isTyping.value) {
+      container.scrollTop = container.scrollHeight;
+    }
   }
 }
+// 新增打字完成处理函数
+const onTypingComplete = (message) => {
+  const targetMessage = messages.value.find(m => m === message);
+  if (targetMessage) {
+    targetMessage.isTyping = false;
+  }
+  isTyping.value = false;
+  scrollToBottom();
+};
+
 
 // 监听消息变化，自动滚动到底部
 watch(messages, async () => {
@@ -623,4 +687,39 @@ watch(messages, async () => {
 .rotate-90 {
   transform: rotate(90deg);
 }
+/* Markdown 样式 */
+.message-content {
+  word-break: break-word;
+}
+
+.message-content p {
+  margin-bottom: 0.5rem;
+}
+
+.message-content strong {
+  font-weight: 600;
+  color: #1a365d;  /* 深蓝色，让粗体更醒目 */
+}
+
+.message-content em {
+  font-style: italic;
+}
+
+.message-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem;
+  color: #2d3748;
+}
+
+.message-content ul {
+  list-style-type: disc;
+  margin: 0.5rem 0 0.5rem 1.5rem;
+}
+
+.message-content ol {
+  list-style-type: decimal;
+  margin: 0.5rem 0 0.5rem 1.5rem;
+}
+
 </style>

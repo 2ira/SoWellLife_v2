@@ -18,15 +18,18 @@ import java.util.Arrays;
 public class SoWellLifeApplication {
     public static void main(String[] args) {
 //        SpringApplication.run(SoWellLifeApplication.class, args);
+        System.setProperty("spring.config.location", "classpath:/application.properties");
         ConfigurableApplicationContext context = SpringApplication.run(SoWellLifeApplication.class, args);
 
-        // 打印所有配置源
+        // 验证配置加载
         ConfigurableEnvironment env = context.getEnvironment();
-        Logger log = LoggerFactory.getLogger(OpenAIServiceImpl.class);
-        log.info("Active profiles: {}", Arrays.toString(env.getActiveProfiles()));
-        log.info("Property sources: ");
-        for (PropertySource<?> propertySource : ((AbstractEnvironment) env).getPropertySources()) {
-            log.info("  {}", propertySource.getName());
+        Logger log = LoggerFactory.getLogger(SoWellLifeApplication.class);
+
+        String apiKey = env.getProperty("openai.api-key");
+        if (apiKey != null && !apiKey.isEmpty()) {
+            log.info("Successfully loaded OpenAI API key from application.properties");
+        } else {
+            log.error("Failed to load OpenAI API key from application.properties");
         }
     }
 }

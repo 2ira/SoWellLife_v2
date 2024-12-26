@@ -43,6 +43,7 @@
 
 <script>
 import axios from 'axios';
+import { API_BASE_URL } from '@/utils/api';
 
 export default {
   name: "Doctor_Detail",
@@ -63,7 +64,7 @@ export default {
   methods: {
     getDoctorDetail(docId) {
       // 发送请求获取医生数据
-      axios.get(`/api/doc_information/${docId}`)
+      axios.get(`${API_BASE_URL}/api/doc_information/${docId}`)
           .then(response => {
             if (response.data) {
               this.doctor = response.data; // 将后端返回的数据赋值给 doctor

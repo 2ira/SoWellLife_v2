@@ -26,27 +26,25 @@ public class OpenAIServiceImpl implements AIService {
     private final ChatHistoryDao chatHistoryDao;
     private final String apiKey;
     private final String apiUrl;
+    private final String model;
 
     @Value("${chat.context.message-limit}")
-    private Integer messageLimit = 20;  // 默认保留20条历史消息，后面考虑修改
+    private Integer messageLimit;  // 默认保留20条历史消息，后面考虑修改
 
     @Autowired
     public OpenAIServiceImpl(
             RestTemplate restTemplate,
-            ChatHistoryDao chatHistoryDao,  // 注入DAO
-            @Value("${openai.api-key}") String apiKey,
-            @Value("${openai.api-url}") String apiUrl) {
+            ChatHistoryDao chatHistoryDao,
+            @Value("${my.custom.openai.api-key}") String apiKey,
+            @Value("${openai.api-url}") String apiUrl,
+            @Value("${openai.model}") String model) {
+        // 确保使用配置文件中的API key
+        this.apiKey = apiKey;
         this.restTemplate = restTemplate;
         this.chatHistoryDao = chatHistoryDao;
-        this.apiKey = apiKey;
         this.apiUrl = apiUrl;
-        log.info("Initialized with API key: {}", apiKey);
-    }
-
-    @PostConstruct
-    public void init() {
-        log.info("System property openai.api-key: {}", System.getProperty("openai.api-key"));
-        log.info("Environment variable OPENAI_API_KEY: {}", System.getenv("OPENAI_API_KEY"));
+        this.model = model;
+        log.info("Initialized OpenAI service with API key from application.properties");
     }
 
     @Override
@@ -82,14 +80,14 @@ public class OpenAIServiceImpl implements AIService {
             messages.add(userMsg);
 
             String fullUrl = apiUrl + "/chat/completions";
-            String actualKey = "sk-z7CzOyi3VfIQHv8xkEo3D6rb7jAIApdVtmUSmktU9SlIbBFa";
+            log.info("Using fullUrl: {}", fullUrl);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(actualKey);
+            headers.setBearerAuth(apiKey);
 
             Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("model", "claude-3-5-sonnet-20241022");
+            requestBody.put("model", model);
             requestBody.put("messages", messages);
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);

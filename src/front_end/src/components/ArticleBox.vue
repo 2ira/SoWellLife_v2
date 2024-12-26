@@ -28,7 +28,7 @@ export default {
 </script>
 
 <style scoped>
- .article-box {
+.article-box {
   display: flex; /* 使用 flexbox 布局 */
   border: 1px solid #ccc;
   padding: 20px;
@@ -60,7 +60,7 @@ export default {
   position: relative; /* 添加相对定位，以便使用伪元素 */
   padding-left: 20px; /* 给标题增加左侧内边距，以留出空间放置竖线 */
   /*font-family: "Georgia", "Times New Roman", Times, serif;*/  /*系统自带的有衬线字体*/
-  font-family: Arial, Helvetica, sans-serif; /*暂时统一Arial字体*/ 
+  font-family: Arial, Helvetica, sans-serif; /*暂时统一Arial字体*/
 }
 
 .article-title::before {

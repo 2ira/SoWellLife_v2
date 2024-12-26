@@ -31,7 +31,7 @@ export default {
   }
 }
 </script>
-  
+
 <style scoped>
 .resource-card {
   background: white;

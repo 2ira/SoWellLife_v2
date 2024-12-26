@@ -71,7 +71,7 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
         welcomeMessage.setHtime(LocalDateTime.now());
         welcomeMessage.setContent("你好！我是AI心理助手\"沙包\"，很高兴和你一起聊天😊");
         welcomeMessage.setHName("新对话");
-        welcomeMessage.setRole("ai");
+        welcomeMessage.setRole("assistant");
 
         chatHistoryDao.insertChatHistory(welcomeMessage);
 
@@ -102,7 +102,7 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
             if (aiReply.equals("沙包出了点小问题，后面再试试吧~😀")) {
                 ChatHistory errorResponse = new ChatHistory();
                 errorResponse.setContent(aiReply);
-                errorResponse.setRole("ai");
+                errorResponse.setRole("assistant");
                 return errorResponse;
             }
 
@@ -130,7 +130,7 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
                 aiResponse.setHtime(LocalDateTime.now());
                 aiResponse.setContent(aiReply);
                 aiResponse.setHName(chatName);
-                aiResponse.setRole("ai");
+                aiResponse.setRole("assistant");
 
                 chatHistoryDao.insertChatHistory(aiResponse);
                 return aiResponse;
@@ -138,7 +138,7 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
                 // 不保存到数据库，只返回响应
                 ChatHistory aiResponse = new ChatHistory();
                 aiResponse.setContent(aiReply);
-                aiResponse.setRole("ai");
+                aiResponse.setRole("assistant");
                 return aiResponse;
             }
         } catch (Exception e) {

@@ -18,6 +18,7 @@
               :src="avatar_url"
               alt="头像"
               class="avatar"
+              @error="handleImageError"
           />
         </div>
 
@@ -140,6 +141,7 @@
 <script>
 import axios from 'axios';
 import { mapState, mapActions } from 'vuex';
+import { API_BASE_URL } from '@/utils/api';
 
 export default {
   name: 'Profile_Info',
@@ -167,12 +169,16 @@ export default {
 
     };
   },
+
   computed: {
     ...mapState({
       isLoggedIn: (state) => state.isLoggedIn,
       username: (state) => state.username,
     }),
+
   },
+
+
   methods: {
     ...mapActions({
       updateUserInfo: 'updateUserInfo',
@@ -186,7 +192,7 @@ export default {
         return;
       }
 
-      const url = 'http://localhost:8080/api/login/profile';
+      const url = `${API_BASE_URL}/api/login/profile`;
       this.isLoading = true;
 
       try {
@@ -199,7 +205,9 @@ export default {
           this.username = response.data.uname;
           this.orgin_username=this.username;
           this.avatar_url = response.data.avatarUser; // 获取头像 URL
+          console.log("Set avatar_url to:", this.avatar_url);
           this.orgin_avatar_url=this.avatar_url;
+
         }
         console.log("this.id ",this.id );
         console.log("this.originalEmail ",this.originalEmail);
@@ -228,7 +236,7 @@ export default {
       // 防止重复提交
       if (!this.isOriginalEmailVerified && this.email !== this.originalEmail) {
         // 检查邮箱是否已注册
-        axios.post('http://localhost:8080/api/login/verify-email', null, {params: {newemail: this.email}})
+        axios.post(`${API_BASE_URL}/api/login/verify-email`, null, {params: {newemail: this.email}})
             .then(response => {
               if (!response.data.success) {
                 alert('邮箱已经注册过！');
@@ -262,7 +270,7 @@ export default {
         avatarFormData.append('uid', this.id);
         avatarFormData.append('avatarFile', this.avatarFile);
 
-        axios.post('http://localhost:8080/api/login/upload-avatar', avatarFormData)
+        axios.post(`${API_BASE_URL}/api/login/upload-avatar`, avatarFormData)
             .then(avatarResponse => {
               if (avatarResponse.status === 200 && avatarResponse.data.fileUrl) {
                 console.log("avatarResponse:", avatarResponse.data.fileUrl);
@@ -288,7 +296,7 @@ export default {
 
     updateUserInfo(formData) {
       // 更新用户信息
-      axios.post('http://localhost:8080/api/login/update', formData)
+      axios.post(`${API_BASE_URL}/api/login/update`, formData)
           .then(updateResponse => {
             if (updateResponse.status === 200) {
               alert('用户信息更新成功');
@@ -336,7 +344,7 @@ export default {
 
       if (this.isOriginalEmailVerified) {
         try {
-          const response = await axios.post('http://localhost:8080/api/login/verify-email', null, { params: { newemail: this.email } });
+          const response = await axios.post(`${API_BASE_URL}/api/login/verify-email`, null, { params: { newemail: this.email } });
           if (!response.data.success) {
             alert('邮箱已经注册过！');
             this.resetCodeSendingState();
@@ -352,7 +360,7 @@ export default {
 
       const targetEmail = type === 'original' ? this.originalEmail : this.email;
       try {
-        await axios.post('http://localhost:8080/api/login/register', null, { params: { email: targetEmail } });
+        await axios.post(`${API_BASE_URL}/api/login/register`, null, { params: { email: targetEmail } });
         console.log('验证码发送成功');
       } catch (error) {
         console.error('验证码发送失败:', error);
@@ -392,7 +400,7 @@ export default {
       const codeToVerify = this.isOriginalEmailVerified ? this.newVerificationCode : this.verificationCode;
 
       try {
-        const response = await axios.post('http://localhost:8080/api/login/verify-code', null, {
+        const response = await axios.post(`${API_BASE_URL}/api/login/verify-code`, null, {
           params: { email: emailToVerify, code: codeToVerify },
         });
 
@@ -402,7 +410,7 @@ export default {
           if (this.isOriginalEmailVerified) {
             this.showEmailVerification = false;
             // 邮箱修改后，更新信息并进行保存
-            const url = 'http://localhost:8080/api/login/change-email';
+            const url = `${API_BASE_URL}/api/login/change-email`;
             this.$store.dispatch('login', {
               email: response.data.email,
               uid: this.id,
@@ -453,6 +461,11 @@ export default {
 
     triggerFileInput() {
       this.$refs.fileInput.click();
+    },
+
+    handleImageError() {
+      console.log('Current avatar_url:', this.avatar_url);
+      console.log('Store avatar_url:', this.$store.state.avatar_url);
     },
   },
   mounted() {
