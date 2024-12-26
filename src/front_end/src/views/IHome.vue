@@ -50,8 +50,14 @@ export default {
       })
           .then(response => {
             console.log(response.config.headers); // 打印请求头
-            this.articles = response.data;
-            console.log("the article is",this.articles)
+            // 获取文章数据后，检查每篇文章的图片字段
+            this.articles = response.data.map(article => {
+              if (article.image) {
+                // 使用 require 动态加载图片
+                article.image = require('@/assets/imgs/' + article.image);
+              }
+              return article;
+            });
             this.isLoading = false; // 数据获取成功后，将加载状态设为false
           })
           .catch(error => {

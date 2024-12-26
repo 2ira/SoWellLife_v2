@@ -1,30 +1,36 @@
-<!-- src/views/ArticleDetail.vue -->
 <template>
   <div class="article-detail">
+    <!-- 第一行：左侧图片，右侧拆开三行：症状名称、症状描述、原因分析 -->
     <div class="article-content">
       <!-- 左侧图片 -->
-      <img :src="article.picture" alt="Article Image" class="article-image" />
-      <!-- 右侧文字内容 -->
-      <div class="article-text">
-        <h1>{{ article.title }}</h1>
-        <p class="article-section">
-          <strong>症状类别：</strong>
-          {{ article.type }}
-        </p>
-        <p class="article-section">
-          <strong>症状描述：</strong>
-          {{ article.symptom }}
-        </p>
-        <p class="article-section">
-          <strong>原因分析：</strong>
-          {{ article.causes }}
-        </p>
-        <p class="article-section">
-          <strong>治疗方法：</strong>
-          {{ article.treatment }}
-        </p>
+      <div class="article-image-container">
+        <img :src="article.picture" alt="Article Image" class="article-image" />
+      </div>
+
+      <!-- 右侧：症状名称、症状描述、原因分析 -->
+      <div class="article-info">
+        <div class="symptom-title">
+          <h1>{{ article.type }}</h1>
+        </div>
+        <div class="card card1">
+          <h3>症状描述</h3>
+          <p>{{ article.symptom }}</p>
+        </div>
+        <div class="card card2">
+          <h3>原因分析</h3>
+          <p>{{ article.causes }}</p>
+        </div>
       </div>
     </div>
+
+    <!-- 第二行：治疗方法 -->
+    <div class="treatment-method">
+      <div class="card">
+        <h3>治疗方法</h3>
+        <p>{{ article.treatment }}</p>
+      </div>
+    </div>
+
     <!-- 相关文章推荐 -->
     <h2 class="related-title">相关推荐</h2>
     <div class="related-articles">
@@ -57,7 +63,6 @@ export default {
   },
   created() {
     const articleId = this.$route.params.id;
-    console.log('文章id: ', articleId);
     this.fetchArticle(articleId);
   },
   methods: {
@@ -65,55 +70,31 @@ export default {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/introductions/${id}`);
         const articleData = response.data;
-        console.log(response.data);
-        console.log("===================")
 
-        console.log('原始article.image值:', articleData.picture); // 输出原始的image字段值
-        console.log('原始article.image类型:', typeof articleData.picture); // 输出原始的image字段数据类型
-
-        if(articleData.picture){
-          articleData.picture = require('@/assets/imgs/'+articleData.picture);
-          console.log('处理后article.image值:', articleData.picture); // 输出处理后的image字段值
+        if (articleData.picture) {
+          articleData.picture = require('@/assets/imgs/' + articleData.picture);
         }
         this.article = articleData;
 
-        // 确保获取到 article.type 后再获取相关资源
         this.fetchRelatedArticles(this.article.type);
-
-        this.$nextTick(() => {
-          this.article = articleData;
-        });
-
       } catch (error) {
         console.error("Error fetching article:", error);
       }
     },
     async fetchRelatedArticles(symptomName) {
       try {
-        // 假设后端 API 可以通过标题搜索相关文章
-        // const response = await axios.get(`/api/articles?relatedTo=${encodeURIComponent(title)}`);
-        // 调用后端 API，根据症状名称查询相关资源
-        console.log('需要检索的rtag: ', symptomName);
-        const resourcesResponse = await axios.get(`\`${API_BASE_URL}/api/resources/by-tag`, {
-          params: { name: symptomName } // 将症状名称作为查询参数传递
+        const resourcesResponse = await axios.get(`${API_BASE_URL}/api/resources/by-tag`, {
+          params: { name: symptomName }
         });
-        // 获取来自视频资源（resourcevideo）的相关文章
         const videoResponse = await axios.get(`${API_BASE_URL}/api/resourceVideos/byTag`, {
           params: { name: symptomName }
         });
 
-        // 合并两个 API 返回的数据
         const combinedArticles = [
           ...resourcesResponse.data,
           ...videoResponse.data
         ];
 
-        // 打印每个相关文章的图片路径
-        this.relatedArticles.forEach((related, index) => {
-          console.log(`相关文章 ${index + 1} 的标题:`, related.title);
-        });
-
-        // 设置相关推荐
         this.relatedArticles = combinedArticles;
       } catch (error) {
         console.error("Error fetching related articles:", error);
@@ -124,48 +105,124 @@ export default {
 </script>
 
 <style scoped>
-
 .article-detail {
-  padding: 20px;
-  margin-top: 100px;
+  padding: 20px 100px; /* 上下20px，左右40px */
+  margin-top: 130px;
 }
 
+/* 第一行：左侧图片，右侧拆开三行：症状名称、症状描述、原因分析 */
 .article-content {
   display: flex;
   gap: 20px; /* 图片和文字之间的间距 */
-  align-items: flex-start; /* 图片和文字顶部对齐 */
+  align-items: center;  /* 图片和右侧卡片底部对齐 */
+  margin-bottom: 20px;
+}
+
+/* 图片容器 */
+.article-image-container {
+  width: 500px; /* 固定宽度 */
+  height: 400px; /* 固定高度 */
+  display: flex;
+  justify-content: center; /* 图片水平居中 */
+  align-items: center; /* 图片垂直居中 */
+  overflow: hidden;
+  margin-right: 20px; /* 确保右侧的内容与图片分开 */
 }
 
 .article-image {
-  max-width: 40%; /* 图片宽度占40% */
-  height: auto;
-  border-radius: 10px; /* 圆角 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 图片阴影效果 */
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* 图片等比缩放 */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.article-text {
-  flex: 1; /* 文字区域占剩余空间 */
+/* 右侧的资料部分 */
+.article-info {
   display: flex;
   flex-direction: column;
-  gap: 15px; /* 各段文字之间的间距 */
-  line-height: 1.8; /* 行高，增加可读性 */
+  flex: 1;
+  gap: 20px;
 }
 
-.article-text h1 {
-  font-size: 1.8rem;
-  margin-bottom: 10px;
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700&display=swap');
+/* 症状名称样式 */
+.symptom-title h1 {
+  font-size: 2rem; /* 增加标题字号 */
+  font-family: 'Merriweather', serif;
+  font-weight: 580;
+  color: #096892;
+  text-align: left;
+  margin-left: 10px;
+  letter-spacing: 1px;
+  text-transform: capitalize; /* 首字母大写 */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  /* 动画效果：让标题更生动 */
+  animation: titleAnimation 1.5s ease-in-out;
+}
+
+/* 为标题添加动画效果 */
+@keyframes titleAnimation {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 卡片样式 */
+.card {
+  border: 1px solid #ddd;
+  border-radius: 12px; /* 增加圆角 */
+  padding: 20px; /* 增加内边距 */
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* 增加阴影效果 */
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.card1 {
+  background-color: #f0f9fa;
+}
+
+.card2 {
+  background-color: #faf9f0;
+}
+
+.card h3 {
+  font-size: 1.3rem;
+  font-family: 'Merriweather', serif;
+  font-weight: 600;
   color: #333;
+  margin-bottom: 10px;
 }
 
-.article-text .article-section {
+.card p {
   font-size: 1rem;
   color: #555;
-  text-align: justify; /* 文字两端对齐 */
+  line-height: 1.6;
 }
 
+/* 第二行：治疗方法 */
+.treatment-method {
+  margin-top: 20px;
+}
+
+.treatment-method .card {
+  background-color: #f0faf2;
+}
+
+/* 相关文章推荐标题 */
 .related-title {
-  margin-top: 100px; /* 控制“相关推荐”标题上方的空白，40px 代表大约两行间距 */
-  margin-left: 100px;
+  margin-top: 50px;
+  margin-bottom: 20px;
+  margin-left: 10px;
+  font-size: 1.6rem;
+  color: #333;
 }
 
 .related-articles {
@@ -173,13 +230,11 @@ export default {
   flex-wrap: wrap;
   justify-content: flex-start;
   gap: 20px;
-  margin-left: 100px;
 }
 
 .related-articles > * {
-  flex: 1 1 calc(25% - 20px); /* 一行三个格子，每个占三分之一的宽度 */
-  max-width: 300px; /* 最大宽度 */
+  flex: 1 1 calc(25% - 20px);
+  max-width: 300px;
   box-sizing: border-box;
 }
-
 </style>
