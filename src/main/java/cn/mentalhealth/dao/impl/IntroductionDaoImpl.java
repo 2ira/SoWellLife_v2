@@ -88,6 +88,35 @@ public class IntroductionDaoImpl implements IntroductionDao {
     }
 
     @Override
+    public List<Introduction> searchIntroductionsBySymptom(String symptomName) {
+        List<Introduction> introductionList = new ArrayList<>();
+        // 使用 LIKE 进行模糊查询
+        String sql = "SELECT * FROM introduction WHERE Type LIKE ?";
+
+        try (Connection connection = jdbcUtils.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            // 模糊查询：在查询参数中使用 % 进行模糊匹配
+            preparedStatement.setString(1, "%" + symptomName + "%");
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    Introduction introduction = new Introduction();
+                    introduction.setIid(resultSet.getInt("Iid"));
+                    introduction.setType(resultSet.getString("Type"));
+                    introduction.setSymptom(resultSet.getString("Symptom"));
+                    introduction.setCauses(resultSet.getString("Causes"));
+                    introduction.setTreatment(resultSet.getString("Treatment"));
+                    introduction.setPicture(resultSet.getString("Picture"));
+                    introductionList.add(introduction);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return introductionList;
+    }
+
+    @Override
     public void insertIntroduction(Introduction introduction) {
         String sql = "INSERT INTO introduction (Type, Symptom, Causes, Treatment, Picture) VALUES (?,?,?,?,?)";
         try (Connection connection = jdbcUtils.getConnection();

@@ -70,6 +70,24 @@ public class IntroductionService {
         }
     }
 
+    // 根据症状名称模糊查询
+    public List<Map<String, Object>> searchSymptomsByName(String symptomName) {
+        List<Introduction> introductions = introductionDao.searchIntroductionsBySymptom(symptomName);
+
+        // 将查询结果转换为符合前端需求的格式
+        List<Map<String, Object>> resultList = new ArrayList<>();
+        for (Introduction introduction : introductions) {
+            Map<String, Object> articleData = new HashMap<>();
+            articleData.put("id", introduction.getIid());
+            articleData.put("title", introduction.getType());
+            articleData.put("description", introduction.getSymptom());
+            articleData.put("image", introduction.getPicture());
+            resultList.add(articleData);
+        }
+
+        return resultList;
+    }
+
     // 添加新的介绍信息，从报文中获取介绍信息相关参数并添加，返回添加结果的报文
     public String addIntroduction(HttpServletRequest request) {
         try {

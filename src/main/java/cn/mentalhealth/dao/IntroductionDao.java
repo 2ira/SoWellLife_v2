@@ -13,6 +13,9 @@ public interface IntroductionDao {
     // 根据症状名称获取相关记录
     List<Introduction> getIntroductionsByType(String type);
 
+    // 根据症状名称进行模糊查询
+    List<Introduction> searchIntroductionsBySymptom(String symptomName);
+
     // 插入新的Introduction记录
     void insertIntroduction(Introduction introduction);
 

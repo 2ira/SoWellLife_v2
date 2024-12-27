@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +37,16 @@ public class IntroductionController {
         Introduction article = introductionService.getIntroductionById(id);
         logger.info("获取到的文章详细信息: {}", article);
         return article;
+    }
+
+    // 根据症状名称模糊搜索
+    @GetMapping("/search")
+    public List<Map<String, Object>> searchSymptoms(HttpServletRequest request) {
+        String symptomName = request.getParameter("symptomName");
+        logger.info("开始根据症状名称进行模糊查询: {}", symptomName);
+        List<Map<String, Object>> data = introductionService.searchSymptomsByName(symptomName);
+        logger.info("获取到的症状查询结果: {}", data);
+        return data;
     }
 
     private static final Logger logger = LoggerFactory.getLogger(IntroductionController.class);

@@ -1,42 +1,68 @@
 <template>
-  <div>
+  <div class="home-page">
     <!-- 搜索结果容器 -->
     <div id="results-container">
       <p v-if="resources.length === 0 && !isLoading">未找到相关资源。</p>
       <p v-if="isLoading">正在搜索，请稍后...</p>
 
-      <div v-for="(resource, index) in resources" :key="index" class="resource-item">
-        <a :href="resource.rurl" target="_blank">
-          <img
-              :src="require(`@/${resource.rimg}`)"
-              :alt="resource.rname"
-              class="article-resource-image"
+      <!-- 症状名称展示 -->
+      <div v-if="symptoms.length > 0" class="symptoms-section">
+        <div class="symptom-list">
+          <!-- 使用 ArticleBox 来展示症状 -->
+          <ArticleBox
+              v-for="symptom in symptoms"
+              :key="symptom.id"
+              :title="symptom.title"
+              :description="symptom.description"
+              :articleId="symptom.id"
+              :image="symptom.image"
+              class="symptom-item"
           />
-          <div class="article-resource-info">
-            <h3 class="article-resource-category">{{ resource.rtag }}</h3>
-            <p class="article-resource-title">{{ resource.rname }}</p>
+        </div>
+      </div>
+
+      <!-- 文章和视频资源展示 -->
+      <div class="resources-section">
+        <div class="resource-grid">
+          <!-- 显示资源 -->
+          <div v-for="(resource, index) in resources" :key="index" class="resource-item">
+            <a :href="resource.rurl" target="_blank">
+              <img
+                  :src="require(`@/${resource.rimg}`)"
+                  :alt="resource.rname"
+                  class="article-resource-image"
+              />
+              <div class="article-resource-info">
+                <h3 class="article-resource-category">{{ resource.rtag }}</h3>
+                <p class="article-resource-title">{{ resource.rname }}</p>
+              </div>
+            </a>
+            <!-- 收藏按钮 -->
+            <img
+                @click.prevent="toggleFavoriteResource(resource)"
+                :src="resource.isFavorited
+                ? require('@/assets/imgs/收藏2.png')
+                : require('@/assets/imgs/收藏1.png')"
+                alt="收藏"
+                class="favorite-icon"
+            />
           </div>
-        </a>
-        <!-- 收藏按钮 -->
-        <img
-            @click.prevent="toggleFavoriteResource(resource)"
-            :src="resource.isFavorited
-            ? require('@/assets/imgs/收藏2.png')
-            : require('@/assets/imgs/收藏1.png')"
-            alt="收藏"
-            class="favorite-icon"
-        />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import ArticleBox from "@/components/ArticleBox.vue";
 import axios from "axios";
 import { API_BASE_URL } from '@/utils/api';
 
 export default {
   name: "SearchPage",
+  components: {
+    ArticleBox
+  },
   props: {
     query: {
       type: String,
@@ -48,18 +74,18 @@ export default {
       localQuery: "", // 本地存储的搜索关键字
       resources: [], // 搜索结果
       isLoading: false, // 搜索加载状态
+      symptoms: [], // 存储症状名称
+      userUid: null, // 用户UID
     };
   },
   watch: {
-    // 监听 props 的 query 参数变化
     query: {
-      immediate: true, // 初次加载时触发
+      immediate: true,
       handler(newQuery) {
         this.localQuery = newQuery; // 更新本地的搜索关键字
         this.fetchResources(); // 根据新的搜索关键字发起搜索
       },
     },
-    // 监听路由参数变化
     "$route.query.q": {
       immediate: true,
       handler(newQuery) {
@@ -68,14 +94,17 @@ export default {
       },
     },
   },
+  mounted() {
+    this.userUid = this.$store.getters.uid;
+  },
   methods: {
-    // 搜索资源的方法
+    // 获取资源并加载收藏状态
     fetchResources() {
-      const searchQuery = this.localQuery ? this.localQuery.trim() : ""; // 确保 query 存在
+      const searchQuery = this.localQuery ? this.localQuery.trim() : "";
 
       if (!searchQuery) {
         console.warn("搜索关键字为空，未发起请求！");
-        this.resources = []; // 清空旧的搜索结果
+        this.resources = [];
         return;
       }
 
@@ -83,28 +112,42 @@ export default {
       this.resources = [];
       this.isLoading = true;
 
-      // 定义请求的URL
-      const byNameUrl = `${API_BASE_URL}//api/resources/by-name?rname=${encodeURIComponent(searchQuery)}`;
-      const byTagUrl = `${API_BASE_URL}//api/resources/by-tag?name=${encodeURIComponent(searchQuery)}`;
-      const byVideoNameUrl = `${API_BASE_URL}//api/resourceVideos/byName?rname=${encodeURIComponent(searchQuery)}`;
-      const byVideoTagUrl = `${API_BASE_URL}//api/resourceVideos/byTag?name=${encodeURIComponent(searchQuery)}`;
+      const byNameUrl = `${API_BASE_URL}/api/resources/by-name?rname=${encodeURIComponent(searchQuery)}`;
+      const byTagUrl = `${API_BASE_URL}/api/resources/by-tag?name=${encodeURIComponent(searchQuery)}`;
+      const byVideoNameUrl = `${API_BASE_URL}/api/resourceVideos/byName?rname=${encodeURIComponent(searchQuery)}`;
+      const byVideoTagUrl = `${API_BASE_URL}/api/resourceVideos/byTag?name=${encodeURIComponent(searchQuery)}`;
+      const bySymptomNameUrl = `${API_BASE_URL}/api/introductions/search?symptomName=${encodeURIComponent(searchQuery)}`;
 
-      // 先发起四个请求
-      Promise.all([fetch(byNameUrl), fetch(byTagUrl), fetch(byVideoNameUrl), fetch(byVideoTagUrl)])
-          .then(([nameResponse, tagResponse, videoNameResponse, videoTagResponse]) => {
-            if (!nameResponse.ok || !tagResponse.ok || !videoNameResponse.ok || !videoTagResponse.ok) {
-              throw new Error("网络请求失败");
-            }
-            return Promise.all([nameResponse.json(), tagResponse.json(), videoNameResponse.json(), videoTagResponse.json()]);
-          })
-          .then(([nameData, tagData, videoNameData, videoTagData]) => {
-            // 合并文章资源和视频资源
+      // 发起请求
+      Promise.all([fetch(byNameUrl), fetch(byTagUrl), fetch(byVideoNameUrl), fetch(byVideoTagUrl), fetch(bySymptomNameUrl)]).then(([nameResponse, tagResponse, videoNameResponse, videoTagResponse, symptomResponse]) => {
+        if (!nameResponse.ok || !tagResponse.ok || !videoNameResponse.ok || !videoTagResponse.ok || !symptomResponse.ok) {
+          throw new Error("网络请求失败");
+        }
+        return Promise.all([nameResponse.json(), tagResponse.json(), videoNameResponse.json(), videoTagResponse.json(), symptomResponse.json()]);
+      })
+          .then(([nameData, tagData, videoNameData, videoTagData, symptomData]) => {
+            // 将症状名称、图片和描述提取出来，存入症状列表
+            this.symptoms = symptomData.map(symptom => ({
+              title: symptom.title,
+              image: symptom.image,  // 返回的图片路径
+              description: symptom.description, // 返回的症状描述
+              id: symptom.id
+            }));
+
+            // 合并文章和视频资源
             let allResources = [...nameData, ...tagData, ...videoNameData, ...videoTagData];
-
-            // 使用 Set 去重（假设资源对象有唯一的 rurl 字段，依据此字段去重）
             allResources = this.removeDuplicates(allResources);
 
-            // 更新资源列表
+            // 获取每个资源的收藏状态（如果用户已经登录）
+            if (this.userUid) {
+              this.checkFavorites(allResources); // 获取并设置收藏状态
+            } else {
+              // 如果未登录，默认所有资源都为未收藏
+              allResources.forEach(resource => {
+                resource.isFavorited = false;
+              });
+            }
+
             this.resources = allResources;
           })
           .catch((error) => {
@@ -112,22 +155,49 @@ export default {
             alert("搜索资源失败，请稍后重试！");
           })
           .finally(() => {
-            // 搜索完成后取消加载状态
             this.isLoading = false;
           });
     },
 
-    // 去重函数，根据资源的唯一标识去重（假设资源有 rurl 或其他唯一标识）
+    // 去重函数，根据资源的唯一标识去重
     removeDuplicates(resources) {
       const seen = new Set();
       return resources.filter((resource) => {
-        // 假设每个资源都有 rurl 或其他唯一字段
         const isDuplicate = seen.has(resource.rurl);
         seen.add(resource.rurl);
         return !isDuplicate;
       });
     },
 
+    // 获取并设置每个资源的收藏状态
+    checkFavorites(resources) {
+      const checkFavoritePromises = resources.map((resource) => {
+        return axios.get(`${API_BASE_URL}/api/favorites/check`, {
+          params: {
+            Uid: this.userUid,
+            Rid: resource.rid,
+            flag: 0,
+          }
+        })
+            .then((response) => {
+              if (response.data && response.data.isFavorited) {
+                resource.isFavorited = true;
+              } else {
+                resource.isFavorited = false;
+              }
+            })
+            .catch((error) => {
+              console.error("获取收藏状态失败：", error);
+            });
+      });
+
+      // 等待所有收藏状态的请求完成后更新状态
+      Promise.all(checkFavoritePromises).then(() => {
+        this.resources = [...resources];
+      });
+    },
+
+    // 切换收藏状态
     toggleFavoriteResource(resource) {
       if (!this.userUid) {
         alert("当前用户没有登陆，请登陆后再进行操作");
@@ -144,9 +214,8 @@ export default {
         axios
             .post(`${API_BASE_URL}/api/favorites/add`, params)
             .then((response) => {
-              console.log("收藏状态已更改为 收藏");
               if (response.data && response.data.success) {
-                resource.isFavorited = true;
+                resource.isFavorited = true; // 更新为已收藏
               } else {
                 console.error("添加收藏失败:", response.data.message);
                 alert("添加收藏失败，请稍后再试");
@@ -165,9 +234,8 @@ export default {
         axios
             .post(`${API_BASE_URL}/api/favorites/remove`, params)
             .then((response) => {
-              console.log("收藏状态已更改为 未收藏");
               if (response.data && response.data.success) {
-                resource.isFavorited = false;
+                resource.isFavorited = false; // 更新为未收藏
               } else {
                 console.error("取消收藏失败:", response.data.message);
                 alert("取消收藏失败，请稍后再试");
@@ -184,16 +252,33 @@ export default {
 </script>
 
 <style scoped>
+.home-page {
+  padding: 50px;
+  padding-left: 200px;
+  padding-right: 200px;
+  margin-top: 40px;
+}
+
 #results-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-  padding-top: 120px;
-  padding-bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding-top: 60px;
+  padding-bottom: 80px;
   max-width: 1200px;
   margin: 20px auto;
   padding-left: 40px;
   padding-right: 40px;
+}
+
+.symptoms-section {
+  margin-bottom: 10px;
+}
+
+.resource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* 每行3个资源 */
+  gap: 20px;
 }
 
 .resource-item {
@@ -213,6 +298,11 @@ export default {
 
 .resource-item:hover {
   transform: translateY(-5px);
+}
+
+.symptom-item {
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 .article-resource-info {
@@ -239,5 +329,4 @@ export default {
   bottom: 10px;
   right: 10px;
 }
-
 </style>

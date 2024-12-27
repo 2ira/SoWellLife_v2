@@ -106,7 +106,7 @@ export default {
 
 <style scoped>
 .article-detail {
-  padding: 20px 100px; /* 上下20px，左右40px */
+  padding: 20px 200px; /* 上下20px，左右200px */
   margin-top: 130px;
 }
 
