@@ -21,6 +21,12 @@
               <p class="article-resource-title">{{ article.title }}</p>
             </div>
           </a>
+          <img
+              @click="toggleFavorite(article, 0)"
+              src="@/assets/imgs/收藏2.png"
+              alt="取消收藏"
+              class="favorite-icon"
+          />
         </div>
       </div>
       <div v-if="showVideo" class="video-resources-container active">
@@ -34,6 +40,12 @@
               <p class="video-resource-title">{{ video.title }}</p>
             </div>
           </a>
+          <img
+              @click="toggleFavorite(video, 1)"
+              src="@/assets/imgs/收藏2.png"
+              alt="取消收藏"
+              class="favorite-icon"
+          />
         </div>
       </div>
     </div>
@@ -76,6 +88,33 @@ const toggleTab = (type) => {
     videoActive.value = true;
   }
   fetchFavoriteResources();
+};
+
+
+const toggleFavorite = async (resource, flag) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/api/favorites/remove`, null, {
+      params: {
+        Uid,
+        Rid: resource.id,
+        flag
+      }
+    });
+
+    if (response.data && response.data.success) {
+      // Remove the item from the collection
+      if (flag === 0) {
+        articleCollection.value = articleCollection.value.filter(item => item.id !== resource.id);
+      } else {
+        videoCollection.value = videoCollection.value.filter(item => item.id !== resource.id);
+      }
+    } else {
+      alert("取消收藏失败，请稍后再试");
+    }
+  } catch (error) {
+    console.error("取消收藏失败:", error);
+    alert("取消收藏失败，请稍后再试");
+  }
 };
 
 const fetchFavoriteResources = async () => {
@@ -253,5 +292,15 @@ const fetchFavoriteResources = async () => {
   font-size: 18px;
   color: #555;
   line-height: 1.5;
+}
+
+
+.favorite-icon {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
 }
 </style>
