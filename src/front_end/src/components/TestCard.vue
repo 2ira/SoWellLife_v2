@@ -1,20 +1,26 @@
+<!-- TestCard.vue -->
 <template>
-  <div class="test-card">
-    <img :src="image" :alt="title">
-    <h3>{{ title }}</h3>
-  </div>
+  <a :href="testUrl" target="_blank" class="test-card-link">
+    <div class="test-card">
+      <img :src="image" :alt="title">
+      <h3>{{ title }}</h3>
+    </div>
+  </a>
 </template>
-
-
 
 <script>
 export default {
   name: "TestCard",
-  props: ["image", "title"]
+  props: ["image", "title", "testUrl"]
 }
 </script>
 
 <style scoped>
+.test-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
 .test-card {
   background: white;
   border-radius: 12px;
@@ -40,6 +46,4 @@ export default {
   color: #333;
   text-align: center;
 }
-
 </style>
-  

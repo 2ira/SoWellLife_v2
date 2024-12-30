@@ -1,13 +1,15 @@
 <!-- DoctorCard.vue -->
 <template>
-  <div class="doctor-card">
-    <img :src="image" :alt="name" class="doctor-avatar">
-    <div class="doctor-info">
-      <h3>{{ name }}</h3>
-      <h3>{{ hospital }}</h3>
-      <p>{{ description }}</p>
+  <a :href="doctorUrl" target="_blank" class="doctor-card-link">
+    <div class="doctor-card">
+      <img :src="image" :alt="name" class="doctor-avatar">
+      <div class="doctor-info">
+        <h3>{{ name }}</h3>
+        <h3>{{ hospital }}</h3>
+        <p>{{ description }}</p>
+      </div>
     </div>
-  </div>
+  </a>
 </template>
 
 <script>
@@ -27,6 +29,10 @@ export default {
       required: true
     },
     description: {
+      type: String,
+      required: true
+    },
+    doctorUrl: {
       type: String,
       required: true
     }

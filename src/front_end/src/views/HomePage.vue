@@ -33,10 +33,11 @@
       <h2>测试一下</h2>
       <div class="test-cards">
         <TestCard
-          v-for="test in tests"
-          :key="test.id"
-          :image="test.image"
-          :title="test.title"
+            v-for="test in tests"
+            :key="test.id"
+            :image="test.image"
+            :title="test.title"
+            :testUrl="test.testUrl"
         />
       </div>
     </section>
@@ -46,29 +47,29 @@
       <div class="doctors-container">
         <div class="doctors-content">
           <div class="title-section">
-            <p class="subtitle">来自全国的100位专家 (bushi)</p>
-            <p class="subtitle">非常可靠！ (bushi)</p>
-            <button class="meet-team-btn">
-              MEET THE TEAM 
-              <span class="arrow">
-                <router-link to="/">
-                  <img src="@/assets/imgs/homepage/arrow.svg" alt="arrow" class="logo-arrow">
-                </router-link>                  
-              </span>
-            </button>
-          </div>
+            <p class="subtitle">来自全国的多位专家</p>
+            <p class="subtitle">非常可靠！</p>
 
+            <router-link to="/doctors" class="meet-team-btn">
+              MEET THE TEAM
+              <span class="arrow">
+                <img src="@/assets/imgs/homepage/arrow.svg" alt="arrow" class="logo-arrow">
+              </span>
+            </router-link>
+          </div>
 
           <div class="doctor-grid">
             <DoctorCard
-              v-for="doctor in doctors"
-              :key="doctor.id"
-              :image="doctor.image"
-              :name="doctor.name"
-              :hospital="doctor.hospital"
-              :description="doctor.description"
+                v-for="doctor in doctors"
+                :key="doctor.id"
+                :image="doctor.image"
+                :name="doctor.name"
+                :hospital="doctor.hospital"
+                :description="doctor.description"
+                :doctorUrl="doctor.doctorUrl"
             />
           </div>
+
         </div>
       </div>
     </section>
@@ -144,18 +145,21 @@
   const tests = ref([
     {
       id: 1,
-      image: require('@/assets/imgs/tests/ocd.jpg'),
-      title: '强迫症 OCD'
+      image: require('@/assets/imgs/tests/1.png'),
+      title: '测试你有被害妄想症吗？',
+      testUrl:'https://www.kuioo.cn/do-you-have-persecutory-delusions/question/'
     },
     {
       id: 2,
-      image: require('@/assets/imgs/tests/bipolar.jpg'),
-      title: '双相情感障碍 Bipolar Disorder'
+      image: require('@/assets/imgs/tests/2.png'),
+      title: '「边缘型人格测试」你有BPD边缘性人格障碍吗？',
+      testUrl: 'https://www.kuioo.cn/borderline-personality-disorder-bpd-test/question/'
     },
     {
       id: 3,
-      image: require('@/assets/imgs/tests/depression.jpg'),
-      title: '抑郁症 Depression'
+      image: require('@/assets/imgs/tests/3.png'),
+      title: '成人多动症测试：你有注意力缺陷多动障碍吗？',
+      testUrl:'https://www.kuioo.cn/adult-adhd-test-do-you-have-attention-deficit-hyperactivity-disorder/question/'
     }
   ])
 
@@ -163,30 +167,34 @@
     {
       id: 1,
       image: require('@/assets/imgs/doctors/doctor1.jpg'),
-      name: '陈医生',
-      hospital: '中大五院',
-      description: '精神科医生，擅长精神病学、精神分裂症、抑郁症、强迫症、躁狂症等精神疾病的治疗。'
+      name: '段艳平',
+      hospital: '北京协和医院',
+      description: '综合医院常见精神心理障碍的诊治，包括：抑郁障碍、广泛性焦虑障碍和惊恐障碍的诊断。',
+      doctorUrl:'https://www.pumch.cn/department_ims/doctor/detail/14143.html'
     },
     {
       id: 2,
       image: require('@/assets/imgs/doctors/doctor2.jpg'),
-      name: '苏医生',
-      hospital: '中大三院',
-      description: '精神科医生，擅长精神病学、精神分裂症、抑郁症、强迫症、躁狂症等精神疾病的治疗。'
+      name: '洪霞',
+      hospital: '北京协和医院',
+      description: '综合医院各类精神心理问题的诊治，对老年期各类精神心理障碍有丰富的临床经验。 ',
+      doctorUrl: 'https://www.pumch.cn/department_ims/doctor/detail/4517.html'
     },
     {
       id: 3,
       image: require('@/assets/imgs/doctors/doctor3.jpg'),
-      name: '李医生',
-      hospital: '中大四院',
-      description: '精神科医生，擅长精神病学、精神分裂症、抑郁症、强迫症、躁狂症等精神疾病的治疗。'
+      name: '史丽丽',
+      hospital: '北京协和医院',
+      description: '综合医院常见精神心理障碍及问题，如：抑郁、焦虑、功能性胃肠病的心理生理问题。',
+      doctorUrl: 'https://www.pumch.cn/department_ims/doctor/detail/4516.html'
     },
     {
       id: 4,
       image: require('@/assets/imgs/doctors/doctor4.jpg'),
-      name: '唐医生',
-      hospital: '中大三院',
-      description: '精神科医生，擅长精神病学、精神分裂症、抑郁症、强迫症、躁狂症等精神疾病的治疗。'
+      name: '李涛',
+      hospital: '北京协和医院',
+      description: '功能性躯体症状、焦虑障碍、抑郁等综合医院常见精神心理障碍的药物及心理治疗。',
+      doctorUrl: 'https://www.pumch.cn/department_ims/doctor/detail/4511.html'
     }
   ])
 </script>

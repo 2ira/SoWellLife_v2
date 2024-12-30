@@ -10,6 +10,16 @@ public class Resource {
     private String Rabstract;
     private String Rimg;  // 新增的字段，用于存储资源的图片路径
 
+    private String Rauthor;
+
+    public String getRauthor() {
+        return Rauthor;
+    }
+
+    public void setRauthor(String rauthor) {
+        Rauthor = rauthor;
+    }
+
     public Resource() {
     }
 
