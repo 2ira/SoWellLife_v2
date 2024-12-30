@@ -1,4 +1,3 @@
-<!-- HomePage.vue -->
 <template>
   <AppNavbar @resource-click="goToResources" />
   <div class="home-container">
@@ -7,25 +6,29 @@
       <div class="carousel-container">
         <HomeCarousel :items="carouselItems" />
       </div>
-      
+
       <!-- 右侧资源列表部分 -->
       <div class="news-list">
-        <h2 class="news-header">BANG NEWS</h2>
+        <h2 class="news-header">经典病症视频介绍</h2>
         <div class="resource-list">
+          <!-- 点击资源卡片跳转到对应 URL -->
           <ResourceCard
-            v-for="resource in resources"
-            :key="resource.id"
-            :title="resource.title"
-            :author="resource.author"
-            :time="resource.time"
+              v-for="resource in resources"
+              :key="resource.id"
+              :title="resource.title"
+              :author="resource.author"
+              :time="resource.time"
+              :url="resource.url"
           />
-          <button class="view-all-btn">
-            READ MORE NEWS
-            <router-link to="/">
-              <img src="@/assets/imgs/homepage/arrow_blue.svg" alt="arrow" class="logo-arrow">
-            </router-link>            
-          </button>
         </div>
+
+
+        <button class="view-all-btn" @click="goToResources('video')">
+          更多视频资源
+          <span class="logo-arrow-container">
+            <img src="@/assets/imgs/homepage/arrow_blue.svg" alt="arrow" class="logo-arrow" />
+          </span>
+        </button>
       </div>
     </div>
 
@@ -69,7 +72,6 @@
                 :doctorUrl="doctor.doctorUrl"
             />
           </div>
-
         </div>
       </div>
     </section>
@@ -77,130 +79,136 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
-  import { useRouter } from 'vue-router'
-  import AppNavbar from '@/components/AppNavbar.vue'
-  import HomeCarousel from "@/components/HomeCarousel.vue"
-  import ResourceCard from "@/components/ResourceCard.vue"
-  import TestCard from "@/components/TestCard.vue"
-  import DoctorCard from "@/components/DoctorCard.vue"
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import AppNavbar from '@/components/AppNavbar.vue'
+import HomeCarousel from "@/components/HomeCarousel.vue"
+import ResourceCard from "@/components/ResourceCard.vue"
+import TestCard from "@/components/TestCard.vue"
+import DoctorCard from "@/components/DoctorCard.vue"
 
-  const router = useRouter()
-  // 方法
-  const goToResources = (type) => {
-    if (type === 'video') {
-      router.push('/resources/video')
-    } else if (type === 'article') {
-      router.push('/resources/article')
-    } else {
-      router.push('/resources/video')
-    }
+const router = useRouter()
+// 方法
+const goToResources = (type) => {
+  if (type === 'video') {
+    router.push('/resources/video')
+  } else if (type === 'article') {
+    router.push('/resources/article')
+  } else {
+    router.push('/resources/video')
   }
+}
 
-  // 数据
-  const carouselItems = ref([
-    {
-      id: 1,
-      image: require('@/assets/imgs/resources/ppd.jpg'),
-      title: 'Why Is It Still So Hard To Diagnose Adult ADHD?',
-      category: 'HEALTH NEWS',
-      author: 'By hhh'
-    },
-    {
-      id: 2,
-      image: require('@/assets/imgs/resources/schizotypal.jpg'),
-      title: 'Why Is It Still So Hard To Diagnose Adult ADHD?',
-      category: 'HEALTH NEWS',
-      author: 'By hhhh'
-    },
-  ])
+// 数据
+const carouselItems = ref([
+  {
+    id: 1,
+    image: require('@/assets/imgs/article/4.jpg'),
+    title: '关于酒精和药物的重要事实-在美国面对成瘾',
+    category: '成瘾',
+    author: '美国卫生与公众服务部',
+    url:'https://www.ncbi.nlm.nih.gov/books/NBK424847/'
+  },
+  {
+    id: 2,
+    image: require('@/assets/imgs/article/16.jpg'),
+    title: '进食障碍研究',
+    category: '进食障碍',
+    author: 'NIMH',
+    url:'https://www.nimh.nih.gov/health/topics/eating-disorders'
+  },
+])
 
-  const resources = ref([
-    {
-      id: 1,
-      title: 'New Guidelines May Help Lower Your Stroke Risk: Key Updates You Need to Know',
-      author: 'By hhhhh',
-      time: '15 hours ago'
-    },
-    {
-      id: 2,
-      title: 'This Simple Tip Can Help You Adjust to the Daylight Saving Time Change',
-      author: 'By hhhhh',
-      time: '19 hours ago'
-    },
-    {
-      id: 3,
-      title: 'This Simple Tip Can Help You Adjust to the Daylight Saving Time Change',
-      author: 'By Stephanie Brown',
-      time: '19 hours ago'
-    },
-    {
-      id: 4,
-      title: 'This Simple Tip Can Help You Adjust to the Daylight Saving Time Change',
-      author: 'By Stephanie Brown',
-      time: '19 hours ago'
-    },
-  ])
+const resources = ref([
+  {
+    id: 1,
+    title: '【科普】被害妄想症',
+    author: '',
+    time: '发布于2023-12-23 16:31:34',
+    url:'https://www.bilibili.com/video/BV1Vi4y1Y76a/?vd_source=14d775208ff520b9e2b9c6265544ea73'
+  },
+  {
+    id: 2,
+    title: '又妖又神？反社会人格障碍到底什么样？',
+    author: '',
+    time: '发布于2023-08-05 19:00:00',
+    url:'https://www.bilibili.com/video/BV1iN411h7bf/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73'
+  },
+  {
+    id: 3,
+    title: '【TED科普】什么是精神分裂症（中英字幕）',
+    author: '',
+    time: '发布于2023-06-04 19:25:50',
+    url:'https://www.bilibili.com/video/BV1XM4y1q7jt/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73'
+  },
+  {
+    id: 4,
+    title: '抑郁症，是怎么改变你大脑的？',
+    author: '',
+    time: '发布于2022-06-19 11:33:55',
+    url:'https://www.bilibili.com/video/BV1da411s7BM/?spm_id_from=333.337.search-card.all.click&vd_source=14d775208ff520b9e2b9c6265544ea73'
+  },
+])
 
-  const tests = ref([
-    {
-      id: 1,
-      image: require('@/assets/imgs/tests/1.png'),
-      title: '测试你有被害妄想症吗？',
-      testUrl:'https://www.kuioo.cn/do-you-have-persecutory-delusions/question/'
-    },
-    {
-      id: 2,
-      image: require('@/assets/imgs/tests/2.png'),
-      title: '「边缘型人格测试」你有BPD边缘性人格障碍吗？',
-      testUrl: 'https://www.kuioo.cn/borderline-personality-disorder-bpd-test/question/'
-    },
-    {
-      id: 3,
-      image: require('@/assets/imgs/tests/3.png'),
-      title: '成人多动症测试：你有注意力缺陷多动障碍吗？',
-      testUrl:'https://www.kuioo.cn/adult-adhd-test-do-you-have-attention-deficit-hyperactivity-disorder/question/'
-    }
-  ])
+const tests = ref([
+  {
+    id: 1,
+    image: require('@/assets/imgs/tests/1.png'),
+    title: '测试你有被害妄想症吗？',
+    testUrl:'https://www.kuioo.cn/do-you-have-persecutory-delusions/question/'
+  },
+  {
+    id: 2,
+    image: require('@/assets/imgs/tests/2.png'),
+    title: '「边缘型人格测试」你有BPD边缘性人格障碍吗？',
+    testUrl: 'https://www.kuioo.cn/borderline-personality-disorder-bpd-test/question/'
+  },
+  {
+    id: 3,
+    image: require('@/assets/imgs/tests/3.png'),
+    title: '成人多动症测试：你有注意力缺陷多动障碍吗？',
+    testUrl:'https://www.kuioo.cn/adult-adhd-test-do-you-have-attention-deficit-hyperactivity-disorder/question/'
+  }
+])
 
-  const doctors = ref([
-    {
-      id: 1,
-      image: require('@/assets/imgs/doctors/doctor1.jpg'),
-      name: '段艳平',
-      hospital: '北京协和医院',
-      description: '综合医院常见精神心理障碍的诊治，包括：抑郁障碍、广泛性焦虑障碍和惊恐障碍的诊断。',
-      doctorUrl:'https://www.pumch.cn/department_ims/doctor/detail/14143.html'
-    },
-    {
-      id: 2,
-      image: require('@/assets/imgs/doctors/doctor2.jpg'),
-      name: '洪霞',
-      hospital: '北京协和医院',
-      description: '综合医院各类精神心理问题的诊治，对老年期各类精神心理障碍有丰富的临床经验。 ',
-      doctorUrl: 'https://www.pumch.cn/department_ims/doctor/detail/4517.html'
-    },
-    {
-      id: 3,
-      image: require('@/assets/imgs/doctors/doctor3.jpg'),
-      name: '史丽丽',
-      hospital: '北京协和医院',
-      description: '综合医院常见精神心理障碍及问题，如：抑郁、焦虑、功能性胃肠病的心理生理问题。',
-      doctorUrl: 'https://www.pumch.cn/department_ims/doctor/detail/4516.html'
-    },
-    {
-      id: 4,
-      image: require('@/assets/imgs/doctors/doctor4.jpg'),
-      name: '李涛',
-      hospital: '北京协和医院',
-      description: '功能性躯体症状、焦虑障碍、抑郁等综合医院常见精神心理障碍的药物及心理治疗。',
-      doctorUrl: 'https://www.pumch.cn/department_ims/doctor/detail/4511.html'
-    }
-  ])
+const doctors = ref([
+  {
+    id: 1,
+    image: require('@/assets/imgs/doctors/doctor1.jpg'),
+    name: '段艳平',
+    hospital: '北京协和医院',
+    description: '综合医院常见精神心理障碍的诊治，包括：抑郁障碍、广泛性焦虑障碍和惊恐障碍的诊断。',
+    doctorUrl:'https://www.pumch.cn/department_ims/doctor/detail/14143.html'
+  },
+  {
+    id: 2,
+    image: require('@/assets/imgs/doctors/doctor2.jpg'),
+    name: '洪霞',
+    hospital: '北京协和医院',
+    description: '综合医院各类精神心理问题的诊治，对老年期各类精神心理障碍有丰富的临床经验。 ',
+    doctorUrl: 'https://www.pumch.cn/department_ims/doctor/detail/4517.html'
+  },
+  {
+    id: 3,
+    image: require('@/assets/imgs/doctors/doctor3.jpg'),
+    name: '史丽丽',
+    hospital: '北京协和医院',
+    description: '综合医院常见精神心理障碍及问题，如：抑郁、焦虑、功能性胃肠病的心理生理问题。',
+    doctorUrl: 'https://www.pumch.cn/department_ims/doctor/detail/4516.html'
+  },
+  {
+    id: 4,
+    image: require('@/assets/imgs/doctors/doctor4.jpg'),
+    name: '李涛',
+    hospital: '北京协和医院',
+    description: '功能性躯体症状、焦虑障碍、抑郁等综合医院常见精神心理障碍的药物及心理治疗。',
+    doctorUrl: 'https://www.pumch.cn/department_ims/doctor/detail/4511.html'
+  }
+])
 </script>
 
-  
-  <style scoped>
+
+<style scoped>
 .home-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -348,7 +356,7 @@ section h2 {
   grid-template-rows: repeat(2, auto); /* 2行布局 */
   grid-auto-flow: row; /* 确保按行填充 */
   gap: 1.5rem;
-  max-width: 900px; 
+  max-width: 900px;
 }
 
 @media (max-width: 1200px) {
@@ -356,7 +364,7 @@ section h2 {
     flex-direction: column;
     gap: 2rem;
   }
-  
+
   .title-section {
     flex: none;
   }
@@ -371,10 +379,9 @@ section h2 {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
   }
-  
+
   .doctors-container {
     padding: 1rem;
   }
 }
 </style>
-  

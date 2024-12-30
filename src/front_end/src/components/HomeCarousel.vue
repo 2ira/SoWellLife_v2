@@ -7,14 +7,16 @@
           :key="item.id"
           class="carousel-item"
       >
-        <div class="carousel-content">
-          <img :src="item.image" :alt="item.title">
-          <div class="carousel-caption">
-            <span class="category">{{ item.category }}</span>
-            <h2>{{ item.title }}</h2>
-            <p>{{ item.author }}</p>
+        <a :href="item.url" target="_blank"> <!-- 添加a标签并设置href -->
+          <div class="carousel-content">
+            <img :src="item.image" :alt="item.title">
+            <div class="carousel-caption">
+              <span class="category">{{ item.category }}</span>
+              <h2>{{ item.title }}</h2>
+              <p>{{ item.author }}</p>
+            </div>
           </div>
-        </div>
+        </a>
       </div>
     </div>
 

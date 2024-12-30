@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : DatabasesExperiments
+ Source Server         : data
  Source Server Type    : MySQL
- Source Server Version : 80034
+ Source Server Version : 80018
  Source Host           : localhost:3306
  Source Schema         : mentalhealth
 
  Target Server Type    : MySQL
- Target Server Version : 80034
+ Target Server Version : 80018
  File Encoding         : 65001
 
- Date: 26/12/2024 14:52:16
+ Date: 31/12/2024 01:30:37
 */
 
 SET NAMES utf8mb4;
@@ -22,7 +22,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 DROP TABLE IF EXISTS `doc_information`;
 CREATE TABLE `doc_information`  (
-  `doc_id` int NOT NULL AUTO_INCREMENT,
+  `doc_id` int(11) NOT NULL AUTO_INCREMENT,
   `doc_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `doc_specialties` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `doc_profile` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
@@ -47,13 +47,31 @@ INSERT INTO `doc_information` VALUES (7, '高晶', '神经科', '从事神经病
 INSERT INTO `doc_information` VALUES (8, '徐蔚海', '神经科', '徐蔚海，男，教授 ，主任医师，博士生导师', 'doctors/doctor8.jpg', '北京协和医院', 'https://www.pumch.cn/department_ims/doctor/detail/4488.html', '主任医师', '脑血管病，颅内动脉粥样硬化，疑难中枢神经系统（脑和脊髓）疾病，青年卒中，不明原因卒中 ');
 
 -- ----------------------------
+-- Table structure for entry
+-- ----------------------------
+DROP TABLE IF EXISTS `entry`;
+CREATE TABLE `entry`  (
+  `Eid` int(11) NOT NULL COMMENT '表项id，int自增',
+  `Qid` int(11) NULL DEFAULT NULL COMMENT '测试id，外键',
+  `Question` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '问题',
+  `Answer` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '回答，特殊分隔符，到时候可以取出来',
+  PRIMARY KEY (`Eid`) USING BTREE,
+  INDEX `fk_qid`(`Qid` ASC) USING BTREE,
+  CONSTRAINT `fk_qid` FOREIGN KEY (`Qid`) REFERENCES `quiz` (`Qid`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of entry
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for favorite
 -- ----------------------------
 DROP TABLE IF EXISTS `favorite`;
 CREATE TABLE `favorite`  (
   `Uid` int(10) UNSIGNED ZEROFILL NOT NULL COMMENT '用户id，外键',
-  `Rid` int NOT NULL COMMENT '资源id，外键',
-  `flag` int NULL DEFAULT NULL COMMENT '是否被收藏（1收藏 0未被收藏）',
+  `Rid` int(11) NOT NULL COMMENT '资源id，外键',
+  `flag` int(11) NULL DEFAULT NULL COMMENT '是否被收藏（1收藏 0未被收藏）',
   PRIMARY KEY (`Uid`, `Rid`) USING BTREE,
   INDEX `fk_rid_favorite`(`Rid` ASC) USING BTREE,
   CONSTRAINT `fk_uid_favorite` FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`) ON DELETE RESTRICT ON UPDATE RESTRICT
@@ -79,14 +97,20 @@ INSERT INTO `favorite` VALUES (0000000001, 205, 1);
 INSERT INTO `favorite` VALUES (0000000001, 206, 1);
 INSERT INTO `favorite` VALUES (0000000001, 207, 1);
 INSERT INTO `favorite` VALUES (0000000001, 208, 1);
+INSERT INTO `favorite` VALUES (0000000003, 1, 0);
+INSERT INTO `favorite` VALUES (0000000003, 2, 0);
+INSERT INTO `favorite` VALUES (0000000003, 3, 0);
+INSERT INTO `favorite` VALUES (0000000003, 200, 1);
+INSERT INTO `favorite` VALUES (0000000003, 201, 1);
+INSERT INTO `favorite` VALUES (0000000003, 202, 1);
 
 -- ----------------------------
 -- Table structure for history
 -- ----------------------------
 DROP TABLE IF EXISTS `history`;
 CREATE TABLE `history`  (
-  `Hid` int NOT NULL AUTO_INCREMENT COMMENT '对话id，用于标记某一个对话，自增',
-  `Cid` int NOT NULL COMMENT '会话id，用于标记某一轮会话，嵌入html脚本获取',
+  `Hid` int(11) NOT NULL AUTO_INCREMENT COMMENT '对话id，用于标记某一个对话，自增',
+  `Cid` int(11) NOT NULL COMMENT '会话id，用于标记某一轮会话，嵌入html脚本获取',
   `Uid` int(10) UNSIGNED ZEROFILL NOT NULL COMMENT '用户的id，user表的外键',
   `Htime` datetime NOT NULL COMMENT '对话时间',
   `Content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '对话内容',
@@ -95,7 +119,7 @@ CREATE TABLE `history`  (
   PRIMARY KEY (`Hid`) USING BTREE,
   INDEX `fk_uid`(`Uid` ASC) USING BTREE,
   CONSTRAINT `fk_uid` FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of history
@@ -126,7 +150,7 @@ INSERT INTO `history` VALUES (20, 1735195879, 0000000004, '2024-12-26 14:51:43',
 -- ----------------------------
 DROP TABLE IF EXISTS `introduction`;
 CREATE TABLE `introduction`  (
-  `Iid` int NOT NULL AUTO_INCREMENT COMMENT 'Introduction ID，范围为1~20，对应20种症状',
+  `Iid` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Introduction ID，范围为1~20，对应20种症状',
   `Type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '症状名称',
   `Symptom` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '症状的基本描述',
   `Causes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '致病原因',
@@ -139,8 +163,7 @@ CREATE TABLE `introduction`  (
 -- Records of introduction
 -- ----------------------------
 INSERT INTO `introduction` VALUES (1, '被害妄想症', '被害妄想症（Paranoid Disorder）又称偏执性精神障碍，是一种精神健康障碍，患者往往处于恐惧状态，感觉被人议论诬陷、遭人暗算、财产被劫等。被害妄想症的临床症状主要包括持续的、不切实际的被害信念，伴随而来的可能是恐惧、焦虑、愤怒等情绪反应，以及相应的行为改变，如逃避、防御或报复。值得注意的是，被害妄想症本身不直接导致高病死率，但患者可能因极端行为而面临风险。', '其发病原因复杂多样，涉及遗传、生物化学失衡等。高危人群包括有精神病史、经历严重心理创伤或长期处于高压环境者。其发病原因复杂多样，涉及遗传、生物化学失衡等。高危人群包括有精神病史、经历严重心理创伤或长期处于高压环境者。\r\n', '1. 一般治疗：向患者及其家属普及被害妄想症的相关知识，提高他们对疾病的认识和应对能力；鼓励患者保持规律的作息和饮食习惯，避免过度劳累和情绪波动；通过模拟社交场景和角色扮演等方式，帮助患者逐步恢复社交功能。\r\n2. 心理治疗：认知行为疗法（CBT）等，通过帮助患者识别和改变不合理的思维模式和行为模式，从而减轻症状并预防复发。\r\n3. 药物治疗：抗精神病药物（第二代抗精神病药物）、抗抑郁药物、心境稳定剂等', 'resources/1.jpg');
-INSERT INTO `introduction` VALUES (2, '边缘型人格障碍', '边缘型人格障碍（Borderline Personality Disorder）属于人格障碍的一种类型，起病于儿童后期或青春期，主要表现为不稳定快速变化的心境、极易冲动、紊乱的自我身份认同、显著的分离焦虑、应激性的精神病性症状等，典型症状有认同紊乱、害怕被抛弃、情绪不稳、空虚、愤怒、冲动、有反复自杀行为等。', '病因及发病机制较为复杂，目前已发现先天遗传（大脑发育成熟延迟）、儿童期虐待、早期不良环境等对该病的形成均有不同程度的影响。', '1. 心理治疗：对边缘型人格障碍患者可采用辨证行为治疗、认知治疗、移情焦点疗法、图示疗法等多种心理治疗方法，治疗形式上可以是个别治疗，也可以是小组治疗。治疗的主要目标是帮助患者看到“全好”或“全坏”这些极端之间的中间地带，将自我和他人的积极看法与消极看法整合起来，形成更为具体的观点，以此建立良好的行为模式，矫正不良习惯。\r\n2. 药物治疗：抗抑郁药物、抗精神病药物、抗焦虑药物、抗癫痫药物等。适当配合药物治疗可以减轻某些特定症状的严重程度，但需要注意由于个体差异大，用药不存在绝对的最好、最快、最有效，除常用非处方药外，应在医生指导下充分结合个人情况选择最合适的药物。', 'resources/2.jpg');
-INSERT INTO `introduction` VALUES (3, '成瘾', '成瘾（Addiction）是一种以强迫性使用某种物质或活动为特征的疾病，过去被认为只包括药物滥用，但现在定义已扩大到赌博以及游戏、购物等活动。成瘾主要表现为对成瘾的物质和行为有强烈的渴求或冲动感，减少或停止成瘾的物质和行为时会出现周身不适、烦躁、易激惹、注意力不集中、睡眠障碍等戒断反应。', '1. 药物成瘾：因反复使用精神活性物质者处于周期性或慢性中毒状态。成瘾物质主要包括：①处方药滥用：如止咳药水、曲马多、复方甘草片、复方地芬诺酯；②阿片类药物成瘾：如吗啡、杜冷丁、美沙酮、丁丙诺菲等；③新型毒品成瘾：如K粉、摇头丸、冰毒、麻古、五仔等；④传统毒品成瘾：如海洛因、黄皮、大麻；⑤安眠药成瘾：如安定、舒乐安定、三唑仑等。\r\n2. 行为成瘾：明确知道自己的行为有害但却无法自控。包括网络成瘾，赌博成瘾、购物成瘾、饮食成瘾、性成瘾、电子游戏成瘾、烟酒成瘾等行为。', '成瘾性疾病的治疗目前在国内外都是一个难题。以前的治疗往往局限于药物治疗，多年的实践证明单纯的药物治疗复发率很高。因此，现在倾向于药物、心理及家庭治疗相结合进行综合性治疗，认知行为疗法（CBT）被认为是最合适的治疗方法。', 'resources/3.jpg');
+INSERT INTO `introduction` VALUES (2, '边缘型人格障碍', 'UpdatedSymptom', '病因及发病机制较为复杂，目前已发现先天遗传（大脑发育成熟延迟）、儿童期虐待、早期不良环境等对该病的形成均有不同程度的影响。', '1. 心理治疗：对边缘型人格障碍患者可采用辨证行为治疗、认知治疗、移情焦点疗法、图示疗法等多种心理治疗方法，治疗形式上可以是个别治疗，也可以是小组治疗。治疗的主要目标是帮助患者看到“全好”或“全坏”这些极端之间的中间地带，将自我和他人的积极看法与消极看法整合起来，形成更为具体的观点，以此建立良好的行为模式，矫正不良习惯。\r\n2. 药物治疗：抗抑郁药物、抗精神病药物、抗焦虑药物、抗癫痫药物等。适当配合药物治疗可以减轻某些特定症状的严重程度，但需要注意由于个体差异大，用药不存在绝对的最好、最快、最有效，除常用非处方药外，应在医生指导下充分结合个人情况选择最合适的药物。', 'resources/2.jpg');
 INSERT INTO `introduction` VALUES (4, '创伤后应激障碍', '创伤后应激障碍（PTSD）是因经历或见证恐怖事件而引发的心理健康疾病。症状可能包括幻觉重现、梦魇和重度焦虑，以及无法控制地想起某事。经历过创伤性事件的大多数人都可能暂时难以调节和应对，但随着时间的流逝和良好的自我护理，他们一般会好转。如果症状加剧，持续数月或数年，并且干扰日常机能，则可能患上创伤后应激障碍。PTSD的症状通常分成四种类型：侵入性记忆、回避、思维和心境的消极变化，以及身体和情绪反应的变化。这些症状可能因时、因人而异。', '经历、目睹或了解到涉及实际死亡或威胁死亡、严重损伤或性侵犯的事件时，可能出现创伤后应激障碍。', '1. 改变环境：使患者摆脱创伤性事件环境；如在黑暗环境下受到性侵的患者，需尽量避免处于黑暗环境；\r\n2. 心理治疗：患者可选用系统脱敏、知识性心理治疗或认知行为治疗；\r\n3. 药物治疗：若患者出现自杀观念、回避反应、植物神经功能反应或睡眠障碍，需服用药物进行治疗。\r\n建议患者在合理评估的基础上，以心理治疗为主、药物治疗为辅，在专业医生的指导下进行治疗。', 'resources/4.png');
 INSERT INTO `introduction` VALUES (5, '多动症', '注意缺陷与多动障碍（ADHD）是一种以注意力无法持久集中、过度活跃和情绪易冲动为主症的神经发育障碍。常在儿童时期发病，多数在学龄前期开始出现，主要分为儿童青少年ADHD和成人ADHD两种类型。病患可能有学习障碍、对立违抗性障碍、情绪障碍、适应障碍等，并因此可能对学业、工作和社交生活产生较大影响。ADHD的主要症状为注意力持续时间短暂、活动过多和情绪冲动。患者常有专注时间短暂，无法过滤无关刺激，常丢三落四。活动过多和情绪行为冲动表现为做事凭兴趣，常常过度兴奋，或因受挫折而情绪低沉，出现反抗和攻击性行为。', '目前病因未明，多认为是遗传和环境等多因素相互作用的结果，如多基因遗传病、孕产期不利因素、大脑发育异常、中枢神经系统尤其是额叶成熟延迟、中枢神经系统多巴胺和去甲肾上腺素神经递质的功能低下、社会心理因素等。', '1. 一般治疗：多为患者营造温馨的成长环境，让患者保持愉悦的心情。父母需对患者态度温和，遇到问题以引导、鼓励为主。规律的体育活动对注意缺陷多动障碍起到积极的缓解作用，应尽力促进相关活动的开展，并尽力协助患者融入到日常生活中。\r\n2. 心理治疗和干预：行为治疗、认知行为治疗、心理社会干预、对家长的教育训练、学校干预等。\r\n3. 药物治疗：心理干预与药物治疗是相辅相成的。药物的作用主要是针对注意缺陷多动障碍的几大核心症状，即注意力缺陷、多动和冲动，应用于6岁及以上的患儿。\r\n目前国内常用药物有哌甲酯和托莫西汀，需注意在医生指导下正确评估使用。', 'resources/5.jpg');
 INSERT INTO `introduction` VALUES (6, '反社会型人格障碍', '反社会型人格障碍（Antisocial Personality Disorder）又称无情型人格障碍或社会性病态，是对社会影响最为严重的类型，其特征是高度攻击性、缺乏羞惭感、不能从经历中取得经验教训、行为受偶然动机驱使、社会适应不良等，然而这些都是相对的。', '基因因素、生活环境（尤其是忽视和虐待）童年时的家庭生活不稳定或暴力等。', '反社会行为在儿童时代就已生根，因此父母、老师和儿科医生或许能够注意到早期预警信号，尽可能识别出最高危的人群（例如表现出品行障碍迹象的儿童）并对他们进行早期干预。若已形成，需要多手段进行治疗，如心理治疗、神经反馈或心理药物治疗相结合。', 'resources/6.jpg');
@@ -158,19 +181,24 @@ INSERT INTO `introduction` VALUES (17, '偷窃癖', '偷窃癖（Kleptomania）�
 INSERT INTO `introduction` VALUES (18, '抑郁症', '抑郁症（Depression）也被称为抑郁障碍，是一种高发病、高临床治愈率但低治疗接受率以及高复发率的精神障碍。其主要特征是显著而持久的情绪低落，有的患者可能存在自伤、自杀行为，甚至可能伴有妄想、幻觉等精神病性症状。临床上可以根据症状的数量、类型及严重程度将抑郁障碍分为轻度、中度和重度，分别针对不同群体如老年人、儿童、产妇等，称为老年抑郁症、儿童抑郁症、产后抑郁症等。抑郁症主要以情绪低落、兴趣减退、精力缺乏作为表现，也存在一些早期症状如反应慢、思维迟缓、记忆力下降等，不过这些都会存在个体差异。抑郁症并不具备传染性，但与应激性生活事件、悲观的人格特质、有其他精神疾病史、有严重的慢性疾病、酗酒、滥用药物等有较大关系。', '该病的病因和发病机制尚不清楚，大量研究资料提示遗传因素、神经生化因素和心理社会因素等对该病的发生均有明显影响。该病尚无明确诱发因素，但目前来看，应激性生活事件、悲观的人格特质、有其他精神疾病史、有严重的慢性疾病、酗酒、滥用药物等与抑郁症发作有着较为密切的关系。', '当自觉有长期情绪低落、对凡事都提不起兴趣或是兴趣下降，甚至伴发反应慢、思维迟缓、记忆力下降等疑似抑郁症表现时，应及时求助医生，此外，家属或亲友发现亲人、朋友有前述表现时，也应积极鼓励其就医。\r\n对于已经确诊抑郁症的患者，应严格遵医嘱治疗，并坚持定期复诊，即使经治疗病情已得到有效控制，如果生活中出现重大变故，或感到有抑郁症发作的迹象，也应及时就医。\r\n抑郁症的治疗主要包括药物治疗、心理治疗和物理治疗，全程治疗可分为三个阶段：急性期治疗、巩固期治疗和维持期治疗，遵循全病程治疗原则、个体化合理用药原则、量化评估原则、抗抑郁药单一使用原则、联盟治疗原则等。', 'resources/18.jpg');
 INSERT INTO `introduction` VALUES (19, '自闭症', '自闭症（Autism）是一种广泛性发展障碍，现多使用于儿童身上。其病征包括异常的语言能力、异常的交往能力、狭窄的兴趣以及固执的行为模式。自闭症是一种较为严重的发育障碍性疾病。典型自闭症，其核心症状就是所谓的“三联症”，主要体现为在社会性和交流能力、语言能力、仪式化的刻板行为三个方面同时都具有本质的缺损。其主要症状为：\r\n1、社会交流障碍：一般表现为缺乏与他人的交流，与父母亲之间缺乏安全依恋关系等；\r\n2、语言交流障碍：语言发育落后，或在正常语言发育后出现语言倒退，语言缺乏交流性质；\r\n3、重复刻板行为。\r\n不典型自闭症则在前述三个方面不全具有缺陷，只具有其中之一或之二。', '自闭症的成因极为复杂，医学生物学原因可能是遗传学因素、免疫因素、生化因素、孕产期因素等。也有学者将测量认知或情绪、情感等心理功能的实验研究手段与探索脑区结构和功能的技术相结合，进行自闭症成因的研究，这种研究模式称为神经心理学模式。以神经心理学的角度探讨自闭症的核心缺陷，有三个主要的假说：心理理论缺陷说、中枢性统合不足说、执行功能缺陷说。', '自闭症无法实现彻底根治，但全世界公认的最有效的治疗方法就是康复训练，部分高功能的自闭症孩子通过训练有望接近正常，基本上达到康复。\r\n1、让孩子与伙伴合作玩游戏。比如一起拍皮球、跳绳、推玩具小车，开始时自闭症儿童可能完全被动，经反复练习后，孩子会主动愿意参加的。\r\n2、目光接触训练。家长要主动和孩子对视，开始孩子不看大人，大人可以追着让孩子看，如果孩子开始看父母了，父母要马上给予表扬和鼓励。\r\n3、呼名应答训练。父母大声、清楚地呼叫孩子的姓名，要求孩子大声回答，逐步让其呼叫小朋友的名字，学会与别人打交道，如果有一点点进步都说明孩子的人际交往能力正在提高。\r\n4、亲子身体接触。父母应该每天抽出一定时间进行这种训练，让孩子坐在大人的腿上，或站在大人面前，父母通过与其说话、抚摸、拥抱、亲吻等亲切的亲子关系表达，让孩子感受到“爱”。\r\n5、社会交往训练。父母可以常带孩子到别人家做客，当孩子有愿意与主人或主人家的孩子接触的表示时，应及时给予表扬和鼓励。父母千万不要因为孩子害怕与外人接触而把他们关在家里。\r\n6、多带孩子进行滑板、秋千、平衡木等游戏。这对减轻行为障碍，增加交流等有较好效果。', 'resources/19.jpg');
 INSERT INTO `introduction` VALUES (20, '自恋型人格障碍', '自恋型人格障碍（Narcissistic Personality Disorder）是一种心理障碍，表现为对自己的过度关注和自我中心。NPD者通常认为自己是特别的、卓越的，并追求持续的赞美和崇拜。他们将自己置于一切之上，常常忽视他人的需求和感受。每一个NPD，可能也在经历着其自身的痛苦和挣扎。NPD的形成，与其成长环境紧密相关。', '关于自恋性人格障碍的成因，经典精神分析理论的解释是：患者无法把自己本能的心理力量投注到外界的某一客体上，该力量滞留在内部，便形成了自恋。现代客体关系理论认为，自恋性人格障碍者的特点是“以自我为客体”，通俗地说，就是“你我不分、他我不分”。造成这种现象的原因是，患者在早年的经历中体验过人际关系上的创伤，如与父母长期分离、父母关系不和或者父母对其态度过于粗暴或过于溺爱等等。有这样一些经历，使患者觉得自己爱自己才是安全的、理所应当的。', '1. 心理疗法：如认知行为疗法和心理动力疗法，可以帮助患者识别和改变自我中心的思维模式，提高同理心和解决问题的能力。\r\n2. 药物治疗：如抗抑郁药和抗焦虑药，可以缓解患者的情绪问题和心理压力。\r\n3. 针对共病的治疗，如双相情感障碍、强迫障碍、抑郁障碍等。\r\n4. 物理治疗。\r\n5. 精神动力学心理治疗可能有效，侧重于潜在的冲突。', 'resources/20.png');
+INSERT INTO `introduction` VALUES (21, 'NewType', 'NewSymptom', 'NewCauses', 'NewTreatment', 'NewPicture');
+INSERT INTO `introduction` VALUES (22, 'NewType', 'NewSymptom', 'NewCauses', 'NewTreatment', 'NewPicture');
+INSERT INTO `introduction` VALUES (23, 'NewType', 'NewSymptom', 'NewCauses', 'NewTreatment', 'NewPicture');
+INSERT INTO `introduction` VALUES (24, 'NewType', 'NewSymptom', 'NewCauses', 'NewTreatment', 'NewPicture');
+INSERT INTO `introduction` VALUES (25, 'NewType', 'NewSymptom', 'NewCauses', 'NewTreatment', 'NewPicture');
 
 -- ----------------------------
 -- Table structure for manager
 -- ----------------------------
 DROP TABLE IF EXISTS `manager`;
 CREATE TABLE `manager`  (
-  `Mid` int NOT NULL AUTO_INCREMENT COMMENT '管理员id，自增',
+  `Mid` int(11) NOT NULL AUTO_INCREMENT COMMENT '管理员id，自增',
   `MEmail` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '管理员邮箱，不为空',
   `MName` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '管理员名称，不为空',
   `AvatarManger` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '管理员头像',
   `ManagerPSW` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '管理员密码',
   PRIMARY KEY (`Mid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of manager
@@ -181,76 +209,81 @@ CREATE TABLE `manager`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `quiz`;
 CREATE TABLE `quiz`  (
-  `Qid` int NOT NULL AUTO_INCREMENT COMMENT '测试id，自增',
+  `Qid` int(11) NOT NULL AUTO_INCREMENT COMMENT '测试id，自增',
   `QName` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '测试名称',
   `Qtag` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '测试标签',
   PRIMARY KEY (`Qid`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of quiz
 -- ----------------------------
+INSERT INTO `quiz` VALUES (1, 'NewQuizName', 'NewQuizTag');
+INSERT INTO `quiz` VALUES (2, 'NewQuizName', 'UpdatedQuizTag');
+INSERT INTO `quiz` VALUES (4, 'NewQuizName', 'NewQuizTag');
+INSERT INTO `quiz` VALUES (5, 'NewQuizName', 'NewQuizTag');
 
 -- ----------------------------
 -- Table structure for resource
 -- ----------------------------
 DROP TABLE IF EXISTS `resource`;
 CREATE TABLE `resource`  (
-  `Rid` int NOT NULL AUTO_INCREMENT COMMENT '资源id，自增',
+  `Rid` int(11) NOT NULL AUTO_INCREMENT COMMENT '资源id，自增',
   `Rname` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `RTime` datetime NULL DEFAULT NULL,
   `Rurl` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `Rstore` int NULL DEFAULT NULL,
+  `Rstore` int(11) NULL DEFAULT NULL,
   `Rtag` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `Rabstract` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `aimg` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `Rauthor` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   PRIMARY KEY (`Rid`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of resource
 -- ----------------------------
-INSERT INTO `resource` VALUES (1, '偏执型人格障碍指南', '2022-04-01 00:00:00', 'https://www.msdmanuals.cn/home/mental-health-disorders/schizophrenia-and-related-disorders/delusional-disorder?query=%E8%A2%AB%E5%AE%B3%E5%A6%84%E6%83%B3%EF%BC%9A', 0, '被害妄想症', '偏执型人格障碍以对他人持久的怀疑和不信任为特征，患者常误解他人动机。治疗通常包括认知行为疗法和药物治疗。', 'assets/imgs/article/1.jpg');
-INSERT INTO `resource` VALUES (2, '边缘型人格障碍手册', '2023-01-01 00:00:00', 'https://www.nami.org/Your-Journey/Individuals-with-Mental-Illness/Borderline-Personality-Disorder', 0, '边缘型人格障碍', '边缘型人格障碍患者常经历情绪波动和冲动行为，治疗方法包括 DBT（辩证行为疗法）。', 'assets/imgs/article/2.png');
-INSERT INTO `resource` VALUES (3, '边缘型人格障碍指南', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/topics/borderline-personality-disorder', 0, '边缘型人格障碍', '边缘型人格障碍表现为情绪不稳定、强烈的被抛弃恐惧和冲动行为，患者常经历人际关系的剧烈波动。', 'assets/imgs/article/3.jpg');
-INSERT INTO `resource` VALUES (4, 'IMPORTANT FACTS ABOUT ALCOHOL AND DRUGS', '2020-01-01 00:00:00', 'https://www.ncbi.nlm.nih.gov/books/NBK424847/', 0, '成瘾', '成瘾是一种复杂的疾病，涉及大脑的奖励系统，治疗通常包括心理治疗和药物干预。', 'assets/imgs/article/4.jpg');
-INSERT INTO `resource` VALUES (5, 'THE NEUROBIOLOGY OF SUBSTANCE USE, MISUSE, AND ADDICTION', '2023-01-01 00:00:00', 'https://www.apa.org/topics/ptsd', 0, '创伤后应激障碍', '创伤后应激障碍是对创伤经历的反应，症状包括闪回、回避和情绪麻木，治疗包括认知行为疗法和药物。', 'assets/imgs/article/5.jpg');
-INSERT INTO `resource` VALUES (6, 'PTSD 症状与治疗', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/topics/post-traumatic-stress-disorder-ptsd', 0, '创伤后应激障碍', 'PTSD 影响许多人，尤其是经历过创伤事件的人，常见症状包括焦虑和抑郁。', 'assets/imgs/article/6.jpg');
-INSERT INTO `resource` VALUES (7, '多动症治疗指南', '2023-01-01 00:00:00', 'https://www.cdc.gov/adhd/about/?CDC_AAref_Val=https://www.cdc.gov/ncbddd/adhd/facts.html', 0, '多动症', '多动症是一种常见的神经发育障碍，表现为注意力不集中和过度活跃，治疗包括行为疗法和药物。', 'assets/imgs/article/7.png');
-INSERT INTO `resource` VALUES (8, '反社会人格障碍研究', '2020-01-01 00:00:00', 'https://www.ncbi.nlm.nih.gov/books/NBK207194/', 0, '反社会型人格障碍', '反社会型人格障碍的患者常表现出冲动和欺骗行为，社会功能受损。', 'assets/imgs/article/8.png');
-INSERT INTO `resource` VALUES (9, 'Antisocial Personality Disorder: Often Overlooked and Untreated', '2023-01-01 00:00:00', 'https://www.psychiatry.org/News-room/APA-Blogs/Antisocial-Personality-Disorder-Often-Overlooked', 0, '反社会型人格障碍', 'ASPD 患者通常缺乏同情心，经常被忽视和未治疗，治疗难度较大，常需结合心理治疗和药物治疗。', 'assets/imgs/article/9.jpg');
-INSERT INTO `resource` VALUES (10, '分裂样人格障碍解析指南', '2020-01-01 00:00:00', 'https://zhuanlan.zhihu.com/p/670363612', 0, '分裂样人格障碍', '疯子中的天才、孤僻的旁观者：分裂样人格障碍。', 'assets/imgs/article/10.jpg');
-INSERT INTO `resource` VALUES (11, '分裂样人格障碍解析', '2020-01-01 00:00:00', 'https://en.wikipedia.org/wiki/Schizoid_personality_disorder', 0, '分裂样人格障碍', '是一种人格障碍，其特征是对社会关系缺乏兴趣，倾向于孤独或隐蔽的生活方式、隐瞒、情感冷淡、疏离和冷漠。受影响的个体可能无法与他人形成亲密的依恋，同时拥有一个丰富而复杂但完全内在的幻想世界。', 'assets/imgs/article/11.jpg');
-INSERT INTO `resource` VALUES (12, '分裂型人格障碍症状', '2020-01-01 00:00:00', 'https://www.mayoclinic.org/diseases-conditions/schizotypal-personality-disorder/symptoms-causes/syc-20353919', 0, '分裂型人格障碍', '分裂型人格障碍患者通常被描述为古怪或古怪，他们通常很少（如果有的话）亲密关系。他们通常不知道关系是如何形成的，也不知道他们的行为如何影响他人。他们还倾向于误解他人的动机和行为，并极度不信任他人。', 'assets/imgs/article/12.png');
-INSERT INTO `resource` VALUES (13, '一直在逃跑的人生：回避型人格障碍万字科普', '2020-01-01 00:00:00', 'https://zhuanlan.zhihu.com/p/666931809', 0, '回避型人格障碍', '一直在逃跑的人生：回避型人格障碍万字科普。与他们接触的人，常常觉得他们冷若冰霜、难以靠近。你的积极主动很难得到同等的回应，他们也很少向你表达真实的想法和感受。但事实上，回避型的「回避」是被动的，行为上他们逃得远远的，内心却十分想与他人发展亲密的关系，这种每时每刻的矛盾让他们备受折磨。而当这种折磨变成更为持久的、适应不良的、缺乏弹性的，就有可能发展成一种回避型人格障碍。', 'assets/imgs/article/13.jpg');
-INSERT INTO `resource` VALUES (14, '成瘾疾病研究', '2020-01-01 00:00:00', 'https://www.msdmanuals.cn/home/mental-health-disorders/personality-disorders/avoidant-personality-disorder#%E7%97%87%E7%8A%B6_v36026687_zh', 0, '回避型人格障碍', '医生诊断回避型人格障碍的标准是，患者必须持续避免社交接触，有不恰当感，并对批评和拒绝过分敏感，至少符合以下中的 4 点：在工作中，他们避免涉及与人际接触的活动，因为他们担心他们会受到批评或拒绝，或者人们会反对他们。除非他们确定被人喜欢，否则他们不愿意与人打交道。他们只留在亲密关系中，因为他们害怕被嘲笑或羞辱。他们先入为主地认为在社交场合会受到批评或被拒绝。他们在新的社交场合特别拘束，因为他们觉得自己不适当。他们认为自己社交无能，没有吸引力，或比其他人逊色。他们不愿冒险或参加任何新活动，因为他们可能会感到尴尬。此外，症状早在成年早期就已经开始了。', 'assets/imgs/article/14.jpg');
-INSERT INTO `resource` VALUES (15, '焦虑症治疗手册', '2020-01-01 00:00:00', 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7071237/', 0, '焦虑', '焦虑症的种类繁多，包括广泛性焦虑症和社交焦虑障碍，治疗方法包括药物和心理治疗。', 'assets/imgs/article/15.png');
-INSERT INTO `resource` VALUES (16, '进食障碍研究', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/topics/eating-disorders', 0, '进食障碍', '进食障碍包括神经性厌食和神经性贪食，通常与心理因素密切相关。', 'assets/imgs/article/16.jpg');
-INSERT INTO `resource` VALUES (17, 'Transforming the understanding and treatment of mental illnesses.', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/statistics/schizophrenia', 0, '精神分裂症', '精神分裂症是一种严重的精神障碍，表现为幻觉、妄想和认知功能障碍。', 'assets/imgs/article/17.jpg');
-INSERT INTO `resource` VALUES (18, '恐慌症症状与治疗', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/statistics/panic-disorder', 0, '恐慌症', '恐慌症表现为突发的强烈恐惧，伴随身体症状，可能导致患者避免特定场合。', 'assets/imgs/article/18.jpg');
-INSERT INTO `resource` VALUES (19, '强迫症治疗指南', '2024-01-01 00:00:00', 'https://www.msdmanuals.cn/home/mental-health-disorders/obsessive-compulsive-and-related-disorders/obsessive-compulsive-disorder-ocd', 0, '强迫症', '强迫症 (OCD) 患者存在强迫观念——反复出现一些想法、画面或冲动，即使患者并不想这样。这些强迫观念可侵入患者的脑海，即使是在患者考虑或做其他事情时。另外，强迫观念通常可导致极大的困苦或焦虑。强迫观念的主题包括伤害（对自己或他人）、清洗或污染、禁止或禁忌的想法（例如，攻击性或性强迫观念）以及苛求对称性。担心污染（如担心接触门把手会引起疾病）多疑（例如担心家正门没有锁）担心物品没有完全排整齐或放平由于强迫观念不使人愉悦，所以患者经常会试图忽视和／或控制它们。', 'assets/imgs/article/19.jpg');
-INSERT INTO `resource` VALUES (20, '双相情感障碍手册', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/statistics/bipolar-disorder', 0, '双相情感障碍', '双相情感障碍表现为情绪的极端波动，包括躁狂和抑郁发作。', 'assets/imgs/article/20.jpg');
-INSERT INTO `resource` VALUES (21, '睡眠相位后移综合征', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/statistics/bipolar-disorder', 0, '睡眠相位后移综合征 DSPS', '睡眠开始和醒来的时间，比理想情况不可控制的晚。每天入睡时间基本相同。一旦入睡，并不会轻易醒来。在早晨理想时间起床是非常困难的。相对非常严重的，没有能力去把睡眠相位提前，如强迫在正常的时间睡觉和起床。', 'assets/imgs/article/21.jpg');
-INSERT INTO `resource` VALUES (22, '偷窃癖症状与治疗', '2024-01-01 00:00:00', 'https://www.mayoclinic.org/zh-hans/diseases-conditions/kleptomania/symptoms-causes/syc-20364732', 0, '偷窃癖 Kleptomania', '偷窃癖是一种心理健康障碍，表现为反复且无法抑制的偷窃冲动，并且偷窃的物品通常您实际上并不需要。偷窃的物品往往价值不大，您可以买得起。偷窃癖一种罕见却非常严重的问题。如果不加以治疗，可能对您和亲人造成情感伤害，甚至法律问题。偷窃癖是一种冲动控制障碍，表现为情感或行为自控出现问题。如果患有冲动控制障碍，您会很难抵抗诱惑或强烈冲动，做一些对自己或他人过分或有害的行为。', 'assets/imgs/article/22.jpg');
-INSERT INTO `resource` VALUES (23, '抑郁症症状与治疗', '2023-03-31 00:00:00', 'https://www.who.int/zh/news-room/fact-sheets/detail/depression', 0, '抑郁症 Depression', '一个人会经历抑郁情绪（感到悲伤、烦躁、空虚）。他们可能会感到失去乐趣或对活动的兴趣。注意力不集中过度内疚或自我价值感低下对未来感到绝望有死亡或自杀的想法睡眠紊乱食欲或体重变化感觉非常疲倦或精力不足。', 'assets/imgs/article/23.jpg');
-INSERT INTO `resource` VALUES (24, '自闭症谱系障碍解析', '2023-03-31 00:00:00', 'https://www.msdmanuals.cn/home/children-s-health-issues/learning-and-developmental-disorders/autism-spectrum-disorder', 0, '自闭症 Autismn', '管患儿在和父母分开后会表现得沮丧，但他们不像其他儿童一样从父母那里寻找安全感。大龄儿童多会自己玩游戏，不会形成亲密的私人关系，尤其是在家之外的地方。与其他孩子互动时，他们可能不会使用眼神交流和面部表情来建立社交联系，并且难以解读他人的情绪和表情。他们可能很难知道如何以及何时加入对话，并且难以识别不适当或有害的言语。这些因素可能会导致其他人将其视为古怪或怪异的人，从而导致社交孤立。自闭症谱系障碍患者通常对变化的抗拒很强，例如新食物、玩具、家具布置和衣服。他们可能过度依恋特定的无生命物体。他们经常重复地做某件事。年幼或更严重的患儿常重复某些动作，如摇摆、挥手或转动物体等。有些患者可能通过重复的行为伤害自己，如撞头或咬自己。患病较轻的人可能会多次观看同一视频，或者坚持每餐都吃相同食物。患有 ASD 的人通常会有非常专业、不同寻常的兴趣。例如，孩子可能会沉迷于真空吸尘器。', 'assets/imgs/article/24.jpg');
-INSERT INTO `resource` VALUES (25, '自恋型人格障碍研究', '2023-01-01 00:00:00', 'https://www.psychologytoday.com/us/conditions/narcissistic-personality-disorder', 0, '自恋型人格障碍', '自恋型人格障碍表现为对自我的过度关注和缺乏同情心，患者常寻求他人的赞美。', 'assets/imgs/article/25.jpg');
+INSERT INTO `resource` VALUES (1, '偏执型人格障碍指南', '2022-04-01 00:00:00', 'https://www.msdmanuals.cn/home/mental-health-disorders/schizophrenia-and-related-disorders/delusional-disorder?query=%E8%A2%AB%E5%AE%B3%E5%A6%84%E6%83%B3%EF%BC%9A', 0, '被害妄想症', '偏执型人格障碍以对他人持久的怀疑和不信任为特征，患者常误解他人动机。治疗通常包括认知行为疗法和药物治疗。', 'assets/imgs/article/1.jpg', NULL);
+INSERT INTO `resource` VALUES (2, '边缘型人格障碍手册', '2023-01-01 00:00:00', 'https://www.nami.org/Your-Journey/Individuals-with-Mental-Illness/Borderline-Personality-Disorder', 0, '边缘型人格障碍', '边缘型人格障碍患者常经历情绪波动和冲动行为，治疗方法包括 DBT（辩证行为疗法）。', 'assets/imgs/article/2.png', NULL);
+INSERT INTO `resource` VALUES (3, '边缘型人格障碍指南', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/topics/borderline-personality-disorder', 0, '边缘型人格障碍', '边缘型人格障碍表现为情绪不稳定、强烈的被抛弃恐惧和冲动行为，患者常经历人际关系的剧烈波动。', 'assets/imgs/article/3.jpg', NULL);
+INSERT INTO `resource` VALUES (4, '关于酒精和药物的重要事实-在美国面对成瘾', '2020-01-01 00:00:00', 'https://www.ncbi.nlm.nih.gov/books/NBK424847/', 0, '成瘾', '成瘾是一种复杂的疾病，涉及大脑的奖励系统，治疗通常包括心理治疗和药物干预。', 'assets/imgs/article/4.jpg', '美国卫生与公众服务部');
+INSERT INTO `resource` VALUES (5, 'THE NEUROBIOLOGY OF SUBSTANCE USE, MISUSE, AND ADDICTION', '2023-01-01 00:00:00', 'https://www.apa.org/topics/ptsd', 0, '创伤后应激障碍', '创伤后应激障碍是对创伤经历的反应，症状包括闪回、回避和情绪麻木，治疗包括认知行为疗法和药物。', 'assets/imgs/article/5.jpg', NULL);
+INSERT INTO `resource` VALUES (6, 'PTSD 症状与治疗', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/topics/post-traumatic-stress-disorder-ptsd', 0, '创伤后应激障碍', 'PTSD 影响许多人，尤其是经历过创伤事件的人，常见症状包括焦虑和抑郁。', 'assets/imgs/article/6.jpg', NULL);
+INSERT INTO `resource` VALUES (7, '多动症治疗指南', '2023-01-01 00:00:00', 'https://www.cdc.gov/adhd/about/?CDC_AAref_Val=https://www.cdc.gov/ncbddd/adhd/facts.html', 0, '多动症', '多动症是一种常见的神经发育障碍，表现为注意力不集中和过度活跃，治疗包括行为疗法和药物。', 'assets/imgs/article/7.png', NULL);
+INSERT INTO `resource` VALUES (8, '反社会人格障碍研究', '2020-01-01 00:00:00', 'https://www.ncbi.nlm.nih.gov/books/NBK207194/', 0, '反社会型人格障碍', '反社会型人格障碍的患者常表现出冲动和欺骗行为，社会功能受损。', 'assets/imgs/article/8.png', NULL);
+INSERT INTO `resource` VALUES (9, 'Antisocial Personality Disorder: Often Overlooked and Untreated', '2023-01-01 00:00:00', 'https://www.psychiatry.org/News-room/APA-Blogs/Antisocial-Personality-Disorder-Often-Overlooked', 0, '反社会型人格障碍', 'ASPD 患者通常缺乏同情心，经常被忽视和未治疗，治疗难度较大，常需结合心理治疗和药物治疗。', 'assets/imgs/article/9.jpg', NULL);
+INSERT INTO `resource` VALUES (10, '分裂样人格障碍解析指南', '2020-01-01 00:00:00', 'https://zhuanlan.zhihu.com/p/670363612', 0, '分裂样人格障碍', '疯子中的天才、孤僻的旁观者：分裂样人格障碍。', 'assets/imgs/article/10.jpg', NULL);
+INSERT INTO `resource` VALUES (11, '分裂样人格障碍解析', '2020-01-01 00:00:00', 'https://en.wikipedia.org/wiki/Schizoid_personality_disorder', 0, '分裂样人格障碍', '是一种人格障碍，其特征是对社会关系缺乏兴趣，倾向于孤独或隐蔽的生活方式、隐瞒、情感冷淡、疏离和冷漠。受影响的个体可能无法与他人形成亲密的依恋，同时拥有一个丰富而复杂但完全内在的幻想世界。', 'assets/imgs/article/11.jpg', NULL);
+INSERT INTO `resource` VALUES (12, '分裂型人格障碍症状', '2020-01-01 00:00:00', 'https://www.mayoclinic.org/diseases-conditions/schizotypal-personality-disorder/symptoms-causes/syc-20353919', 0, '分裂型人格障碍', '分裂型人格障碍患者通常被描述为古怪或古怪，他们通常很少（如果有的话）亲密关系。他们通常不知道关系是如何形成的，也不知道他们的行为如何影响他人。他们还倾向于误解他人的动机和行为，并极度不信任他人。', 'assets/imgs/article/12.png', NULL);
+INSERT INTO `resource` VALUES (13, '一直在逃跑的人生：回避型人格障碍万字科普', '2020-01-01 00:00:00', 'https://zhuanlan.zhihu.com/p/666931809', 0, '回避型人格障碍', '一直在逃跑的人生：回避型人格障碍万字科普。与他们接触的人，常常觉得他们冷若冰霜、难以靠近。你的积极主动很难得到同等的回应，他们也很少向你表达真实的想法和感受。但事实上，回避型的「回避」是被动的，行为上他们逃得远远的，内心却十分想与他人发展亲密的关系，这种每时每刻的矛盾让他们备受折磨。而当这种折磨变成更为持久的、适应不良的、缺乏弹性的，就有可能发展成一种回避型人格障碍。', 'assets/imgs/article/13.jpg', NULL);
+INSERT INTO `resource` VALUES (14, '成瘾疾病研究', '2020-01-01 00:00:00', 'https://www.msdmanuals.cn/home/mental-health-disorders/personality-disorders/avoidant-personality-disorder#%E7%97%87%E7%8A%B6_v36026687_zh', 0, '回避型人格障碍', '医生诊断回避型人格障碍的标准是，患者必须持续避免社交接触，有不恰当感，并对批评和拒绝过分敏感，至少符合以下中的 4 点：在工作中，他们避免涉及与人际接触的活动，因为他们担心他们会受到批评或拒绝，或者人们会反对他们。除非他们确定被人喜欢，否则他们不愿意与人打交道。他们只留在亲密关系中，因为他们害怕被嘲笑或羞辱。他们先入为主地认为在社交场合会受到批评或被拒绝。他们在新的社交场合特别拘束，因为他们觉得自己不适当。他们认为自己社交无能，没有吸引力，或比其他人逊色。他们不愿冒险或参加任何新活动，因为他们可能会感到尴尬。此外，症状早在成年早期就已经开始了。', 'assets/imgs/article/14.jpg', NULL);
+INSERT INTO `resource` VALUES (15, '焦虑症治疗手册', '2020-01-01 00:00:00', 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7071237/', 0, '焦虑', '焦虑症的种类繁多，包括广泛性焦虑症和社交焦虑障碍，治疗方法包括药物和心理治疗。', 'assets/imgs/article/15.png', NULL);
+INSERT INTO `resource` VALUES (16, '进食障碍研究', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/topics/eating-disorders', 0, '进食障碍', '进食障碍包括神经性厌食和神经性贪食，通常与心理因素密切相关。', 'assets/imgs/article/16.jpg', 'NIMH');
+INSERT INTO `resource` VALUES (17, 'Transforming the understanding and treatment of mental illnesses.', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/statistics/schizophrenia', 0, '精神分裂症', '精神分裂症是一种严重的精神障碍，表现为幻觉、妄想和认知功能障碍。', 'assets/imgs/article/17.jpg', NULL);
+INSERT INTO `resource` VALUES (18, '恐慌症症状与治疗', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/statistics/panic-disorder', 0, '恐慌症', '恐慌症表现为突发的强烈恐惧，伴随身体症状，可能导致患者避免特定场合。', 'assets/imgs/article/18.jpg', NULL);
+INSERT INTO `resource` VALUES (19, '强迫症治疗指南', '2024-01-01 00:00:00', 'https://www.msdmanuals.cn/home/mental-health-disorders/obsessive-compulsive-and-related-disorders/obsessive-compulsive-disorder-ocd', 0, '强迫症', '强迫症 (OCD) 患者存在强迫观念——反复出现一些想法、画面或冲动，即使患者并不想这样。这些强迫观念可侵入患者的脑海，即使是在患者考虑或做其他事情时。另外，强迫观念通常可导致极大的困苦或焦虑。强迫观念的主题包括伤害（对自己或他人）、清洗或污染、禁止或禁忌的想法（例如，攻击性或性强迫观念）以及苛求对称性。担心污染（如担心接触门把手会引起疾病）多疑（例如担心家正门没有锁）担心物品没有完全排整齐或放平由于强迫观念不使人愉悦，所以患者经常会试图忽视和／或控制它们。', 'assets/imgs/article/19.jpg', NULL);
+INSERT INTO `resource` VALUES (20, '双相情感障碍手册', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/statistics/bipolar-disorder', 0, '双相情感障碍', '双相情感障碍表现为情绪的极端波动，包括躁狂和抑郁发作。', 'assets/imgs/article/20.jpg', NULL);
+INSERT INTO `resource` VALUES (21, '睡眠相位后移综合征', '2023-01-01 00:00:00', 'https://www.nimh.nih.gov/health/statistics/bipolar-disorder', 0, '睡眠相位后移综合征 DSPS', '睡眠开始和醒来的时间，比理想情况不可控制的晚。每天入睡时间基本相同。一旦入睡，并不会轻易醒来。在早晨理想时间起床是非常困难的。相对非常严重的，没有能力去把睡眠相位提前，如强迫在正常的时间睡觉和起床。', 'assets/imgs/article/21.jpg', NULL);
+INSERT INTO `resource` VALUES (22, '偷窃癖症状与治疗', '2024-01-01 00:00:00', 'https://www.mayoclinic.org/zh-hans/diseases-conditions/kleptomania/symptoms-causes/syc-20364732', 0, '偷窃癖 Kleptomania', '偷窃癖是一种心理健康障碍，表现为反复且无法抑制的偷窃冲动，并且偷窃的物品通常您实际上并不需要。偷窃的物品往往价值不大，您可以买得起。偷窃癖一种罕见却非常严重的问题。如果不加以治疗，可能对您和亲人造成情感伤害，甚至法律问题。偷窃癖是一种冲动控制障碍，表现为情感或行为自控出现问题。如果患有冲动控制障碍，您会很难抵抗诱惑或强烈冲动，做一些对自己或他人过分或有害的行为。', 'assets/imgs/article/22.jpg', NULL);
+INSERT INTO `resource` VALUES (23, '抑郁症症状与治疗', '2023-03-31 00:00:00', 'https://www.who.int/zh/news-room/fact-sheets/detail/depression', 0, '抑郁症 Depression', '一个人会经历抑郁情绪（感到悲伤、烦躁、空虚）。他们可能会感到失去乐趣或对活动的兴趣。注意力不集中过度内疚或自我价值感低下对未来感到绝望有死亡或自杀的想法睡眠紊乱食欲或体重变化感觉非常疲倦或精力不足。', 'assets/imgs/article/23.jpg', 'author1');
+INSERT INTO `resource` VALUES (24, '自闭症谱系障碍解析', '2023-03-31 00:00:00', 'https://www.msdmanuals.cn/home/children-s-health-issues/learning-and-developmental-disorders/autism-spectrum-disorder', 0, '自闭症 Autismn', '管患儿在和父母分开后会表现得沮丧，但他们不像其他儿童一样从父母那里寻找安全感。大龄儿童多会自己玩游戏，不会形成亲密的私人关系，尤其是在家之外的地方。与其他孩子互动时，他们可能不会使用眼神交流和面部表情来建立社交联系，并且难以解读他人的情绪和表情。他们可能很难知道如何以及何时加入对话，并且难以识别不适当或有害的言语。这些因素可能会导致其他人将其视为古怪或怪异的人，从而导致社交孤立。自闭症谱系障碍患者通常对变化的抗拒很强，例如新食物、玩具、家具布置和衣服。他们可能过度依恋特定的无生命物体。他们经常重复地做某件事。年幼或更严重的患儿常重复某些动作，如摇摆、挥手或转动物体等。有些患者可能通过重复的行为伤害自己，如撞头或咬自己。患病较轻的人可能会多次观看同一视频，或者坚持每餐都吃相同食物。患有 ASD 的人通常会有非常专业、不同寻常的兴趣。例如，孩子可能会沉迷于真空吸尘器。', 'assets/imgs/article/24.jpg', 'author2');
+INSERT INTO `resource` VALUES (25, '自恋型人格障碍研究', '2023-01-01 00:00:00', 'https://www.psychologytoday.com/us/conditions/narcissistic-personality-disorder', 0, '自恋型人格障碍', '自恋型人格障碍表现为对自我的过度关注和缺乏同情心，患者常寻求他人的赞美。', 'assets/imgs/article/25.jpg', 'author3');
 
 -- ----------------------------
 -- Table structure for resource_video
 -- ----------------------------
 DROP TABLE IF EXISTS `resource_video`;
 CREATE TABLE `resource_video`  (
-  `Rid` int NOT NULL AUTO_INCREMENT COMMENT '资源id，自增',
+  `Rid` int(11) NOT NULL AUTO_INCREMENT COMMENT '资源id，自增',
   `Rname` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `RTime` datetime NULL DEFAULT NULL,
   `Rurl` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `Rstore` int NULL DEFAULT NULL,
+  `Rstore` int(11) NULL DEFAULT NULL,
   `Rtag` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `Rabstract` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `vimg` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   PRIMARY KEY (`Rid`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 224 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of resource_video
@@ -320,13 +353,18 @@ CREATE TABLE `user`  (
   `AvatarUser` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户自定义头像，图片相对路径',
   `UserPSW` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户密码',
   PRIMARY KEY (`Uid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (0000000001, 'example@example.com', 'HelloWorld', 'http://localhost:8082/uploads/1-1735194508910.png', '111111a@');
+INSERT INTO `user` VALUES (0000000001, 'example@example.com', 'Updated User Name', 'http://localhost:8082/uploads/1-1735194508910.png', '111111a@');
 INSERT INTO `user` VALUES (0000000003, '2900399358@qq.com', 'user_1735194810791', 'https://tse3-mm.cn.bing.net/th/id/OIP-C.yp-D-KHI3e2nN4eMBJcEVAAAAA?rs=1&pid=ImgDetMain', '123456');
 INSERT INTO `user` VALUES (0000000004, 'lianglx26@mail2.sysu.edu.cn', 'user_1735195061657', 'https://tse3-mm.cn.bing.net/th/id/OIP-C.yp-D-KHI3e2nN4eMBJcEVAAAAA?rs=1&pid=ImgDetMain', '123456');
+INSERT INTO `user` VALUES (0000000005, 'test@example.com', 'New User', 'default_avatar.jpg', NULL);
+INSERT INTO `user` VALUES (0000000006, 'test@example.com', 'New User', 'default_avatar.jpg', NULL);
+INSERT INTO `user` VALUES (0000000007, 'test@example.com', 'New User', 'default_avatar.jpg', NULL);
+INSERT INTO `user` VALUES (0000000008, 'test@example.com', 'New User', 'default_avatar.jpg', NULL);
+INSERT INTO `user` VALUES (0000000009, 'test@example.com', 'New User', 'default_avatar.jpg', NULL);
 
 SET FOREIGN_KEY_CHECKS = 1;

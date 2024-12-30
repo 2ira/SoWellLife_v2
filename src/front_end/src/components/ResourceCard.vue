@@ -1,6 +1,6 @@
 <!-- ResourceCard.vue -->
 <template>
-  <div class="resource-card">
+  <a :href="url" target="_blank" class="resource-card">
     <div class="content">
       <h3>{{ title }}</h3>
       <div class="meta">
@@ -8,7 +8,7 @@
         <span class="author">{{ author }}</span>
       </div>
     </div>
-  </div>
+  </a>
 </template>
 
 
@@ -27,6 +27,10 @@ export default {
     author: {
       type: String,
       required: true
+    },
+    url: {
+      type: String,
+      required: true
     }
   }
 }
@@ -38,7 +42,7 @@ export default {
   overflow: hidden;
   box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  height: 100%;
+  height: 90px;
   display: flex;
   flex-direction: column;
   padding:0.2rem 0.2rem;   /* 调整上下左右的内边距 */
@@ -50,8 +54,14 @@ export default {
 }
 
 
+.content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .content h3 {
-  margin: 0 0 0.7rem;  /* 增加标题和meta信息之间的距离 */
+  margin: 0.7rem 0 0.7rem;  /* 增加标题和meta信息之间的距离 */
   font-size: 1.1rem;
   color: #1B4D62;
   line-height: 1.4;
@@ -62,13 +72,14 @@ export default {
   gap: 1rem;
   font-size: 0.875rem;
   color: #666;
+  margin-top: auto;
 }
 
 
 .time {
   margin: 0;
   color: #666;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   line-height: 1.5;
 }
 
