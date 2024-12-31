@@ -125,8 +125,6 @@
           </button>
         </div>
 
-
-
         <div class="save-item">
           <button @click="verifyCode" class="save-btn">保存</button>
           <button @click="cancelEmailVerification" class="cancel-btn">取消</button>
@@ -602,6 +600,7 @@ export default {
 }
 
 .save-item {
+  margin-top: 50px;
   display: flex;
   justify-content: center; /* 水平居中 */
   gap: 10px;               /* 按钮之间的间距 */

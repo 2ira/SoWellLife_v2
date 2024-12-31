@@ -129,6 +129,8 @@ export default {
 .carousel-caption h2 {
   margin: 0.5rem 0;
   font-size: 1.75rem;
+  font-family: 'Microsoft YaHei', sans-serif;
+
 }
 
 .carousel-control {

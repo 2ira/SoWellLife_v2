@@ -1,16 +1,19 @@
 
 <template>
-  <div class="test-page">
-    <ArticleBoxTest
-        v-for="(article) in articles"
-        :key="article.id"
-        :title="article.title"
-        :description="article.description"
-        :articleId="article.id"
-        :image="getImagePath(article.image)"
-    :jumpUrl="article.url"
-    />
+  <div class="background">
+    <div class="test-page">
+      <ArticleBoxTest
+          v-for="(article) in articles"
+          :key="article.id"
+          :title="article.title"
+          :description="article.description"
+          :articleId="article.id"
+          :image="getImagePath(article.image)"
+          :jumpUrl="article.url"
+      />
+    </div>
   </div>
+
 </template>
 
 <script>
@@ -59,6 +62,13 @@ export default {
 </script>
 
 <style scoped>
+.background{
+  background-image: url('@/assets/imgs/background4.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+
 .test-page {
   padding: 50px;
   padding-left: 200px;

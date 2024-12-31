@@ -484,8 +484,9 @@ header {
 
 
 .navbar {
-  background-color: #8cb3da;
-  padding: 0.5rem 15rem;
+  //background-color: #8cb3da;
+  background-color: rgb(143, 188, 160);
+  padding: 0.7rem 15rem;
   border-bottom: 1px solid #e0e0e0;
 }
 

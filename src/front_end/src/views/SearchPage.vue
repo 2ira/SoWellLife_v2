@@ -1,56 +1,59 @@
 <template>
-  <div class="home-page">
-    <!-- 搜索结果容器 -->
-    <div id="results-container">
-      <p v-if="resources.length === 0 && !isLoading">未找到相关资源。</p>
-      <p v-if="isLoading">正在搜索，请稍后...</p>
+  <div class="background">
+    <div class="home-page">
+      <!-- 搜索结果容器 -->
+      <div id="results-container">
+        <p v-if="resources.length === 0 && !isLoading">未找到相关资源。</p>
+        <p v-if="isLoading">正在搜索，请稍后...</p>
 
-      <!-- 症状名称展示 -->
-      <div v-if="symptoms.length > 0" class="symptoms-section">
-        <div class="symptom-list">
-          <!-- 使用 ArticleBox 来展示症状 -->
-          <ArticleBox
-              v-for="symptom in symptoms"
-              :key="symptom.id"
-              :title="symptom.title"
-              :description="symptom.description"
-              :articleId="symptom.id"
-              :image="symptom.image"
-              class="symptom-item"
-          />
+        <!-- 症状名称展示 -->
+        <div v-if="symptoms.length > 0" class="symptoms-section">
+          <div class="symptom-list">
+            <!-- 使用 ArticleBox 来展示症状 -->
+            <ArticleBox
+                v-for="symptom in symptoms"
+                :key="symptom.id"
+                :title="symptom.title"
+                :description="symptom.description"
+                :articleId="symptom.id"
+                :image="symptom.image"
+                class="symptom-item"
+            />
+          </div>
         </div>
-      </div>
 
-      <!-- 文章和视频资源展示 -->
-      <div class="resources-section">
-        <div class="resource-grid">
-          <!-- 显示资源 -->
-          <div v-for="(resource, index) in resources" :key="index" class="resource-item">
-            <a :href="resource.rurl" target="_blank">
+        <!-- 文章和视频资源展示 -->
+        <div class="resources-section">
+          <div class="resource-grid">
+            <!-- 显示资源 -->
+            <div v-for="(resource, index) in resources" :key="index" class="resource-item">
+              <a :href="resource.rurl" target="_blank">
+                <img
+                    :src="require(`@/${resource.rimg}`)"
+                    :alt="resource.rname"
+                    class="article-resource-image"
+                />
+                <div class="article-resource-info">
+                  <h3 class="article-resource-category">{{ resource.rtag }}</h3>
+                  <p class="article-resource-title">{{ resource.rname }}</p>
+                </div>
+              </a>
+              <!-- 收藏按钮 -->
               <img
-                  :src="require(`@/${resource.rimg}`)"
-                  :alt="resource.rname"
-                  class="article-resource-image"
-              />
-              <div class="article-resource-info">
-                <h3 class="article-resource-category">{{ resource.rtag }}</h3>
-                <p class="article-resource-title">{{ resource.rname }}</p>
-              </div>
-            </a>
-            <!-- 收藏按钮 -->
-            <img
-                @click.prevent="toggleFavoriteResource(resource)"
-                :src="resource.isFavorited
+                  @click.prevent="toggleFavoriteResource(resource)"
+                  :src="resource.isFavorited
                 ? require('@/assets/imgs/收藏2.png')
                 : require('@/assets/imgs/收藏1.png')"
-                alt="收藏"
-                class="favorite-icon"
-            />
+                  alt="收藏"
+                  class="favorite-icon"
+              />
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -252,11 +255,20 @@ export default {
 </script>
 
 <style scoped>
+
+
+.background{
+  background-image: url('@/assets/imgs/background4.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
 .home-page {
   padding: 50px;
   padding-left: 200px;
   padding-right: 200px;
   margin-top: 40px;
+
 }
 
 #results-container {

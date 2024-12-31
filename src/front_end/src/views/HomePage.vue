@@ -1,81 +1,84 @@
 <template>
   <AppNavbar @resource-click="goToResources" />
-  <div class="home-container">
-    <div class="news-section">
-      <!-- 左侧轮播图部分 -->
-      <div class="carousel-container">
-        <HomeCarousel :items="carouselItems" />
-      </div>
-
-      <!-- 右侧资源列表部分 -->
-      <div class="news-list">
-        <h2 class="news-header">经典病症视频介绍</h2>
-        <div class="resource-list">
-          <!-- 点击资源卡片跳转到对应 URL -->
-          <ResourceCard
-              v-for="resource in resources"
-              :key="resource.id"
-              :title="resource.title"
-              :author="resource.author"
-              :time="resource.time"
-              :url="resource.url"
-          />
+  <div class="background">
+    <div class="home-container">
+      <div class="news-section">
+        <!-- 左侧轮播图部分 -->
+        <div class="carousel-container">
+          <HomeCarousel :items="carouselItems" />
         </div>
 
-
-        <button class="view-all-btn" @click="goToResources('video')">
-          更多视频资源
-          <span class="logo-arrow-container">
-            <img src="@/assets/imgs/homepage/arrow_blue.svg" alt="arrow" class="logo-arrow" />
-          </span>
-        </button>
-      </div>
-    </div>
-
-    <section class="tests">
-      <h2>测试一下</h2>
-      <div class="test-cards">
-        <TestCard
-            v-for="test in tests"
-            :key="test.id"
-            :image="test.image"
-            :title="test.title"
-            :testUrl="test.testUrl"
-        />
-      </div>
-    </section>
-
-    <section class="doctors">
-      <h2>医生专家</h2>
-      <div class="doctors-container">
-        <div class="doctors-content">
-          <div class="title-section">
-            <p class="subtitle">来自全国的多位专家</p>
-            <p class="subtitle">非常可靠！</p>
-
-            <router-link to="/doctors" class="meet-team-btn">
-              MEET THE TEAM
-              <span class="arrow">
-                <img src="@/assets/imgs/homepage/arrow.svg" alt="arrow" class="logo-arrow">
-              </span>
-            </router-link>
-          </div>
-
-          <div class="doctor-grid">
-            <DoctorCard
-                v-for="doctor in doctors"
-                :key="doctor.id"
-                :image="doctor.image"
-                :name="doctor.name"
-                :hospital="doctor.hospital"
-                :description="doctor.description"
-                :doctorUrl="doctor.doctorUrl"
+        <!-- 右侧资源列表部分 -->
+        <div class="news-list">
+          <h2 class="news-header">经典病症视频介绍</h2>
+          <div class="resource-list">
+            <!-- 点击资源卡片跳转到对应 URL -->
+            <ResourceCard
+                v-for="resource in resources"
+                :key="resource.id"
+                :title="resource.title"
+                :author="resource.author"
+                :time="resource.time"
+                :url="resource.url"
             />
           </div>
+
+
+          <button class="view-all-btn" @click="goToResources('video')">
+            更多视频资源
+            <span class="logo-arrow-container">
+            <img src="@/assets/imgs/homepage/arrow_blue.svg" alt="arrow" class="logo-arrow" />
+          </span>
+          </button>
         </div>
       </div>
-    </section>
+
+      <section class="tests">
+        <h2 class="test-content">测试一下</h2>
+        <div class="test-cards">
+          <TestCard
+              v-for="test in tests"
+              :key="test.id"
+              :image="test.image"
+              :title="test.title"
+              :testUrl="test.testUrl"
+          />
+        </div>
+      </section>
+
+      <section class="doctors">
+        <h2 class="doctor-content">医生专家</h2>
+        <div class="doctors-container">
+          <div class="doctors-content">
+            <div class="title-section">
+              <p class="subtitle">来自全国的多位专家</p>
+              <p class="subtitle">非常可靠！</p>
+
+              <router-link to="/doctors" class="meet-team-btn">
+                MEET THE TEAM
+                <span class="arrow">
+                <img src="@/assets/imgs/homepage/arrow.svg" alt="arrow" class="logo-arrow">
+              </span>
+              </router-link>
+            </div>
+
+            <div class="doctor-grid">
+              <DoctorCard
+                  v-for="doctor in doctors"
+                  :key="doctor.id"
+                  :image="doctor.image"
+                  :name="doctor.name"
+                  :hospital="doctor.hospital"
+                  :description="doctor.description"
+                  :doctorUrl="doctor.doctorUrl"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   </div>
+
 </template>
 
 <script setup>
@@ -103,10 +106,10 @@ const goToResources = (type) => {
 const carouselItems = ref([
   {
     id: 1,
-    image: require('@/assets/imgs/article/4.jpg'),
+    image: require('@/assets/imgs/Appnavbar.jpg'),
     title: '关于酒精和药物的重要事实-在美国面对成瘾',
     category: '成瘾',
-    author: '美国卫生与公众服务部',
+    author: 'FROM 美国卫生与公众服务部',
     url:'https://www.ncbi.nlm.nih.gov/books/NBK424847/'
   },
   {
@@ -114,7 +117,7 @@ const carouselItems = ref([
     image: require('@/assets/imgs/article/16.jpg'),
     title: '进食障碍研究',
     category: '进食障碍',
-    author: 'NIMH',
+    author: 'FROM NIMH',
     url:'https://www.nimh.nih.gov/health/topics/eating-disorders'
   },
 ])
@@ -209,11 +212,20 @@ const doctors = ref([
 
 
 <style scoped>
+
+.background{
+  background-image: url('@/assets/imgs/background4.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+
 .home-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1rem;
   margin-top: 100px;
+
 }
 
 section {
@@ -233,6 +245,19 @@ section h2 {
 }
 
 
+.test-content{
+  color: #1a365d;
+  font-family: 'Microsoft YaHei', sans-serif;
+  font-weight: bold;
+}
+
+.doctor-content{
+  color: #1a365d;
+  font-family: 'Microsoft YaHei', sans-serif;
+  font-weight: bold;
+}
+
+
 .section-header {
   text-align: left;
   margin-bottom: 2rem;
@@ -241,7 +266,7 @@ section h2 {
   display: flex;
   gap: 2rem;
   margin-bottom: 3rem;
-  margin-top: 15px;
+  margin-top: 28px;
 }
 
 .carousel-container {
@@ -255,12 +280,16 @@ section h2 {
 
 
 .news-header {
-  background-color: #367b99;
+  //background-color: #367b99;
+  background-color: #1a365d;
   border-radius: 8px;
   color: white;
   padding: 1rem;
   margin: 0;
   font-size: 1.25rem;
+  font-family: 'Microsoft YaHei', sans-serif; /* 修改字体家族 */
+  font-weight: bold; /* 加粗文字 */
+  line-height: 1.5;
 }
 
 .resource-list {
@@ -284,7 +313,8 @@ section h2 {
 
 .view-all-btn {
   background-color: transparent;
-  color: rgb(37, 81, 164);
+  //color: rgb(37, 81, 164);
+  color: #1a365d;
   border: none;
   padding: 0.1rem 1rem;
   border-radius: 9px;
@@ -301,7 +331,8 @@ section h2 {
 }
 
 .meet-team-btn {
-  background-color: #2C7A7B;
+  background-color: #1a365d;
+  //background-color: #2C7A7B;
   color: white;
   border: none;
   padding: 0.75rem 1rem;

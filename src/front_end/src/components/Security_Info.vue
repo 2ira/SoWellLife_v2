@@ -1,6 +1,6 @@
 <template>
   <div class="section">
-    <div class="security-container">
+    <div class="security-container" >
       <!-- 当前密码 -->
       <div class="profile-item">
         <label for="current-password">当前密码:</label>
@@ -279,13 +279,16 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
   min-height: 80vh;
+
 }
+
 
 .profile-item {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
   gap: 12px;
+  margin-top: 50px;
 }
 
 .profile-item label {

@@ -1,35 +1,38 @@
 <template>
-  <div class="home-container">
-    <!-- 错误信息显示 -->
-    <div v-if="isLoading" class="loading-message">加载中...</div>
-    <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+  <div class="background">
+    <div class="home-container">
+      <!-- 错误信息显示 -->
+      <div v-if="isLoading" class="loading-message">加载中...</div>
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
 
-    <div class="caption">
-      <span class="s1">医师介绍</span> <span class="s2">共{{ doctors.length }}名医生</span>
-    </div>
-    <section class="doctors">
-      <div class="doctors-content">
-        <div class="doctor-grid">
-          <!-- 渲染医生信息 -->
-          <div class="item" v-for="doctor in doctors" :key="doctor.docId">
-            <!-- 使用 router-link 来实现跳转并传递 doc_id -->
-            <router-link :to="`/doctor_detail?doc_id=${doctor.docId}`">
-              <div class="doctor-avatar-wrapper">
-                <img :src="require(`@/assets/imgs/${doctor.docImage}`)" alt="医生头像" class="doctor-avatar" />
+      <div class="caption">
+        <span class="s1">医师介绍</span> <span class="s2">共{{ doctors.length }}名医生</span>
+      </div>
+      <section class="doctors">
+        <div class="doctors-content">
+          <div class="doctor-grid">
+            <!-- 渲染医生信息 -->
+            <div class="item" v-for="doctor in doctors" :key="doctor.docId">
+              <!-- 使用 router-link 来实现跳转并传递 doc_id -->
+              <router-link :to="`/doctor_detail?doc_id=${doctor.docId}`">
+                <div class="doctor-avatar-wrapper">
+                  <img :src="require(`@/assets/imgs/${doctor.docImage}`)" alt="医生头像" class="doctor-avatar" />
 
-                <div class="info">
-                  <div class="inline">
-                    <div class="h2">{{ doctor.docName }}</div>
-                    <div class="p">{{ doctor.title }}</div>
+                  <div class="info">
+                    <div class="inline">
+                      <div class="h2">{{ doctor.docName }}</div>
+                      <div class="p">{{ doctor.title }}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </router-link>
+              </router-link>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   </div>
+
 </template>
 
 
@@ -71,6 +74,14 @@ export default {
 </script>
 
 <style scoped>
+
+.background{
+  background-image: url('@/assets/imgs/background4.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+
 .home-container {
   max-width: 1200px;
   margin: 0 auto;

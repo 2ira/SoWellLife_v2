@@ -1,17 +1,20 @@
 <!-- IHome.vue -->
 <template>
-  <div class="home-page">
-    <!--      <LoadingSpinner v-if="isLoading"></LoadingSpinner> &lt;!&ndash; 加载时显示加载动画,这里这个控件还没有得到 &ndash;&gt;-->
-    <ArticleBox
-        v-for="article in articles"
-        :key="article.id"
-        :title="article.title"
-        :description="article.description"
-        :articleId="article.id"
-        :image="article.image"
-    />
-    <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div> <!-- 显示错误信息 -->
+  <div class="background">
+    <div class="home-page">
+      <!--      <LoadingSpinner v-if="isLoading"></LoadingSpinner> &lt;!&ndash; 加载时显示加载动画,这里这个控件还没有得到 &ndash;&gt;-->
+      <ArticleBox
+          v-for="article in articles"
+          :key="article.id"
+          :title="article.title"
+          :description="article.description"
+          :articleId="article.id"
+          :image="article.image"
+      />
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div> <!-- 显示错误信息 -->
+    </div>
   </div>
+
 </template>
 
 <script>
@@ -71,6 +74,13 @@ export default {
 </script>
 
 <style scoped>
+
+.background{
+  background-image: url('@/assets/imgs/background4.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
 .home-page {
   padding: 50px;
   padding-left: 200px;

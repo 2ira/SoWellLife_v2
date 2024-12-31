@@ -62,9 +62,12 @@ export default {
 
 .content h3 {
   margin: 0.7rem 0 0.7rem;  /* 增加标题和meta信息之间的距离 */
-  font-size: 1.1rem;
-  color: #1B4D62;
+  font-size: 1.2rem;
+  font-family: 'Microsoft YaHei', sans-serif;
+  color: #333;
+  //color: rgb(0,100,0);
   line-height: 1.4;
+  margin-left: 10px;
 }
 
 .meta {
@@ -77,10 +80,12 @@ export default {
 
 
 .time {
-  margin: 0;
+  //margin: 0;
   color: #666;
   font-size: 0.9rem;
   line-height: 1.5;
+  margin-left: 10px;
+  margin-bottom: 5px;
 }
 
 .author {

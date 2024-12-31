@@ -157,17 +157,20 @@ const fetchFavoriteResources = async () => {
   position: relative;
   width: 100%;
   height: 100vh;
+  background-image: url('@/assets/imgs/background4.jpg');
+  background-size: cover;
+  background-position: center;
 }
 .background {
   position: absolute;
-  top: 0;
+  top: -500px;
   left: 0;
   width: 100%;
   height: 100%;
-  background-size: cover;
+  background-size: 1800px auto;
   background-position: center;
   z-index: -1;
-  background-image: url('@/assets/imgs/article/3.jpg');
+  background-image: url('@/assets/imgs/final.jpg');
 }
 .user-info {
   display: flex;

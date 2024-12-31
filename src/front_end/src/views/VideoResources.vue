@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="background">
     <!-- 加载中显示 -->
     <div v-if="isLoading" class="loading-message">加载中...</div>
     <!-- 错误信息显示 -->
@@ -152,11 +152,19 @@ export default {
 </script>
 
 <style scoped>
+
+.background{
+  background-image: url('@/assets/imgs/background4.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+
 .video-resources-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
-  padding-top: 120px;
+  padding-top: 130px;
   padding-bottom: 100px;
   max-width: 1200px;
   margin: 20px auto;
@@ -188,15 +196,18 @@ export default {
 }
 
 .video-resource-category {
-  font-size: 16px;
+  font-size: 14px;
   color: #449d44;
   font-weight: bold;
+  font-family: 'Microsoft YaHei', sans-serif;
+  margin-bottom: 10px;
 }
 
 .video-resource-title {
   font-size: 18px;
-  color: #555;
+  color: #333;
   line-height: 1.5;
+  font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
 }
 
 .favorite-icon {

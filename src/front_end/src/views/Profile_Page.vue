@@ -1,42 +1,45 @@
 <template>
-  <div class="profile-page">
-    <!-- 错误提示区域 -->
-    <div v-if="showError" class="error-message">
-      <p>Identifier 参数丢失，请检查链接或联系管理员。</p>
-    </div>
-
-    <!-- 左侧导航栏 -->
-    <div class="sidebar" v-if="!showError">
-      <div class="settings-header">
-        <span class="settings-label">设置</span>
+  <div class="background">
+    <div class="profile-page">
+      <!-- 错误提示区域 -->
+      <div v-if="showError" class="error-message">
+        <p>Identifier 参数丢失，请检查链接或联系管理员。</p>
       </div>
 
-      <!-- 设置子选项 -->
-      <div class="settings-options">
-        <button
-            :class="{ active: currentTab === 'profile' }"
-            @click="changeTab('profile')"
-        >
-          个人设置
-        </button>
-        <button
-            :class="{ active: currentTab === 'security' }"
-            @click="changeTab('security')"
-        >
-          安全设置
-        </button>
-      </div>
-    </div>
+      <!-- 左侧导航栏 -->
+      <div class="sidebar" v-if="!showError">
+        <div class="settings-header">
+          <span class="settings-label">设置</span>
+        </div>
 
-    <!-- 右侧内容区 -->
-    <div class="content" v-if="!showError">
-      <!-- 根据选项渲染不同的组件 -->
-      <Profile_Info
-          v-if="currentTab === 'profile' "
-      />
-      <Security_Info v-if="currentTab === 'security' " />
+        <!-- 设置子选项 -->
+        <div class="settings-options">
+          <button
+              :class="{ active: currentTab === 'profile' }"
+              @click="changeTab('profile')"
+          >
+            个人设置
+          </button>
+          <button
+              :class="{ active: currentTab === 'security' }"
+              @click="changeTab('security')"
+          >
+            安全设置
+          </button>
+        </div>
+      </div>
+
+      <!-- 右侧内容区 -->
+      <div class="content" v-if="!showError">
+        <!-- 根据选项渲染不同的组件 -->
+        <Profile_Info
+            v-if="currentTab === 'profile' "
+        />
+        <Security_Info v-if="currentTab === 'security' " />
+      </div>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -66,6 +69,15 @@ export default {
 </script>
 
 <style scoped>
+
+.background{
+  background-image: url('@/assets/imgs/background4.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 1000px;
+}
+
+
 /* 错误提示样式 */
 .error-message {
   color: red;

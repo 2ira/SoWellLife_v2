@@ -1,44 +1,47 @@
 <template>
-  <div class="doctor-detail-wrapper" v-if="doctor">
-    <div class="doctor-info">
-      <div class="top-section">
-        <div class="image-and-text">
-          <img :src="require(`@/assets/imgs/${doctor.docImage}`)"  alt="医生照片" class="doctor-photo" />
-          <div class="text-details">
-            <div class="doctor-info-text">
-              <div class="doctor-name-and-title">
-                <div class="name-and-title-wrapper">
-                  <div class="doctor-name">{{ doctor.docName }}</div>
-                  <div class="doctor-job-title" style="font-size: 18px; color: #777; margin-left: 10px;">{{ doctor.title }}</div>
+  <div class="background">
+    <div class="doctor-detail-wrapper" v-if="doctor">
+      <div class="doctor-info">
+        <div class="top-section">
+          <div class="image-and-text">
+            <img :src="require(`@/assets/imgs/${doctor.docImage}`)"  alt="医生照片" class="doctor-photo" />
+            <div class="text-details">
+              <div class="doctor-info-text">
+                <div class="doctor-name-and-title">
+                  <div class="name-and-title-wrapper">
+                    <div class="doctor-name">{{ doctor.docName }}</div>
+                    <div class="doctor-job-title" style="font-size: 18px; color: #777; margin-left: 10px;">{{ doctor.title }}</div>
+                  </div>
                 </div>
-              </div>
-              <div class="doctor-details">
-                <div style="margin-top: 20px;">
-                  <strong>所在医院：</strong>{{ doctor.docHospital }}
+                <div class="doctor-details">
+                  <div style="margin-top: 20px;">
+                    <strong>所在医院：</strong>{{ doctor.docHospital }}
+                  </div>
+                  <div style="margin-top: 20px;">
+                    <strong>专业特长：</strong><span class="tag">{{ doctor.docSpecialties }}</span>
+                  </div>
+                  <div style="margin-top: 20px; width: 700px">
+                    <strong>擅长：</strong>{{ doctor.spec_symptom }}
+                  </div>
+                  <div style="width: 700px; margin-top: 25px; border-bottom: 2px dashed #006400;"></div>
+                  <p style="margin-top: 20px;">如果你想了解该医生的更多信息（包括学习经历、患者评价），请点击右方链接：
+                    <a :href="doctor.hosUrl" class="learn-more" target="_blank">了解更多</a>
+                  </p>
                 </div>
-                <div style="margin-top: 20px;">
-                  <strong>专业特长：</strong><span class="tag">{{ doctor.docSpecialties }}</span>
-                </div>
-                <div style="margin-top: 20px;">
-                  <strong>擅长：</strong>{{ doctor.spec_symptom }}
-                </div>
-                <div style="width: 800px; margin-top: 25px; border-bottom: 2px dashed #006400;"></div>
-                <p style="margin-top: 20px;">如果你想了解该医生的更多信息（包括学习经历、患者评价），请点击右方链接：
-                  <a :href="doctor.hosUrl" class="learn-more" target="_blank">了解更多</a>
-                </p>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="bottom-section">
-        <div class="introduction-box">
-          <div class="introduction-title">个人简介</div>
-          <p>{{ doctor.docProfile }}</p>
+        <div class="bottom-section">
+          <div class="introduction-box">
+            <div class="introduction-title">个人简介</div>
+            <p>{{ doctor.docProfile }}</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -79,6 +82,14 @@ export default {
 </script>
 
 <style scoped>
+
+.background{
+  background-image: url('@/assets/imgs/background4.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+
 .doctor-detail-wrapper {
   background-color: #f9f9f9;
   padding: 60px 30px;
@@ -139,7 +150,7 @@ export default {
 .tag {
   display: inline-block;
   padding: 5px 10px;
-  background-color: #4CAF50;
+  background-color: #1a365d;
   color: white;
   border-radius: 15px;
 }
@@ -156,13 +167,14 @@ export default {
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 15px;
-  width: 1200px;
+  width: 1090px;
 }
 
 .introduction-title {
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 8px;
+
 }
 
 .introduction-box p {
@@ -172,6 +184,7 @@ export default {
 }
 
 .learn-more {
+  color: #1a365d;
   text-decoration: underline;
   margin-bottom: 10px;
 }
