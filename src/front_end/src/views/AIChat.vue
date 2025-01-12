@@ -1,4 +1,4 @@
-# AIChat.vue
+
 <template>
   <div class="fixed top-[120px] bottom-0 left-0 right-0 flex bg-gray-100">
     <!-- 左侧边栏 -->
@@ -177,15 +177,10 @@
 
 
     <!-- 右侧聊天区域 -->
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col chat-background" >
       <!-- 聊天消息区域 -->
       <div class="flex-1 overflow-y-auto p-4 pb-24 relative" ref="messageContainer">
         <div class="max-w-3xl mx-auto space-y-4">
-          <!--          <template v-if="messages.length === 0">-->
-          <!--            <div class="absolute inset-0 flex items-center justify-center"> &lt;!&ndash; 使用 flex 和高度充满来居中 &ndash;&gt;-->
-          <!--              <p class="text-2xl text-gray-500 font-medium">开始新的对话吧！</p> &lt;!&ndash; 调整字体大小和粗细 &ndash;&gt;-->
-          <!--            </div>-->
-          <!--          </template>-->
           <template v-if="showWelcome">
             <!-- 使用 React 组件作为欢迎界面 -->
             <WelcomeAnimation />
@@ -655,6 +650,15 @@ watch(messages, async () => {
 </script>
 
 <style scoped>
+
+.chat-background {
+  background-image: url('@/assets/imgs/background4.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

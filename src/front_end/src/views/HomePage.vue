@@ -109,7 +109,7 @@ const carouselItems = ref([
     image: require('@/assets/imgs/Appnavbar.jpg'),
     title: '关于酒精和药物的重要事实-在美国面对成瘾',
     category: '成瘾',
-    author: 'FROM 美国卫生与公众服务部',
+    author: 'From National Library of Medicine',
     url:'https://www.ncbi.nlm.nih.gov/books/NBK424847/'
   },
   {
@@ -117,8 +117,32 @@ const carouselItems = ref([
     image: require('@/assets/imgs/article/16.jpg'),
     title: '进食障碍研究',
     category: '进食障碍',
-    author: 'FROM NIMH',
+    author: 'From National Institute of Mental Health',
     url:'https://www.nimh.nih.gov/health/topics/eating-disorders'
+  },
+  {
+    id: 3,
+    image: require('@/assets/imgs/article/6.jpg'),
+    title: 'PTSD 症状与治疗',
+    category: '创伤后应激障碍',
+    author: 'From National Institute of Mental Health',
+    url:'https://www.nimh.nih.gov/health/topics/post-traumatic-stress-disorder-ptsd'
+  },
+  {
+    id: 4,
+    image: require('@/assets/imgs/article/19.jpg'),
+    title: '强迫症治疗指南',
+    category: '强迫症',
+    author: 'From Katharine Anne Phillips and Dan J. Stein',
+    url:'https://www.msdmanuals.cn/home/mental-health-disorders/obsessive-compulsive-and-related-disorders/obsessive-compulsive-disorder-ocd'
+  },
+  {
+    id: 5,
+    image: require('@/assets/imgs/article/24.jpg'),
+    title: '自闭症谱系障碍解析',
+    category: '自闭症',
+    author: 'From Stephen Brian Sulkes',
+    url:'https://www.msdmanuals.cn/home/children-s-health-issues/learning-and-developmental-disorders/autism-spectrum-disorder'
   },
 ])
 

@@ -15,7 +15,7 @@
       >
         <div class="avatar-frame">
           <img
-              :src="avatar_url"
+              :src="previewAvatarUrl ? previewAvatarUrl : avatar_url"
               alt="头像"
               class="avatar"
               @error="handleImageError"
@@ -164,7 +164,8 @@ export default {
       countdown: 0,
       timer: null,
       orgin_username:'',
-      orgin_avatar_url:''
+      orgin_avatar_url:'',
+      previewAvatarUrl: '', // 用于本地预览的临时URL
 
     };
   },
@@ -195,20 +196,25 @@ export default {
 
       try {
         const response = await axios.get(url, { params: { identifier: uid } });
-        console.log("response.data:",response.data);
+
         if (response.status === 200 && response.data) {
           this.id = response.data.uid;
           this.originalEmail = response.data.email;
-          this.email=this.originalEmail;
+          this.email = this.originalEmail;
           this.username = response.data.uname;
-          this.orgin_username=this.username;
-          this.avatar_url = response.data.avatarUser; // 获取头像 URL
-          console.log("Set avatar_url to:", this.avatar_url);
-          this.orgin_avatar_url=this.avatar_url;
+          this.orgin_username = this.username;
 
+          // 保持使用 Vuex store 中的头像 URL
+          const storeAvatarUrl = this.$store.state.avatar_url;
+          if (storeAvatarUrl) {
+            this.avatar_url = storeAvatarUrl;
+            this.orgin_avatar_url = storeAvatarUrl;
+          } else {
+            // 如果 store 中没有，则使用接口返回的
+            this.avatar_url = response.data.avatarUser;
+            this.orgin_avatar_url = response.data.avatarUser;
+          }
         }
-        console.log("this.id ",this.id );
-        console.log("this.originalEmail ",this.originalEmail);
       } catch (error) {
         this.errorMessage = error.response?.data?.message || '网络错误，无法获取用户信息。';
       } finally {
@@ -216,14 +222,18 @@ export default {
       }
     },
 
+
     // 文件选择后的处理
+
     onFileChange(event) {
       const file = event.target.files[0];
       if (file) {
         this.avatarFile = file;
+        // 创建本地预览URL
         const reader = new FileReader();
         reader.onload = (e) => {
-          this.avatar_url = e.target.result;
+          const previewUrl = e.target.result;
+          this.avatar_url = previewUrl; // 更新本地预览
         };
         reader.readAsDataURL(file);
       }
@@ -252,88 +262,102 @@ export default {
 
 
 
-    savechangeothers() {
-      // 进行用户信息更新操作
+    async savechangeothers() {
       this.isLoading = true;
       const formData = new FormData();
       formData.append('uid', this.id);
       formData.append('newUserName', this.username);
 
-      console.log("this.avatarFile:", this.avatarFile);
-
-      // 如果上传了头像文件，先上传头像
+      // 如果上传了头像文件，则先上传头像
       if (this.avatarFile) {
-        // 上传头像到服务器
         const avatarFormData = new FormData();
         avatarFormData.append('uid', this.id);
         avatarFormData.append('avatarFile', this.avatarFile);
 
-        axios.post(`${API_BASE_URL}/api/login/upload-avatar`, avatarFormData)
-            .then(avatarResponse => {
-              if (avatarResponse.status === 200 && avatarResponse.data.fileUrl) {
-                console.log("avatarResponse:", avatarResponse.data.fileUrl);
-                formData.append('newAvatarUrl', avatarResponse.data.fileUrl); // 设置新的头像 URL
+        try {
+          const avatarResponse = await axios.post(`${API_BASE_URL}/api/login/upload-avatar`, avatarFormData);
+          if (avatarResponse.status === 200 && avatarResponse.data.fileUrl) {
+            formData.append('newAvatarUrl', avatarResponse.data.fileUrl);
+          }
+        } catch (error) {
+          console.error('头像上传失败:', error);
+          this.errorMessage = '头像上传失败，请稍后再试。';
+          this.isLoading = false;
+          return;
+        }
+      }
 
-                // 上传头像成功后，执行更新用户信息
-                this.updateUserInfo(formData);
-              } else {
-                this.errorMessage = '头像上传失败，请稍后再试。';
-                this.isLoading = false;
-              }
-            })
-            .catch(error => {
-              console.error('头像上传失败:', error);
-              this.errorMessage = '头像上传失败，请稍后再试。';
-              this.isLoading = false;
-            });
-      } else {
-        // 如果没有头像文件，直接提交更新用户信息
-        this.updateUserInfo(formData);
+      // 上传其他用户信息
+      try {
+        const updateResponse = await axios.post(`${API_BASE_URL}/api/login/update`, formData);
+        if (updateResponse.status === 200) {
+          // 上传成功后，才去更新全局 store
+          const newAvatarUrl = updateResponse.data.avatarUrl || this.avatar_url;
+          this.$store.commit('UPDATE_USER_INFO', {
+            uid: this.id,
+            username: this.username,
+            avatar_url: newAvatarUrl,
+          });
+          // 本地也更新
+          this.avatar_url = newAvatarUrl;
+          this.orgin_avatar_url = newAvatarUrl;
+          // 清空临时预览
+          this.previewAvatarUrl = null;
+          // 提示成功
+          alert('用户信息更新成功');
+        }
+      } catch (error) {
+        console.error('用户信息更新失败:', error);
+        this.errorMessage = '用户信息更新失败，请稍后再试。';
+      } finally {
+        this.isLoading = false;
+        this.isOriginalEmailVerified = false;
       }
     },
 
-    updateUserInfo(formData) {
-      // 更新用户信息
-      axios.post(`${API_BASE_URL}/api/login/update`, formData)
-          .then(updateResponse => {
-            if (updateResponse.status === 200) {
-              alert('用户信息更新成功');
-              const data = updateResponse.data;
-              console.log("updateResponse:", updateResponse.data);
+    async updateUserInfo(formData) {
+      try {
+        const updateResponse = await axios.post(`${API_BASE_URL}/api/login/update`, formData);
 
-              // 如果有新的头像 URL，更新 Vuex store
-              if (data.avatarUrl) {
-                this.$store.commit('UPDATE_USER_INFO', {
-                  uid: this.id,
-                  username: this.username,
-                  avatar_url: data.avatarUrl,
-                });
+        if (updateResponse.status === 200) {
+          const data = updateResponse.data;
 
-                // 强制更新组件的头像 URL
-                this.avatar_url = data.avatarUrl;
-              }
-            } else {
-              this.errorMessage = '用户信息更新失败，请稍后再试。';
-            }
-          })
-          .catch(error => {
-            console.error('用户信息更新失败:', error);
-            this.errorMessage = '用户信息更新失败，请稍后再试。';
-          })
-          .finally(() => {
-            this.isLoading = false;
-            this.isOriginalEmailVerified = false;
+          // 如果头像更新成功，使用新的头像URL，否则保持原有URL
+          const newAvatarUrl = data.avatarUrl || this.avatar_url;
+
+          // 更新 Vuex store，保持头像URL的格式一致
+          await this.$store.commit('UPDATE_USER_INFO', {
+            uid: this.id,
+            username: this.username,
+            avatar_url: newAvatarUrl
           });
 
+          // 更新本地状态
+          this.avatar_url = newAvatarUrl;
+          this.orgin_avatar_url = newAvatarUrl;
+
+          alert('用户信息更新成功');
+        } else {
+          this.errorMessage = '用户信息更新失败，请稍后再试。';
+        }
+      } catch (error) {
+        console.error('用户信息更新失败:', error);
+        this.errorMessage = '用户信息更新失败，请稍后再试。';
+      } finally {
+        this.isLoading = false;
+        this.isOriginalEmailVerified = false;
+      }
     },
-
-
-
 
     // 取消修改
     cancelchange() {
+      // 恢复原先的用户名
       this.username = this.orgin_username;
+      // 恢复原先的头像
       this.avatar_url = this.orgin_avatar_url;
+      // 清空本地预览
+      this.previewAvatarUrl = null;
+      // 清空文件
       this.$refs.fileInput.value = '';
     },
 

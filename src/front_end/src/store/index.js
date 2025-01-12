@@ -29,9 +29,16 @@ export default createStore({
             state.uid = null;
         },
         // 更新用户名和头像
-        UPDATE_USER_INFO(state, { username, avatar_url }) {
-            state.username = username;
-            state.avatar_url = avatar_url;
+        // UPDATE_USER_INFO(state, { username, avatar_url }) {
+        //     state.username = username;
+        //     state.avatar_url = avatar_url;
+        // },
+
+
+        UPDATE_USER_INFO(state, payload) {
+            state.username = payload.username;
+            state.avatar_url = payload.avatar_url;
+            state.uid = payload.uid;
         },
     },
     actions: {

@@ -148,6 +148,9 @@ const fetchFavoriteResources = async () => {
     loading.value = false;
   }
 };
+
+
+
 </script>
 
 
