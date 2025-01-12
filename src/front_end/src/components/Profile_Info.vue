@@ -19,6 +19,7 @@
               alt="头像"
               class="avatar"
               @error="handleImageError"
+              @load="() => console.log('Image loaded successfully')"
           />
         </div>
 
@@ -172,15 +173,14 @@ export default {
     ...mapState({
       isLoggedIn: (state) => state.isLoggedIn,
       username: (state) => state.username,
+      storeAvatarUrl: (state) => state.avatar_url, // 从 store 中获取头像 URL
     }),
-
   },
 
 
+
   methods: {
-    ...mapActions({
-      updateUserInfo: 'updateUserInfo',
-    }),
+    ...mapActions(['updateUserInfo']),
 
     // 获取用户信息
     async getUserInfo() {
@@ -300,16 +300,18 @@ export default {
               alert('用户信息更新成功');
               const data = updateResponse.data;
               console.log("updateResponse:", updateResponse.data);
+
+              // 如果有新的头像 URL，更新 Vuex store
               if (data.avatarUrl) {
+                this.$store.commit('UPDATE_USER_INFO', {
+                  uid: this.id,
+                  username: this.username,
+                  avatar_url: data.avatarUrl,
+                });
+
+                // 强制更新组件的头像 URL
                 this.avatar_url = data.avatarUrl;
               }
-
-              // 更新 Vuex 状态
-              this.$store.commit('UPDATE_USER_INFO', {
-                uid: this.id,
-                username: this.username,
-                avatar_url: this.avatar_url,
-              });
             } else {
               this.errorMessage = '用户信息更新失败，请稍后再试。';
             }
@@ -319,9 +321,10 @@ export default {
             this.errorMessage = '用户信息更新失败，请稍后再试。';
           })
           .finally(() => {
-            this.isLoading = false; // 无论成功或失败，最终都要重置 loading 状态
+            this.isLoading = false;
             this.isOriginalEmailVerified = false;
           });
+
     },
 
 
@@ -468,6 +471,7 @@ export default {
   },
   mounted() {
     this.getUserInfo();
+
 
   },
 };

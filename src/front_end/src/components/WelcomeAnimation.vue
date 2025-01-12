@@ -26,7 +26,7 @@ import { ref, onMounted } from 'vue'
 const firstLine = ref('')
 const secondLine = ref('')
 const firstText = "Hello～今天开心吗？"
-const secondText = "我们一起来聊聊天吧😊"
+const secondText = "我们一起来聊聊天吧^o^"
 
 onMounted(() => {
   // 第一行动画

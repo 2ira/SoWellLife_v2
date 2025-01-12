@@ -74,7 +74,9 @@ export default {
   background-image: url('@/assets/imgs/background4.jpg');
   background-size: cover;
   background-position: center;
-  height: 1000px;
+  min-height: 1000px;
+  height: 1050px;
+  padding-top: 130px;
 }
 
 

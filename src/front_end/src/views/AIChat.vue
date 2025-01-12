@@ -661,16 +661,16 @@ watch(messages, async () => {
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #f9f9f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #E5E7EB;
+  background-color: #f9f9f9;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #D1D5DB;
+  background-color: #f9f9f9;
 }
 
 /* 加载动画样式 */

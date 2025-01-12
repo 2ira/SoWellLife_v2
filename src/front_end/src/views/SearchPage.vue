@@ -261,6 +261,7 @@ export default {
   background-image: url('@/assets/imgs/background4.jpg');
   background-size: cover;
   background-position: center;
+  padding-top: 15px;
 }
 
 .home-page {
