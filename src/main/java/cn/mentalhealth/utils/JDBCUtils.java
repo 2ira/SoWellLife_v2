@@ -23,7 +23,7 @@ public class JDBCUtils {
     private static String username;
     private static String password;
 
-    private static final String CONFIG_FILE_PATH = "C:\\1_Tangwj\\中级实训\\SoWellLife_v2\\src\\main\\resources\\druid.properties";
+    private static final String CONFIG_FILE_PATH = "D:\\ilikestudyhhhmaybe\\Project\\MentalHealth\\SoWellLife_v2\\src\\main\\resources\\druid.properties";
 
 
 

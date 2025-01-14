@@ -25,7 +25,7 @@
       <div class="flex-1 overflow-y-auto">
         <!-- 最近对话标题和折叠按钮 -->
         <div
-            class="px-7 py-2 flex items-center justify-between cursor-pointer hover:bg-gray-50"
+            class="px-7 py-3 flex items-center justify-between cursor-pointer hover:bg-gray-50"
             @click="toggleChatList"
         >
 
@@ -179,7 +179,7 @@
     <!-- 右侧聊天区域 -->
     <div class="flex-1 flex flex-col chat-background" >
       <!-- 聊天消息区域 -->
-      <div class="flex-1 overflow-y-auto p-4 pb-24 relative" ref="messageContainer">
+      <div class="flex-1 overflow-y-auto p-10 pb-24 relative" ref="messageContainer">
         <div class="max-w-3xl mx-auto space-y-4">
           <template v-if="showWelcome">
             <!-- 使用 React 组件作为欢迎界面 -->
@@ -261,6 +261,11 @@
       </div>
 
       <!-- 底部输入区域 -->
+      <!-- 在底部输入区域之前添加 -->
+      <div class="fixed bottom-20 left-64 right-0">
+        <QuickPrompts @prompt-click="handlePromptClick" />
+      </div>
+
       <div class="fixed bottom-0 left-64 right-0 border-t border-gray-200 bg-white p-4">
         <div class="max-w-3xl mx-auto flex gap-4">
           <input
@@ -295,7 +300,14 @@ import { useStore } from 'vuex'
 import TypingMessage from '@/components/TypingMessage.vue';  // 引入组件
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+// 添加 QuickPrompts 组件的导入
+import QuickPrompts from '@/components/QuickPrompts.vue';
 
+// 添加处理快捷指令点击的方法
+const handlePromptClick = async (message) => {
+  inputMessage.value = message;
+  await sendMessage();
+};
 
 // 状态定义
 const router = useRouter()
