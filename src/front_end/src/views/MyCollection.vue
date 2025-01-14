@@ -160,20 +160,19 @@ const fetchFavoriteResources = async () => {
   position: relative;
   width: 100%;
   height: 100vh;
-  background-image: url('@/assets/imgs/background4.jpg');
-  background-size: cover;
-  background-position: center;
+  background-color: #e4f1ea;
 }
 .background {
-  position: absolute;
-  top: -500px;
+  position: fixed;  /* 改为 fixed，这样可以固定在视口 */
+  top: 0;  /* 调整到顶部 */
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-size: 1800px auto;
+  width: 100%;  /* 改为100%以确保完全覆盖 */
+  height: 85vh;  /* 使用视口高度 */
+  background-size: cover;  /* 改用 cover 确保图片完整覆盖 */
   background-position: center;
   z-index: -1;
-  background-image: url('@/assets/imgs/final.jpg');
+  background-image: url('@/assets/imgs/bk2(1).jpg');
+  background-repeat: no-repeat;  /* 防止图片重复 */
 }
 .user-info {
   display: flex;
@@ -310,3 +309,5 @@ const fetchFavoriteResources = async () => {
   right: 10px;
 }
 </style>
+
+

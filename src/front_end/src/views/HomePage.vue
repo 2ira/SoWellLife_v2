@@ -238,9 +238,10 @@ const doctors = ref([
 <style scoped>
 
 .background{
-  background-image: url('@/assets/imgs/background4.jpg');
-  background-size: cover;
-  background-position: center;
+  //background-image: url('@/assets/imgs/background4.jpg');
+  //background-size: cover;
+  //background-position: center;
+  background-color: #e4f1ea;
   padding-top: 15px;
 }
 

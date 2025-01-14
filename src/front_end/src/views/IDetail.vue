@@ -213,7 +213,7 @@ export default {
 }
 
 .treatment-method .card {
-  background-color: #f0faf2;
+  background-color: #e4f1ea;
 }
 
 /* 相关文章推荐标题 */

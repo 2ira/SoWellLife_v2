@@ -664,10 +664,11 @@ watch(messages, async () => {
 <style scoped>
 
 .chat-background {
-  background-image: url('@/assets/imgs/background4.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  //background-image: url('@/assets/imgs/background4.jpg');
+  //background-size: cover;
+  //background-position: center;
+  //background-repeat: no-repeat;
+  background-color: #e4f1ea;
 }
 
 
