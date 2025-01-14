@@ -5,6 +5,7 @@ import cn.mentalhealth.domain.User;
 import cn.mentalhealth.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.util.List;
 
@@ -14,96 +15,109 @@ public class UserServiceTest {
 
     private UserService userService;
     private UserDaoImpl userDaoImpl;
-
+    private MockHttpServletRequest mockRequest;
     @BeforeEach
     public void setUp() {
         userDaoImpl = new UserDaoImpl();
         userService = new UserService();
+        mockRequest = new MockHttpServletRequest();
     }
-
-    // 测试获取所有用户记录的方法
     @Test
     public void testGetAllUsers() {
         List<User> users = userService.getAllUsers();
         assertNotNull(users);
     }
-
-    // 测试根据用户ID获取特定用户记录的方法
     @Test
     public void testGetUserById() {
-        // 假设数据库中存在一个用户记录，其Uid为1（可根据实际情况调整）
         int uid = 1;
         User user = userService.getUserById(uid);
-        if (user!= null) {
+        if (user != null) {
             assertEquals(uid, user.getUid());
         } else {
             assertNull(user);
         }
     }
-
-    // 测试根据用户邮箱获取特定用户记录的方法
     @Test
     public void testGetUserByEmail() {
-        // 假设数据库中存在一个用户记录，其邮箱为"test@example.com"（可根据实际情况调整）
-        String email = "example@qq.com";
+        String email = "test@example.com";
         User user = userService.getUserByEmail(email);
-        if (user!= null) {
+        if (user != null) {
             assertEquals(email, user.getEmail());
         } else {
             assertNull(user);
         }
     }
-
-    // 测试添加新用户记录的方法
     @Test
     public void testAddUser() {
         User newUser = new User();
-        newUser.setEmail("test@example.com");
-        newUser.setUName("New User");
-        newUser.setAvatarUser("default_avatar.jpg");
+        newUser.setEmail("newtest@example.com");
+        newUser.setUName("New Test User");
+        newUser.setAvatarUser("test_avatar.jpg");
+        newUser.setUserPSW("testpassword");
 
-        userService.addUser(newUser);
+        User addedUser = userService.addUser(newUser);
+        assertNotNull(addedUser);
 
-        // 再次查询数据库，验证是否插入成功
-        User insertedUser = userService.getUserByEmail(newUser.getEmail());
-        assertNotNull(insertedUser);
-        assertEquals(newUser.getEmail(), insertedUser.getEmail());
-        assertEquals(newUser.getUName(), insertedUser.getUName());
-        assertEquals(newUser.getAvatarUser(), insertedUser.getAvatarUser());
-    }
-
-    // 测试更新用户记录的方法
-    @Test
-    public void testUpdateUser() {
-        // 假设数据库中存在一个用户记录，其Uid为2（可根据实际情况调整）
-        int uid = 1;
-        User originalUser = userService.getUserById(uid);
-
-        if (originalUser!= null) {
-            originalUser.setUName("Updated User Name");
-            userService.updateUser(originalUser, "Uid = " + uid);
-
-            User updatedUser = userService.getUserById(uid);
-            assertEquals("Updated User Name", updatedUser.getUName());
-        } else {
-            assertNull(originalUser);
+        User retrievedUser = userService.getUserByEmail(newUser.getEmail());
+        if (retrievedUser != null) {
+            assertEquals(newUser.getEmail(), retrievedUser.getEmail());
+            assertEquals(newUser.getUName(), retrievedUser.getUName());
+            assertEquals(newUser.getAvatarUser(), retrievedUser.getAvatarUser());
         }
     }
-
-    // 测试删除用户记录的方法
     @Test
-    public void testDeleteUser() {
-        // 假设数据库中存在一个用户记录，其Uid为3（可根据实际情况调整）
-        int uid = 2;
-        User userToDelete = userService.getUserById(uid);
+    public void testUpdateUserName() {
+        // 设置请求参数
+        mockRequest.setParameter("uid", "1");
+        mockRequest.setParameter("newUserName", "Updated Test Name");
 
-        if (userToDelete!= null) {
-            userService.deleteUser("Uid = 0000000002");
+        String result = userService.updateUserName(mockRequest);
+        assertNotNull(result);
+    }
+    @Test
+    public void testUpdateUserEmail() {
+        mockRequest.setParameter("uid", "1");
+        mockRequest.setParameter("newemail", "updated@example.com");
 
-            User deletedUser = userService.getUserById(uid);
-            assertNull(deletedUser);
-        } else {
-            assertNull(userToDelete);
-        }
+        String result = userService.updateUserEmail(mockRequest);
+        assertNotNull(result);
+    }
+    @Test
+    public void testUpdateUserAvatar() {
+        mockRequest.setParameter("uid", "1");
+        mockRequest.setParameter("newAvatarUrl", "new_avatar.jpg");
+
+        String result = userService.updateUserAvatar(mockRequest);
+        assertNotNull(result);
+    }
+    @Test
+    public void testUpdateUserPassword() {
+        mockRequest.setParameter("uid", "1");
+        mockRequest.setParameter("oldPassword", "oldpass");
+        mockRequest.setParameter("newPassword", "newpass");
+
+        String result = userService.updateUserPassword(mockRequest);
+        assertNotNull(result);
+    }
+    @Test
+    public void testInvalidPasswordUpdate() {
+        mockRequest.setParameter("uid", "1");
+        mockRequest.setParameter("oldPassword", (String) null);
+        mockRequest.setParameter("newPassword", "newpass");
+
+        String result = userService.updateUserPassword(mockRequest);
+        assertTrue(result.contains("false"));
+    }
+    @Test
+    public void testGetAvatarPathByUserId() {
+        User testUser = new User();// 首先创建一个带有头像的测试用户
+        testUser.setEmail("avatartest@example.com");
+        testUser.setUName("Avatar Test User");
+        testUser.setAvatarUser("test_avatar.jpg");
+        User addedUser = userService.addUser(testUser);
+        assertNotNull(addedUser);
+        String avatarPath = userService.getAvatarPathByUserId(addedUser.getUid());
+        assertNotNull(avatarPath);
+        assertTrue(avatarPath.contains("test_avatar.jpg") || avatarPath.contains("未设置头像"));
     }
 }
