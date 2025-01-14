@@ -22,74 +22,103 @@ public class IntroductionDaoImplTest {
     public void testGetAllIntroductions() {
         List<Introduction> introductions = introductionDaoImpl.getAllIntroductions();
         assertNotNull(introductions);
+        assertFalse(introductions.isEmpty());
     }
 
     @Test
     public void testGetIntroductionById() {
-        // 假设数据库中存在一个Introduction记录，其iid为1（可根据实际情况调整）
-        int iid = 1;
-        Introduction introduction = introductionDaoImpl.getIntroductionById(iid);
-        if (introduction!= null) {
-            assertEquals(iid, introduction.getIid());
-        } else {
-            assertNull(introduction);
-        }
+        // 先插入一条测试数据
+        Introduction testIntro = new Introduction();
+        testIntro.setType("TestType");
+        testIntro.setSymptom("TestSymptom");
+        testIntro.setCauses("TestCauses");
+        testIntro.setTreatment("TestTreatment");
+        testIntro.setPicture("TestPicture");
+
+        introductionDaoImpl.insertIntroduction(testIntro);
+
+        // 获取刚插入的数据的ID
+        List<Introduction> allIntros = introductionDaoImpl.getAllIntroductions();
+        int lastId = allIntros.get(allIntros.size() - 1).getIid();
+
+        Introduction introduction = introductionDaoImpl.getIntroductionById(lastId);
+        assertNotNull(introduction);
+        assertEquals("TestType", introduction.getType());
+
+        // 清理测试数据
+        introductionDaoImpl.deleteIntroduction("Iid = " + lastId);
     }
 
     @Test
     public void testGetIntroductionsByType() {
-        // 假设数据库中存在类型为"SomeType"的相关Introduction记录（可根据实际情况调整）
-        String type = "SomeType";
-        List<Introduction> introductions = introductionDaoImpl.getIntroductionsByType(type);
+        // 插入测试数据
+        Introduction testIntro = new Introduction();
+        testIntro.setType("SpecificTestType");
+        testIntro.setSymptom("TestSymptom");
+        testIntro.setCauses("TestCauses");
+        testIntro.setTreatment("TestTreatment");
+        testIntro.setPicture("TestPicture");
+
+        introductionDaoImpl.insertIntroduction(testIntro);
+
+        List<Introduction> introductions = introductionDaoImpl.getIntroductionsByType("SpecificTestType");
         assertNotNull(introductions);
+        assertFalse(introductions.isEmpty());
+        assertEquals("SpecificTestType", introductions.get(0).getType());
+
+        // 清理测试数据
+        introductionDaoImpl.deleteIntroduction("Type = 'SpecificTestType'");
     }
 
     @Test
-    public void testInsertIntroduction() {
+    public void testInsertAndUpdateIntroduction() {
+        // 测试插入
         Introduction introduction = new Introduction();
-        introduction.setType("NewType");
-        introduction.setSymptom("NewSymptom");
-        introduction.setCauses("NewCauses");
-        introduction.setTreatment("NewTreatment");
-        introduction.setPicture("NewPicture");
+        introduction.setType("InsertType");
+        introduction.setSymptom("InsertSymptom");
+        introduction.setCauses("InsertCauses");
+        introduction.setTreatment("InsertTreatment");
+        introduction.setPicture("InsertPicture");
 
         introductionDaoImpl.insertIntroduction(introduction);
 
-        // 再次查询数据库，验证是否插入成功
-        List<Introduction> introductions = introductionDaoImpl.getIntroductionsByType(introduction.getType());
-        assertTrue(introductions.stream().anyMatch(i -> i.getSymptom().equals(introduction.getSymptom())));
-    }
+        // 获取插入的数据
+        List<Introduction> inserted = introductionDaoImpl.getIntroductionsByType("InsertType");
+        assertFalse(inserted.isEmpty());
+        int insertedId = inserted.get(0).getIid();
 
-    @Test
-    public void testUpdateIntroduction() {
-        // 假设数据库中存在一个Introduction记录，其iid为2（可根据实际情况调整）
-        int iid = 2;
-        Introduction originalIntroduction = introductionDaoImpl.getIntroductionById(iid);
+        // 测试更新
+        introduction.setSymptom("UpdatedSymptom");
+        introductionDaoImpl.updateIntroduction(introduction, "Iid = " + insertedId);
 
-        if (originalIntroduction!= null) {
-            originalIntroduction.setSymptom("UpdatedSymptom");
-            introductionDaoImpl.updateIntroduction(originalIntroduction, "iid = " + iid);
+        Introduction updated = introductionDaoImpl.getIntroductionById(insertedId);
+        assertEquals("UpdatedSymptom", updated.getSymptom());
 
-            Introduction updatedIntroduction = introductionDaoImpl.getIntroductionById(iid);
-            assertEquals("UpdatedSymptom", updatedIntroduction.getSymptom());
-        } else {
-            assertNull(originalIntroduction);
-        }
+        // 清理测试数据
+        introductionDaoImpl.deleteIntroduction("Iid = " + insertedId);
     }
 
     @Test
     public void testDeleteIntroduction() {
-        // 假设数据库中存在一个Introduction记录，其iid为3（可根据实际情况调整）
-        int iid = 3;
-        Introduction introductionToDelete = introductionDaoImpl.getIntroductionById(iid);
+        // 插入测试数据
+        Introduction testIntro = new Introduction();
+        testIntro.setType("DeleteTestType");
+        testIntro.setSymptom("DeleteTestSymptom");
+        testIntro.setCauses("DeleteTestCauses");
+        testIntro.setTreatment("DeleteTestTreatment");
+        testIntro.setPicture("DeleteTestPicture");
 
-        if (introductionToDelete!= null) {
-            introductionDaoImpl.deleteIntroduction("iid = " + iid);
+        introductionDaoImpl.insertIntroduction(testIntro);
 
-            Introduction deletedIntroduction = introductionDaoImpl.getIntroductionById(iid);
-            assertNull(deletedIntroduction);
-        } else {
-            assertNull(introductionToDelete);
-        }
+        // 获取插入的数据的ID
+        List<Introduction> allIntros = introductionDaoImpl.getAllIntroductions();
+        int lastId = allIntros.get(allIntros.size() - 1).getIid();
+
+        // 删除数据
+        introductionDaoImpl.deleteIntroduction("Iid = " + lastId);
+
+        // 验证删除
+        List<Introduction> afterDelete = introductionDaoImpl.getIntroductionsByType("DeleteTestType");
+        assertTrue(afterDelete.isEmpty());
     }
 }

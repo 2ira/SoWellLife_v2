@@ -23,31 +23,7 @@ public class UserService {
         objectMapper.setDateFormat(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
     }
 
-    // 获取所有用户记录，并以JSON报文格式返回
-    public String getAllUsersAsJson() {
-        List<User> users = getAllUsers();
-        try {
-            return objectMapper.writeValueAsString(users);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "{\"error\": \"获取所有用户记录时出错\", \"details\": \"" + e.getMessage() + "\"}";
-        }
-    }
 
-    // 根据用户ID获取特定用户记录，并以JSON报文格式返回
-    public String getUserByIdAsJson(int uid) {
-        User user = getUserById(uid);
-        try {
-            if (user!= null) {
-                return objectMapper.writeValueAsString(user);
-            } else {
-                return "{\"error\": \"未找到ID为 " + uid + " 的用户\", \"details\": \"请检查输入的用户ID是否正确\"}";
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "{\"error\": \"根据ID获取用户记录时出错\", \"details\": \"" + e.getMessage() + "\"}";
-        }
-    }
     //获取头像
     public String getAvatarPathByUserId(int uid) {
         User user = getUserById(uid);  // 获取用户对象
@@ -69,20 +45,6 @@ public class UserService {
     }
 
 
-    // 根据用户邮箱获取特定用户记录，并以JSON报文格式返回
-    public String getUserByEmailAsJson(String email) {
-        User user = getUserByEmail(email);
-        try {
-            if (user!= null) {
-                return objectMapper.writeValueAsString(user);
-            } else {
-                return "{\"error\": \"未找到邮箱为 " + email + " 的用户\", \"details\": \"请检查输入的邮箱是否正确\"}";
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "{\"error\": \"根据邮箱获取用户记录时出错\", \"details\": \"" + e.getMessage() + "\"}";
-        }
-    }
 
     // 获取所有用户记录
     public List<User> getAllUsers() {
@@ -110,10 +72,6 @@ public class UserService {
         userDao.updateUser(user, condition);
     }
 
-    // 删除用户记录
-    public void deleteUser(String condition) {
-        userDao.deleteUser(condition);
-    }
 
     // 从HttpServletRequest中获取用户ID并更新用户名称，返回操作结果的JSON报文
     public String updateUserName(HttpServletRequest request) {
@@ -245,68 +203,5 @@ public class UserService {
             return "{\"success\": false, \"error\": \"更新用户密码时出错\", \"details\": \"" + e.getMessage() + "\"}";
         }
     }
-
-    private String updateEmail(HttpServletRequest request) {
-        try {
-            // 打印所有请求参数
-            System.out.println("请求参数: " + request.getParameterMap());
-
-            // 获取用户ID和新旧邮箱
-            String uidParam = request.getParameter("uid");
-            String oldEmail = request.getParameter("oldEmail");
-            String newEmail = request.getParameter("newEmail");
-
-            // 打印获取到的具体参数
-            System.out.println("用户ID: " + uidParam);
-            System.out.println("旧邮箱: " + oldEmail);
-            System.out.println("新邮箱: " + newEmail);
-
-            // 校验参数是否为空
-            if (uidParam == null || uidParam.isEmpty()) {
-                return "{\"success\": false, \"error\": \"用户ID不能为空\", \"details\": \"请提供有效的用户ID\"}";
-            }
-
-            if (oldEmail == null || oldEmail.isEmpty()) {
-                return "{\"success\": false, \"error\": \"旧邮箱不能为空\", \"details\": \"请提供旧邮箱\"}";
-            }
-
-            if (newEmail == null || newEmail.isEmpty()) {
-                return "{\"success\": false, \"error\": \"新邮箱不能为空\", \"details\": \"请提供新邮箱\"}";
-            }
-
-            // 将用户ID从字符串转换为整数
-            int uid = Integer.parseInt(uidParam);
-
-            // 获取用户对象
-            User user = getUserById(uid);
-            if (user != null) {
-                // 校验旧邮箱是否正确
-                if (user.getEmail().equals(oldEmail)) {
-                    // 更新邮箱
-                    user.setEmail(newEmail);
-                    // 记录操作日志
-                    log("用户 " + uid + " 更新了邮箱", request);
-                    updateUser(user, "Uid = " + uid);
-
-                    return "{\"success\": true, \"message\": \"用户邮箱更新成功\"}";
-                } else {
-                    return "{\"success\": false, \"error\": \"旧邮箱不正确\", \"details\": \"请检查输入的旧邮箱\"}";
-                }
-            } else {
-                return "{\"success\": false, \"error\": \"未找到ID为 " + uid + " 的用户，无法更新邮箱\", \"details\": \"请检查输入的用户ID是否正确\"}";
-            }
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            return "{\"success\": false, \"error\": \"用户ID格式错误，无法解析为数字\", \"details\": \"" + e.getMessage() + "\"}";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "{\"success\": false, \"error\": \"更新用户邮箱时出错\", \"details\": \"" + e.getMessage() + "\"}";
-        }
-    }
-
-
-
-
-
 
 }
